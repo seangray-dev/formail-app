@@ -43,8 +43,8 @@ export default function FormSheet() {
             <h6 className='mb-10'>Organization: {orgName}</h6>
           </SheetTitle>
         </SheetHeader>
-        <div className='flex items-center justify-between'>
-          <p className='font-bold text-xl mb-4'>Forms</p>
+        <div className='flex items-center justify-between mb-4'>
+          <p className='font-bold text-xl'>Forms</p>
           <CreateFormDialog />
         </div>
         <ul className='w-full flex flex-col'>

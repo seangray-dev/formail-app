@@ -81,9 +81,10 @@ export default function CreateFormDialog() {
   return (
     <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
       <DialogTrigger asChild>
-        <Button size={'icon'} variant={'outline'}>
+        <div className='text-sm rounded-md border px-4 py-2 cursor-pointer hover:bg-secondary transition-all duration-150 flex gap-2 items-center'>
           <PlusIcon className='h-4 w-4' />
-        </Button>
+          Create New Form
+        </div>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

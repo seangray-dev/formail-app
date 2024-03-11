@@ -1,4 +1,5 @@
 'use client';
+import CreateFormDialog from '@/components/layout/Header/create-new-form-dialog';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,7 +20,8 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 import { useOrganization, useUser } from '@clerk/nextjs';
 import { useMutation, useQuery } from 'convex/react';
-import { CogIcon, TrashIcon } from 'lucide-react';
+import { BarChart2Icon, CogIcon, Loader2, TrashIcon } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { api } from '../../../convex/_generated/api';
 import { Id } from '../../../convex/_generated/dataModel';
@@ -39,8 +41,8 @@ export default function Home() {
     orgName = organization.organization?.name ?? 'Personal account';
   }
   const forms = useQuery(api.forms.getForms, orgId ? { orgId } : 'skip');
-  const createForm = useMutation(api.forms.createForm);
   const deleteForm = useMutation(api.forms.deleteForm);
+  const isLoading = forms === undefined;
 
   async function handleDeleteForm(formId: FormId) {
     try {
@@ -61,8 +63,26 @@ export default function Home() {
   }
 
   return (
-    <main className='container py-10'>
-      <div className='text-3xl mb-8 font-medium'>{orgName} Forms</div>
+    <main className='container py-10 flex-1 flex flex-col'>
+      <div className='flex items-center justify-between mb-8'>
+        <div className='text-3xl font-medium'>{orgName} Forms</div>
+        <CreateFormDialog />
+      </div>
+      {isLoading && (
+        <div className='flex-1 flex flex-col justify-center items-center gap-10'>
+          <Loader2 className='animate-spin h-10 w-10' />
+          <div className='text-xl'>Loading forms...</div>
+        </div>
+      )}
+      {!isLoading && forms.length === 0 && (
+        <div className='flex-1 flex flex-col justify-center items-center gap-10'>
+          <Image alt='' width={200} height={200} src='/no_forms.svg' />
+          <div className='text-base md:text-2xl text-center'>
+            You have no forms. Create one to get started!
+          </div>
+          <CreateFormDialog />
+        </div>
+      )}
       <ul className='flex flex-col'>
         {forms?.map((form) => {
           return (
@@ -87,7 +107,25 @@ export default function Home() {
                       <TooltipContent>
                         <p className='text-sm text-muted-foreground font-normal'>
                           Go to <span className='text-white'>{form.name}</span>{' '}
-                          form settings
+                          settings
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+                <div>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Link
+                          href={`/dashboard/${orgId}/form/${form._id}/analytics`}>
+                          <BarChart2Icon className='h-5 w-5 text-muted-foreground hover:text-white transition-all duration-150' />
+                        </Link>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className='text-sm text-muted-foreground font-normal'>
+                          Go to <span className='text-white'>{form.name}</span>{' '}
+                          analytics
                         </p>
                       </TooltipContent>
                     </Tooltip>
@@ -111,9 +149,12 @@ export default function Home() {
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle className='text-muted-foreground'>
+                      <AlertDialogTitle>
                         Are you sure you want to delete the{' '}
-                        <span className='text-white'>"{form.name}"</span> form?
+                        <span className='text-muted-foreground'>
+                          "{form.name}"
+                        </span>{' '}
+                        form?
                       </AlertDialogTitle>
                       <AlertDialogDescription>
                         This action cannot be undone. This will permanently
