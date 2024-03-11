@@ -65,3 +65,28 @@ export const getForms = query({
       .collect();
   },
 });
+
+export const deleteForm = mutation({
+  args: { formId: v.id('forms') },
+  async handler(ctx, args) {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity) {
+      throw new ConvexError('No user identity provided');
+    }
+
+    const form = await ctx.db.get(args.formId);
+
+    if (!form) {
+      throw new ConvexError('This form does not exist');
+    }
+
+    const hasAccess = await hasAccessToOrg(ctx, form.orgId);
+
+    if (!hasAccess) {
+      throw new ConvexError('you do not have access to delete this form');
+    }
+
+    await ctx.db.delete(args.formId);
+  },
+});
