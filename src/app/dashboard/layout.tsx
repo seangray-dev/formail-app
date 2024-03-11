@@ -7,7 +7,7 @@ export default function DashboardLayout({
 }) {
   return (
     <section className='flex-1 flex flex-col'>
-      <div className='container mt-6'>
+      <div className='container my-6'>
         <DashboardHeader />
       </div>
       {children}

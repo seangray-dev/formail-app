@@ -9,7 +9,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -33,7 +32,7 @@ export default function SubmissionsPage() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   return (
-    <section className='container py-10'>
+    <section className='container'>
       <h3 className='mb-6'>Submissions</h3>
       <Table className='w-full border'>
         <TableHeader>

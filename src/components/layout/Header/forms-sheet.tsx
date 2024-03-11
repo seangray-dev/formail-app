@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/sheet';
 import { useOrganization, useUser } from '@clerk/nextjs';
 import { useQuery } from 'convex/react';
-import { MenuIcon } from 'lucide-react';
+import { ChevronRightIcon, MenuIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { api } from '../../../../convex/_generated/api';
@@ -50,7 +50,9 @@ export default function FormSheet() {
         <ul className='w-full flex flex-col'>
           {forms?.map((form) => {
             return (
-              <li key={form._id} className='hover:bg-secondary w-full'>
+              <li
+                key={form._id}
+                className='group hover:bg-secondary transition-all duration-150 w-full flex justify-between items-center'>
                 <Button
                   onClick={() => {
                     setIsSheetOpen(false);
@@ -64,6 +66,10 @@ export default function FormSheet() {
                     {form.name}
                   </Link>
                 </Button>
+                <ChevronRightIcon
+                  size={20}
+                  className='hidden group-hover:block mr-4'
+                />
               </li>
             );
           })}
