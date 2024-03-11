@@ -1,5 +1,5 @@
 import React from 'react';
 
 export default function FormAnalyticsPage() {
-  return <div>FormAnalyticsPage</div>;
+  return <div className='container'>FormAnalyticsPage</div>;
 }

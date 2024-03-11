@@ -90,3 +90,28 @@ export const deleteForm = mutation({
     await ctx.db.delete(args.formId);
   },
 });
+
+export const getFormById = query({
+  args: { formId: v.id('forms') },
+  async handler(ctx, args) {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity) {
+      throw new ConvexError('You must be signed in to access form details.');
+    }
+
+    const form = await ctx.db.get(args.formId);
+
+    if (!form) {
+      throw new ConvexError('Form not found.');
+    }
+
+    const hasAccess = await hasAccessToOrg(ctx, form.orgId);
+
+    if (!hasAccess) {
+      throw new ConvexError('You do not have permission to view this form.');
+    }
+
+    return form;
+  },
+});

@@ -9,7 +9,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { useOrganization, useUser } from '@clerk/nextjs';
-import { useMutation, useQuery } from 'convex/react';
+import { useQuery } from 'convex/react';
 import { MenuIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
