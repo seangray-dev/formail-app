@@ -22,7 +22,7 @@ export default function Home() {
         return <div key={form._id}>{form.name}</div>;
       })}
 
-      <Button
+      {/* <Button
         onClick={() => {
           if (!orgId) return;
           createForm({
@@ -31,7 +31,7 @@ export default function Home() {
           });
         }}>
         Click Me
-      </Button>
+      </Button> */}
     </main>
   );
 }

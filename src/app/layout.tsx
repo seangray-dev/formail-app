@@ -1,4 +1,5 @@
-import Header from '@/components/layout/header';
+import Header from '@/components/layout/Header/header';
+import { Toaster } from '@/components/ui/toaster';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import ConvexClientProvider from '../components/Providers/ConvexClientProvider';
@@ -22,6 +23,7 @@ export default function RootLayout({
         <ConvexClientProvider>
           <Header />
           {children}
+          <Toaster />
         </ConvexClientProvider>
       </body>
     </html>

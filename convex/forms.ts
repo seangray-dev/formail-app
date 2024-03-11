@@ -2,7 +2,7 @@ import { ConvexError, v } from 'convex/values';
 import { MutationCtx, QueryCtx, mutation, query } from './_generated/server';
 
 export const createForm = mutation({
-  args: { name: v.string(), orgId: v.string() },
+  args: { name: v.string(), description: v.string(), orgId: v.string() },
   async handler(ctx, args) {
     const identity = await ctx.auth.getUserIdentity();
 
@@ -12,6 +12,7 @@ export const createForm = mutation({
 
     await ctx.db.insert('forms', {
       name: args.name,
+      description: args.description,
       orgId: args.orgId,
     });
   },

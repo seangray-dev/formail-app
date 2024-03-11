@@ -4,10 +4,11 @@ import { v } from 'convex/values';
 export const roles = v.union(v.literal('admin'), v.literal('member'));
 
 export default defineSchema({
-  forms: defineTable({ name: v.string(), orgId: v.string() }).index(
-    'by_orgId',
-    ['orgId']
-  ),
+  forms: defineTable({
+    name: v.string(),
+    orgId: v.string(),
+    description: v.string(),
+  }).index('by_orgId', ['orgId']),
   users: defineTable({
     tokenIdentifier: v.string(),
     name: v.optional(v.string()),
