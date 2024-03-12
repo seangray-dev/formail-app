@@ -152,7 +152,7 @@ export default function Home() {
                       <AlertDialogTitle>
                         Are you sure you want to delete the{' '}
                         <span className='text-muted-foreground'>
-                          "{form.name}"
+                          `&ldquo;`{form.name}`&ldquo;`
                         </span>{' '}
                         form?
                       </AlertDialogTitle>
