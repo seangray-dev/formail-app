@@ -20,4 +20,8 @@ export default defineSchema({
       })
     ),
   }).index('by_tokenIdentifier', ['tokenIdentifier']),
+  submissions: defineTable({
+    formId: v.id('forms'),
+    data: v.string(),
+  }),
 });
