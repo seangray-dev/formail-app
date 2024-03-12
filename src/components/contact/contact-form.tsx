@@ -43,7 +43,7 @@ export function ContactForm() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const response = await fetch(
-        'https://formail.dev/submit/j57514nxfczspjxh4b695f9n0h6n5s6m',
+        'https://www.formail.dev/submit/j57514nxfczspjxh4b695f9n0h6n5s6m',
         {
           method: 'POST',
           headers: {
