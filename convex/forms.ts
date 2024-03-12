@@ -7,7 +7,7 @@ export const createForm = mutation({
     const identity = await ctx.auth.getUserIdentity();
 
     if (!identity) {
-      throw new ConvexError('you must be signed in to create a file');
+      throw new ConvexError('you must be signed in to create a form');
     }
 
     await ctx.db.insert('forms', {
