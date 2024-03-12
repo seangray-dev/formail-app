@@ -46,7 +46,9 @@ export default function DashboardHeader() {
     <>
       <Breadcrumb>
         <BreadcrumbList>
-          <BreadcrumbItem>{orgName}</BreadcrumbItem>
+          <BreadcrumbItem className='hover:cursor-not-allowed'>
+            {orgName}
+          </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             {!formId && <BreadcrumbPage>Dashboard</BreadcrumbPage>}
@@ -57,7 +59,9 @@ export default function DashboardHeader() {
           {isFormPage && (
             <>
               <BreadcrumbSeparator />
-              <BreadcrumbItem>Forms</BreadcrumbItem>
+              <BreadcrumbItem className='hover:cursor-not-allowed'>
+                Forms
+              </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbPage>{formName}</BreadcrumbPage>
