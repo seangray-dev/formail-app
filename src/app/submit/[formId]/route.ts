@@ -8,9 +8,12 @@ export async function POST(
   req: NextRequest,
   context: { params: { formId: any } }
 ) {
+  console.log('Request method:', req.method);
   if (req.method === 'OPTIONS') {
+    console.log('Handling OPTIONS request');
     // Handle OPTIONS request for CORS preflight
     let response = new NextResponse(null, {
+      status: 200,
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'POST, OPTIONS',
