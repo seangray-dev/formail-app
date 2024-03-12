@@ -27,7 +27,7 @@ import { api } from '../../../convex/_generated/api';
 import { Id } from '../../../convex/_generated/dataModel';
 type FormId = Id<'forms'>;
 
-export default function Home() {
+export default function DashboardHomePage() {
   const organization = useOrganization();
   const user = useUser();
   const { toast } = useToast();
