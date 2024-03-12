@@ -26,26 +26,24 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { useToast } from '@/components/ui/use-toast';
+import { formDetailsAtom } from '@/jotai/state';
 import { useMutation, useQuery } from 'convex/react';
 import { formatRelative } from 'date-fns';
+import { useAtom } from 'jotai';
 import { MailIcon, ShieldAlertIcon, TrashIcon } from 'lucide-react';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { api } from '../../../../../../../convex/_generated/api';
 import { Id } from '../../../../../../../convex/_generated/dataModel';
 type submissionId = Id<'submissions'>;
 
 export default function SubmissionsPage() {
-  const pathname = usePathname();
   const { toast } = useToast();
+  const [formDetails] = useAtom(formDetailsAtom);
+  const { formId } = formDetails;
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedSubmissionId, setSelectedSubmissionId] =
     useState<submissionId | null>(null);
-
-  const pathSegments = pathname.split('/').filter(Boolean);
-  const isFormPage = pathSegments.length > 2 && pathSegments[2] === 'form';
-  const formId = isFormPage ? pathSegments[3] : null;
 
   const formQueryArg = formId ? { formId: formId as Id<'forms'> } : 'skip';
   const submissions = useQuery(

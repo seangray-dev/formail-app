@@ -9,42 +9,19 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
-import { useOrganization, useUser } from '@clerk/nextjs';
-import { useQuery } from 'convex/react';
+import { formDetailsAtom } from '@/jotai/state';
+import { useAtom } from 'jotai';
 import { ClipboardCheckIcon, ClipboardIcon } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { api } from '../../../../convex/_generated/api';
-import { Id } from '../../../../convex/_generated/dataModel';
 
 export default function DashboardHeader() {
   const [isCopied, setIsCopied] = useState(false);
-  const pathname = usePathname();
-  const organization = useOrganization();
-  const user = useUser();
+  const [formDetails] = useAtom(formDetailsAtom);
   const isActive = (href: string) => pathname === href;
-
-  let orgId: string | undefined = undefined;
-  let orgName: string | undefined = undefined;
-  if (organization.isLoaded && user.isLoaded) {
-    orgId = organization.organization?.id ?? user.user?.id;
-  }
-
-  if (organization.isLoaded && user.isLoaded) {
-    orgName = organization.organization?.name ?? 'Personal account';
-  }
-
-  // Parse the pathname to extract formId if present
-  const pathSegments = pathname.split('/').filter(Boolean); // Remove empty segments
-  const isFormPage = pathSegments.length > 2 && pathSegments[2] === 'form';
-  const formId = isFormPage ? pathSegments[3] : null;
-
-  // Use `useQuery` with 'skip' option when formId is not available
-  const formQueryArg =
-    user.isLoaded && formId ? { formId: formId as Id<'forms'> } : 'skip';
-  const form = useQuery(api.forms.getFormById, formQueryArg);
-  let formName = form?.name ?? 'Unknown';
+  const { orgId, orgName, formName, formId, formDescription, pathname } =
+    formDetails;
+  const isFormPage = pathname?.includes('/form/');
 
   const copyToClipboard = async (text: string) => {
     try {
@@ -94,19 +71,18 @@ export default function DashboardHeader() {
               Form Name: <span className='text-white'>{formName}</span>
             </p>
             <p>
-              Description:{' '}
-              <span className='text-white'>{form?.description}</span>
+              Description: <span className='text-white'>{formDescription}</span>
             </p>
             <p className='flex gap-2 items-center'>
-              Form ID: <span className='text-white'>{form?._id}</span>
+              Form ID: <span className='text-white'>{formId}</span>
               <Button
                 title='Copy to clipboard'
                 size={'icon'}
                 variant={'ghost'}
                 className='p-0 m-0 w-fit h-fit hover:bg-transparent mb-1 relative'
                 onClick={() => {
-                  if (form?._id) {
-                    copyToClipboard(form._id);
+                  if (formId) {
+                    copyToClipboard(formId);
                   }
                 }}>
                 {isCopied ? (
@@ -122,45 +98,45 @@ export default function DashboardHeader() {
           </div>
           <nav className='mt-6 border-b pb-2 flex gap-4 text-muted-foreground'>
             <Link
-              href={`/dashboard/${orgId}/form/${form?._id}/submissions`}
+              href={`/dashboard/${orgId}/form/${formId}/submissions`}
               className={
-                isActive(`/dashboard/${orgId}/form/${form?._id}/submissions`)
+                isActive(`/dashboard/${orgId}/form/${formId}/submissions`)
                   ? 'text-white'
                   : 'hover:text-white duration-150 transition-all'
               }>
               Submissions
             </Link>
             <Link
-              href={`/dashboard/${orgId}/form/${form?._id}/analytics`}
+              href={`/dashboard/${orgId}/form/${formId}/analytics`}
               className={
-                isActive(`/dashboard/${orgId}/form/${form?._id}/analytics`)
+                isActive(`/dashboard/${orgId}/form/${formId}/analytics`)
                   ? 'text-white'
                   : 'hover:text-white duration-150 transition-all'
               }>
               Analytics
             </Link>
             <Link
-              href={`/dashboard/${orgId}/form/${form?._id}/export`}
+              href={`/dashboard/${orgId}/form/${formId}/export`}
               className={
-                isActive(`/dashboard/${orgId}/form/${form?._id}/export`)
+                isActive(`/dashboard/${orgId}/form/${formId}/export`)
                   ? 'text-white'
                   : 'hover:text-white duration-150 transition-all'
               }>
               Export
             </Link>
             <Link
-              href={`/dashboard/${orgId}/form/${form?._id}/settings`}
+              href={`/dashboard/${orgId}/form/${formId}/settings`}
               className={
-                isActive(`/dashboard/${orgId}/form/${form?._id}/settings`)
+                isActive(`/dashboard/${orgId}/form/${formId}/settings`)
                   ? 'text-white'
                   : 'hover:text-white duration-150 transition-all'
               }>
               Settings
             </Link>
             <Link
-              href={`/dashboard/${orgId}/form/${form?._id}/how-to`}
+              href={`/dashboard/${orgId}/form/${formId}/how-to`}
               className={
-                isActive(`/dashboard/${orgId}/form/${form?._id}/how-to`)
+                isActive(`/dashboard/${orgId}/form/${formId}/how-to`)
                   ? 'text-white'
                   : 'hover:text-white duration-150 transition-all'
               }>
