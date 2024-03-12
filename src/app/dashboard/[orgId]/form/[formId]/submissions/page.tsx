@@ -142,7 +142,7 @@ export default function SubmissionsPage() {
         <div className='flex-1 flex flex-col justify-center items-center gap-10'>
           <Image alt='' width={200} height={200} src='/no_submissions.svg' />
           <div className='text-base md:text-2xl text-center'>
-            You don`&apos;`t have any submissions for this form yet.
+            You don&apos;t have any submissions for this form yet.
           </div>
         </div>
       )}
