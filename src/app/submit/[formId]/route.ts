@@ -4,6 +4,27 @@ import { api } from '../../../../convex/_generated/api';
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
+export function middleware(req: NextRequest) {
+  // Check if the request method is POST
+  if (req.method === 'POST') {
+    // Create a response object for CORS headers
+    const res = NextResponse.next();
+
+    // Set CORS headers
+    res.headers.set('Access-Control-Allow-Origin', '*');
+    res.headers.set('Access-Control-Allow-Methods', 'POST');
+    res.headers.set(
+      'Access-Control-Allow-Headers',
+      'Content-Type, Authorization'
+    );
+
+    return res;
+  } else {
+    // If the request is not a POST, return a 405 Method Not Allowed response
+    return new NextResponse('Method Not Allowed', { status: 405 });
+  }
+}
+
 export async function POST(
   req: NextRequest,
   context: { params: { formId: any } }
