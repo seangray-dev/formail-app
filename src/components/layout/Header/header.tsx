@@ -14,7 +14,9 @@ export default function Header() {
       <div className='flex justify-between items-center'>
         <div className='flex items-center gap-4'>
           <Link href={'/'}>Formail</Link>
-          <FormSheet />
+          <SignedIn>
+            <FormSheet />
+          </SignedIn>
         </div>
         <div className='flex gap-4 items-center'>
           <div className='-mb-2'>
