@@ -87,6 +87,17 @@ export const deleteForm = mutation({
       throw new ConvexError('you do not have access to delete this form');
     }
 
+    // Retrieve all submissions associated with the form
+    const submissions = await ctx.db
+      .query('submissions')
+      .filter((q) => q.eq(q.field('formId'), args.formId))
+      .collect();
+
+    // Delete all associated submissions
+    for (const submission of submissions) {
+      await ctx.db.delete(submission._id);
+    }
+
     await ctx.db.delete(args.formId);
   },
 });
