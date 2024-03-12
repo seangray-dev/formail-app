@@ -8,17 +8,17 @@ export async function POST(
   req: NextRequest,
   context: { params: { formId: any } }
 ) {
-  // if (req.method === 'OPTIONS') {
-  //   // Handle OPTIONS request for CORS preflight
-  //   let response = new NextResponse(null, {
-  //     headers: {
-  //       'Access-Control-Allow-Origin': '*',
-  //       'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  //       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-  //     },
-  //   });
-  //   return response;
-  // }
+  if (req.method === 'OPTIONS') {
+    // Handle OPTIONS request for CORS preflight
+    let response = new NextResponse(null, {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      },
+    });
+    return response;
+  }
 
   // Proceed with POST request handling
   if (req.method === 'POST') {
