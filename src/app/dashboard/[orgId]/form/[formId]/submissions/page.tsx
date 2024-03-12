@@ -25,7 +25,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { useQuery } from 'convex/react';
+import { useToast } from '@/components/ui/use-toast';
+import { useMutation, useQuery } from 'convex/react';
 import { formatRelative } from 'date-fns';
 import { MailIcon, ShieldAlertIcon, TrashIcon } from 'lucide-react';
 import Image from 'next/image';
@@ -33,10 +34,14 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { api } from '../../../../../../../convex/_generated/api';
 import { Id } from '../../../../../../../convex/_generated/dataModel';
+type submissionId = Id<'submissions'>;
 
 export default function SubmissionsPage() {
   const pathname = usePathname();
+  const { toast } = useToast();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedSubmissionId, setSelectedSubmissionId] =
+    useState<submissionId | null>(null);
 
   const pathSegments = pathname.split('/').filter(Boolean);
   const isFormPage = pathSegments.length > 2 && pathSegments[2] === 'form';
@@ -47,6 +52,34 @@ export default function SubmissionsPage() {
     api.submissions.getSubmissionsByFormId,
     formQueryArg
   );
+
+  const deleteSubmission = useMutation(api.submissions.deleteSubmissionById);
+
+  const handleDeleteClick = (submissionId: submissionId) => {
+    setSelectedSubmissionId(submissionId);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirmation = async () => {
+    if (selectedSubmissionId) {
+      try {
+        await deleteSubmission({ submissionId: selectedSubmissionId });
+        setIsDeleteDialogOpen(false);
+        setSelectedSubmissionId(null);
+        toast({
+          variant: 'default',
+          title: 'Submission deleted successfully',
+        });
+      } catch (error) {
+        toast({
+          variant: 'destructive',
+          title: 'Deleting submission failed, please try again.',
+          description:
+            'You may not have permission to delete this submission. Contact your organization admin',
+        });
+      }
+    }
+  };
 
   return (
     <section className='container flex-1 flex flex-col'>
@@ -120,9 +153,10 @@ export default function SubmissionsPage() {
                           <TooltipTrigger
                             onClick={() => {
                               setIsDeleteDialogOpen(true);
+                              handleDeleteClick(submission._id);
                             }}>
                             <TrashIcon
-                              className='text-muted-foreground hover:text-white transition-all duration-150'
+                              className='text-muted-foreground hover:text-destructive transition-all duration-150'
                               size={20}
                             />
                           </TooltipTrigger>
@@ -162,7 +196,9 @@ export default function SubmissionsPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction className='bg-destructive text-destructive-foreground hover:bg-destructive/80 transition-all duration-150'>
+            <AlertDialogAction
+              onClick={handleDeleteConfirmation}
+              className='bg-destructive text-destructive-foreground hover:bg-destructive/80 transition-all duration-150'>
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
