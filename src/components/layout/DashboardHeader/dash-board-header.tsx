@@ -73,12 +73,14 @@ export default function DashboardHeader() {
       {formId && (
         <>
           <div className='mt-6 text-muted-foreground'>
-            <p>{orgName}</p>
+            <p>
+              Organization: <span className='text-white'>{orgName}</span>
+            </p>
             <p>
               Form Name: <span className='text-white'>{formName}</span>
             </p>
             <p>
-              formId: <span className='text-white'>{form?._id}</span>
+              Form ID: <span className='text-white'>{form?._id}</span>
             </p>
           </div>
           <nav className='mt-6 border-b pb-2 flex gap-4 text-muted-foreground'>
