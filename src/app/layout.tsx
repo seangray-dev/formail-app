@@ -21,7 +21,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className={`${sora.className} min-h-screen flex flex-col`}>
+      <body
+        className={`${sora.className} min-h-screen flex flex-col antialiased`}>
         <ConvexClientProvider>
           <Header />
           {children}
