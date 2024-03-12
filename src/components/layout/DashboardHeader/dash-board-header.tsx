@@ -93,6 +93,10 @@ export default function DashboardHeader() {
             <p>
               Form Name: <span className='text-white'>{formName}</span>
             </p>
+            <p>
+              Description:{' '}
+              <span className='text-white'>{form?.description}</span>
+            </p>
             <p className='flex gap-2 items-center'>
               Form ID: <span className='text-white'>{form?._id}</span>
               <Button
