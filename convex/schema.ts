@@ -8,6 +8,14 @@ export default defineSchema({
     name: v.string(),
     orgId: v.string(),
     description: v.string(),
+    settings: v.object({
+      emailRecipients: v.array(v.string()),
+      emailThreads: v.boolean(),
+      honeypotField: v.optional(v.string()),
+      customSpamWords: v.optional(v.array(v.string())),
+      spamProtectionService: v.string(),
+      spamProtectionSecret: v.optional(v.string()),
+    }),
   }).index('by_orgId', ['orgId']),
   users: defineTable({
     tokenIdentifier: v.string(),
