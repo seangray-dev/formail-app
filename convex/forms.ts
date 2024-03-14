@@ -57,7 +57,7 @@ export const createForm = mutation({
         emailRecipients: defaultAdmins,
         emailThreads: true,
         honeypotField: '',
-        customSpamWords: [''],
+        customSpamWords: '',
         spamProtectionService: 'None',
         spamProtectionSecret: '',
       },

@@ -26,10 +26,14 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { formDetailsAtom } from '@/jotai/state';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useQuery } from 'convex/react';
 import { useAtom } from 'jotai';
-import { SaveIcon, TrashIcon } from 'lucide-react';
-import { useForm } from 'react-hook-form';
+import { SaveIcon } from 'lucide-react';
+import { useEffect } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
+import { api } from '../../../../../../../convex/_generated/api';
+import { Id } from '../../../../../../../convex/_generated/dataModel';
 
 const formSchema = z.object({
   form_name: z
@@ -42,21 +46,28 @@ const formSchema = z.object({
   email_recipients: z.array(z.string()),
   email_threads: z.boolean().default(true),
   honeypot_field: z.string().optional(),
-  custom_spam_words: z.array(z.string()).optional(),
-  spam_protection_service: z
-    .enum(['None', 'Botpoison', 'Google reCAPTCHA v2', 'hCaptcha', 'Turnstile'])
-    .optional(),
+  custom_spam_words: z
+    .string()
+    .optional()
+    .transform((value) => {
+      return value
+        ? value
+            .split(/[\s,]+/)
+            .filter(Boolean)
+            .join(', ')
+        : '';
+    }),
+  spam_protection_service: z.string().optional(),
   spam_protection_secret: z.string().optional(),
 });
 
 export default function FormSettingsPage() {
   const [formDetails] = useAtom(formDetailsAtom);
-
   const { formName, formDescription, orgUsers, formId, orgId } = formDetails;
-  const defaultAdmins =
-    orgUsers
-      ?.filter((user) => user.role === 'admin')
-      .map((admin) => admin.id) || [];
+  const formSettings = useQuery(
+    api.forms.getFormById,
+    formId ? { formId: formId as Id<'forms'> } : 'skip'
+  );
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -65,14 +76,64 @@ export default function FormSettingsPage() {
       form_description: '',
       email_recipients: [],
       email_threads: true,
+      honeypot_field: '',
+      custom_spam_words: '',
+      spam_protection_service: '',
+      spam_protection_secret: '',
     },
   });
 
-  // 2. Define a submit handler.
+  const { reset } = form;
+
+  useEffect(() => {
+    if (formSettings) {
+      const {
+        settings: {
+          emailRecipients,
+          emailThreads,
+          honeypotField,
+          customSpamWords,
+          spamProtectionService,
+          spamProtectionSecret,
+        } = {},
+      } = formSettings;
+
+      reset({
+        form_name: formSettings.name || '',
+        form_description: formSettings.description || '',
+        email_recipients: emailRecipients,
+        email_threads: emailThreads,
+        honeypot_field: honeypotField,
+        custom_spam_words: customSpamWords,
+        spam_protection_service: spamProtectionService,
+        spam_protection_secret: spamProtectionSecret,
+      });
+    }
+  }, [formSettings, reset]);
+
+  const spamProtectionService = useWatch({
+    control: form.control,
+    name: 'spam_protection_service',
+    defaultValue: 'None',
+  });
+
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
+    if (
+      values.spam_protection_service !== 'None' &&
+      !values.spam_protection_secret
+    ) {
+      form.setError('spam_protection_secret', {
+        type: 'manual',
+        message: 'Spam Protection Secret Key is required',
+      });
+      return; // Prevent form submission if validation fails
+    }
+
+    // Proceed with form submission if validation passes
     console.log(values);
+    // Here you would handle the actual form submission, e.g., sending data to an API
+    // After successful submission, you can reset the form
+    reset();
   }
 
   return (
@@ -230,9 +291,12 @@ export default function FormSettingsPage() {
               <FormItem>
                 <FormLabel>Spam Protection Service</FormLabel>
                 <FormControl>
-                  <Select>
+                  <Select
+                    {...field}
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}>
                     <SelectTrigger>
-                      <SelectValue {...field} />
+                      <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value='None'>None</SelectItem>
@@ -250,27 +314,35 @@ export default function FormSettingsPage() {
             )}
           />
 
-          <FormField
-            control={form.control}
-            name='spam_protection_secret'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Spam Protection Secret Key</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    type='password'
-                    placeholder='Enter secret key'
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {spamProtectionService !== 'None' && (
+            <FormField
+              control={form.control}
+              rules={{
+                required:
+                  spamProtectionService !== 'None'
+                    ? 'Spam Protection Secret Key is required'
+                    : false,
+              }}
+              name='spam_protection_secret'
+              render={({ field, fieldState: { error } }) => (
+                <FormItem>
+                  <FormLabel>Spam Protection Secret Key</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type='password'
+                      placeholder='Enter secret key'
+                    />
+                  </FormControl>
+                  {error && <FormMessage>{error.message}</FormMessage>}
+                </FormItem>
+              )}
+            />
+          )}
 
           <div className='flex flex-col gap-4 md:flex-row md:justify-between'>
             <DeleteSubmissions formId={formId} />
-            <DeleteForm formId={formId} orgId={orgId} />
+            <DeleteForm formId={formId} />
             <Button type='submit'>
               <SaveIcon className='mr-2' size={18} />
               Save Changes
