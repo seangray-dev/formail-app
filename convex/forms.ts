@@ -1,4 +1,4 @@
-import { useQuery } from 'convex/react';
+import { useMutation, useQuery } from 'convex/react';
 import { ConvexError, v } from 'convex/values';
 import { api } from './_generated/api';
 import { mutation, query } from './_generated/server';
@@ -162,5 +162,43 @@ export const getFormById = query({
     }
 
     return form;
+  },
+});
+
+export const updateFormSettings = mutation({
+  args: {
+    formId: v.id('forms'),
+    name: v.string(),
+    description: v.string(),
+    settings: v.object({
+      emailRecipients: v.array(v.string()),
+      emailThreads: v.boolean(),
+      honeypotField: v.optional(v.string()),
+      customSpamWords: v.optional(v.string()),
+      spamProtectionService: v.string(),
+      spamProtectionSecret: v.optional(v.string()),
+    }),
+  },
+  async handler(ctx, args) {
+    const { formId, settings, name, description } = args;
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity) {
+      throw new ConvexError('No user identity provided');
+    }
+
+    const form = await ctx.db.get(formId);
+
+    if (!form) {
+      throw new ConvexError('This form does not exist');
+    }
+
+    const hasAccess = await isAdminOfOrg(ctx, form.orgId);
+
+    if (!hasAccess) {
+      throw new ConvexError('you do not have access to update this form');
+    }
+
+    await ctx.db.patch(formId, { name, description, settings });
   },
 });

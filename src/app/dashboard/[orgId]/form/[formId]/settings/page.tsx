@@ -24,9 +24,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import { useToast } from '@/components/ui/use-toast';
 import { formDetailsAtom } from '@/jotai/state';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery } from 'convex/react';
+import { useMutation, useQuery } from 'convex/react';
 import { useAtom } from 'jotai';
 import { SaveIcon } from 'lucide-react';
 import { useEffect } from 'react';
@@ -62,8 +63,10 @@ const formSchema = z.object({
 });
 
 export default function FormSettingsPage() {
+  const { toast } = useToast();
   const [formDetails] = useAtom(formDetailsAtom);
-  const { formName, formDescription, orgUsers, formId, orgId } = formDetails;
+  const updateFormSettingsMutation = useMutation(api.forms.updateFormSettings);
+  const { orgUsers, formId } = formDetails;
   const formSettings = useQuery(
     api.forms.getFormById,
     formId ? { formId: formId as Id<'forms'> } : 'skip'
@@ -117,7 +120,19 @@ export default function FormSettingsPage() {
     defaultValue: 'None',
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    // Ensure formId is correctly typed as Id<'forms'>
+    const typedFormId = formId as Id<'forms'>;
+    const { form_name, form_description } = values;
+    const settings = {
+      emailRecipients: values.email_recipients,
+      emailThreads: values.email_threads,
+      honeypotField: values.honeypot_field,
+      customSpamWords: values.custom_spam_words,
+      spamProtectionService: values.spam_protection_service || '',
+      spamProtectionSecret: values.spam_protection_secret,
+    };
+
     if (
       values.spam_protection_service !== 'None' &&
       !values.spam_protection_secret
@@ -126,14 +141,42 @@ export default function FormSettingsPage() {
         type: 'manual',
         message: 'Spam Protection Secret Key is required',
       });
-      return; // Prevent form submission if validation fails
+      return;
     }
 
-    // Proceed with form submission if validation passes
-    console.log(values);
-    // Here you would handle the actual form submission, e.g., sending data to an API
-    // After successful submission, you can reset the form
-    reset();
+    if (!formId || !form_name || !form_description) {
+      console.error('Form ID is undefined.');
+      return;
+    }
+
+    try {
+      await updateFormSettingsMutation({
+        formId: typedFormId,
+        name: form_name,
+        description: form_description,
+        settings,
+      });
+      toast({
+        variant: 'default',
+        title: 'Updated Form Settings',
+        description:
+          'Your settings for this form have successfully been updated.',
+      });
+      reset();
+    } catch (err: any) {
+      let errorMessage = 'An unexpected error occurred. Please try again.';
+      if (err.message.includes('No user identity provided')) {
+        errorMessage = 'You must be logged in to update settings.';
+      } else if (err.message.includes('you do not have access')) {
+        errorMessage = 'Only admins can update form settings.';
+      }
+      console.log(err);
+      toast({
+        variant: 'destructive',
+        title: 'Failed to update settings for this form',
+        description: `${errorMessage}`,
+      });
+    }
   }
 
   return (
