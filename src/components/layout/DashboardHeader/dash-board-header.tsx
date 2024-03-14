@@ -62,7 +62,7 @@ export default function DashboardHeader() {
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             {!formId && <BreadcrumbPage>Dashboard</BreadcrumbPage>}
-            {formId && (
+            {isFormPage && (
               <BreadcrumbLink href='/dashboard'>Dashboard</BreadcrumbLink>
             )}
           </BreadcrumbItem>
