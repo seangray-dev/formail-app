@@ -29,32 +29,33 @@ http.route({
             name: `${result.data.first_name ?? ''} ${
               result.data.last_name ?? ''
             }`,
+            email: result.data.email_addresses[0].email_address,
             image: result.data.image_url,
           });
           break;
+
         case 'user.updated':
-          // @ts-ignore
           await ctx.runMutation(internal.users.updateUser, {
-            tokenIdentifier: `https://${process.env.CLERK_HOSTNAME}|${result.data.id}`,
+            // tokenIdentifier: `https://${process.env.CLERK_HOSTNAME}|${result.data.id}`,
+            tokenIdentifier: `https://known-ox-51.clerk.accounts.dev|${result.data.id}`,
             name: `${result.data.first_name ?? ''} ${
               result.data.last_name ?? ''
             }`,
             image: result.data.image_url,
           });
           break;
+
         case 'organizationMembership.created':
-          // @ts-ignore
           await ctx.runMutation(internal.users.addOrgIdToUser, {
             tokenIdentifier: `https://known-ox-51.clerk.accounts.dev|${result.data.public_user_data.user_id}`,
             orgId: result.data.organization.id,
             role: result.data.role === 'org:admin' ? 'admin' : 'member',
           });
           break;
+
         case 'organizationMembership.updated':
-          console.log(result.data.role);
-          // @ts-ignore
           await ctx.runMutation(internal.users.updateRoleInOrgForUser, {
-            tokenIdentifier: `https://${process.env.CLERK_HOSTNAME}|${result.data.public_user_data.user_id}`,
+            tokenIdentifier: `https://known-ox-51.clerk.accounts.dev|${result.data.public_user_data.user_id}`,
             orgId: result.data.organization.id,
             role: result.data.role === 'org:admin' ? 'admin' : 'member',
           });

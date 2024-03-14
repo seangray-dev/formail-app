@@ -1,5 +1,6 @@
 import { ConvexError, v } from 'convex/values';
-import { MutationCtx, QueryCtx, mutation, query } from './_generated/server';
+import { mutation, query } from './_generated/server';
+import { hasAccessToOrg, isAdminOfOrg } from './orgAccess';
 
 export const createForm = mutation({
   args: { name: v.string(), description: v.string(), orgId: v.string() },
@@ -17,38 +18,6 @@ export const createForm = mutation({
     });
   },
 });
-
-export async function hasAccessToOrg(
-  ctx: QueryCtx | MutationCtx,
-  orgId: string
-) {
-  const identity = await ctx.auth.getUserIdentity();
-
-  if (!identity) {
-    return null;
-  }
-
-  const user = await ctx.db
-    .query('users')
-    .withIndex('by_tokenIdentifier', (q) =>
-      q.eq('tokenIdentifier', identity.tokenIdentifier)
-    )
-    .first();
-
-  if (!user) {
-    return null;
-  }
-
-  const hasAccess =
-    user.orgIds.some((item) => item.orgId === orgId) ||
-    user.tokenIdentifier.includes(orgId);
-
-  if (!hasAccess) {
-    return null;
-  }
-
-  return { user };
-}
 
 export const getForms = query({
   args: { orgId: v.string() },
@@ -81,7 +50,7 @@ export const deleteForm = mutation({
       throw new ConvexError('This form does not exist');
     }
 
-    const hasAccess = await hasAccessToOrg(ctx, form.orgId);
+    const hasAccess = await isAdminOfOrg(ctx, form.orgId);
 
     if (!hasAccess) {
       throw new ConvexError('you do not have access to delete this form');

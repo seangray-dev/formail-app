@@ -19,8 +19,15 @@ export default function DashboardHeader() {
   const [isCopied, setIsCopied] = useState(false);
   const [formDetails] = useAtom(formDetailsAtom);
   const isActive = (href: string) => pathname === href;
-  const { orgId, orgName, formName, formId, formDescription, pathname } =
-    formDetails;
+  const {
+    orgId,
+    orgName,
+    admins,
+    formName,
+    formId,
+    formDescription,
+    pathname,
+  } = formDetails;
   const isFormPage = pathname?.includes('/form/');
 
   const copyToClipboard = async (text: string) => {

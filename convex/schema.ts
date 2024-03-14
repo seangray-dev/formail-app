@@ -12,16 +12,17 @@ export default defineSchema({
   users: defineTable({
     tokenIdentifier: v.string(),
     name: v.optional(v.string()),
+    email: v.optional(v.string()),
     image: v.optional(v.string()),
-    orgIds: v.array(
-      v.object({
-        orgId: v.string(),
-        role: roles,
-      })
-    ),
+    orgIds: v.array(v.string()),
   }).index('by_tokenIdentifier', ['tokenIdentifier']),
   submissions: defineTable({
     formId: v.id('forms'),
     data: v.string(),
   }),
+  userOrgRoles: defineTable({
+    userId: v.id('users'),
+    orgId: v.string(),
+    role: roles,
+  }).index('by_orgId_and_role', ['orgId', 'role']),
 });

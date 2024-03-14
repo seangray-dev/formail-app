@@ -26,14 +26,27 @@ export async function getUser(
 }
 
 export const createUser = internalMutation({
-  args: { tokenIdentifier: v.string(), name: v.string(), image: v.string() },
+  args: {
+    tokenIdentifier: v.string(),
+    name: v.string(),
+    email: v.string(),
+    image: v.string(),
+  },
   async handler(ctx, args) {
     const clerkUserId = args.tokenIdentifier.split('|')[1];
-    await ctx.db.insert('users', {
+
+    const userId = await ctx.db.insert('users', {
       tokenIdentifier: args.tokenIdentifier,
-      orgIds: [{ orgId: clerkUserId, role: 'admin' }],
+      orgIds: [clerkUserId],
       name: args.name,
+      email: args.email,
       image: args.image,
+    });
+
+    await ctx.db.insert('userOrgRoles', {
+      userId: userId,
+      orgId: clerkUserId,
+      role: 'admin',
     });
   },
 });
@@ -65,7 +78,13 @@ export const addOrgIdToUser = internalMutation({
     const user = await getUser(ctx, args.tokenIdentifier);
 
     await ctx.db.patch(user._id, {
-      orgIds: [...user.orgIds, { orgId: args.orgId, role: args.role }],
+      orgIds: [...user.orgIds, args.orgId],
+    });
+
+    await ctx.db.insert('userOrgRoles', {
+      userId: user._id,
+      orgId: args.orgId,
+      role: args.role,
     });
   },
 });
@@ -75,19 +94,21 @@ export const updateRoleInOrgForUser = internalMutation({
   async handler(ctx, args) {
     const user = await getUser(ctx, args.tokenIdentifier);
 
-    const org = user.orgIds.find((org) => org.orgId === args.orgId);
+    const userOrgRole = await ctx.db
+      .query('userOrgRoles')
+      .filter((q) =>
+        q.and(
+          q.eq(q.field('userId'), user._id),
+          q.eq(q.field('orgId'), args.orgId)
+        )
+      )
+      .first();
 
-    if (!org) {
-      throw new ConvexError(
-        'expected an org on the user but was not found when updating'
-      );
+    if (!userOrgRole) {
+      throw new ConvexError('Organization role not found');
     }
 
-    org.role = args.role;
-
-    await ctx.db.patch(user._id, {
-      orgIds: user.orgIds,
-    });
+    await ctx.db.patch(userOrgRole._id, { role: args.role });
   },
 });
 
@@ -119,5 +140,32 @@ export const getMe = query({
     }
 
     return user;
+  },
+});
+
+export const getAdminsByOrgId = query({
+  args: { orgId: v.string() },
+  async handler(ctx, args) {
+    const userOrgRoles = await ctx.db
+      .query('userOrgRoles')
+      .filter((q) =>
+        q.and(
+          q.eq(q.field('orgId'), args.orgId),
+          q.eq(q.field('role'), 'admin')
+        )
+      )
+      .collect();
+
+    const adminUserIds = userOrgRoles.map((role) => role.userId);
+
+    const admins = await Promise.all(
+      adminUserIds.map((userId) => ctx.db.get(userId))
+    );
+
+    return admins.filter(Boolean).map((admin) => ({
+      id: admin?._id,
+      name: admin?.name,
+      email: admin?.email,
+    }));
   },
 });

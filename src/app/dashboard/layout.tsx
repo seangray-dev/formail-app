@@ -39,8 +39,10 @@ export default function DashboardLayout({
   // Use `useQuery` with 'skip' option when formId is not available
   const formQueryArg =
     user.isLoaded && formId ? { formId: formId as Id<'forms'> } : 'skip';
+  const adminQueryArg = user.isLoaded && orgId ? { orgId: orgId } : 'skip';
   const form = useQuery(api.forms.getFormById, formQueryArg);
   let formName = form?.name ?? 'Unknown';
+  const admins = useQuery(api.users.getAdminsByOrgId, adminQueryArg);
 
   useEffect(() => {
     if (formId && form) {
@@ -53,7 +55,7 @@ export default function DashboardLayout({
         pathname,
       });
     }
-  }, [formId, form, setFormDetails, orgId, orgName, pathname]);
+  }, [formId, form, admins, setFormDetails, orgId, orgName, pathname]);
 
   return (
     <section className='flex-1 flex flex-col'>

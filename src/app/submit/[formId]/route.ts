@@ -5,7 +5,6 @@ import { api } from '../../../../convex/_generated/api';
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
 export async function OPTIONS() {
-  console.log('Handling OPTIONS request');
   // Handle OPTIONS request for CORS preflight
   let response = new NextResponse(null, {
     status: 200,
@@ -15,7 +14,6 @@ export async function OPTIONS() {
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     },
   });
-  console.log('Response headers set for OPTIONS request:', response.headers);
   return response;
 }
 
@@ -23,7 +21,6 @@ export async function POST(
   req: NextRequest,
   context: { params: { formId: any } }
 ) {
-  console.log('Handling POST request');
   const formId = context.params.formId;
   const data = await req.json();
 
@@ -45,7 +42,6 @@ export async function POST(
       { status: 200 }
     );
   } catch (error) {
-    console.error('Error submitting form:', error);
     return NextResponse.json(
       { error: 'Internal Server Error' },
       { status: 500 }
