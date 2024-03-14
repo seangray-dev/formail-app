@@ -4,6 +4,7 @@ interface OrgUser {
   id: string | undefined;
   name: string;
   email: string;
+  role?: 'admin' | 'member';
 }
 
 interface FormDetails {

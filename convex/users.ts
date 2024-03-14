@@ -180,7 +180,7 @@ export const getAllUsersByOrgId = query({
 
     const userIds = userOrgRoles
       .map((mapping) => mapping.userId)
-      .filter(Boolean); // Ensure userId is not undefined
+      .filter(Boolean);
 
     const users = await Promise.all(
       userIds.map((userId) => ctx.db.get(userId))
@@ -192,5 +192,44 @@ export const getAllUsersByOrgId = query({
       name: user?.name || 'Unknown Name',
       email: user?.email || 'No Email',
     }));
+  },
+});
+
+export const getUsersByOrgIdWithRoles = query({
+  args: { orgId: v.string() },
+  async handler(ctx, args) {
+    // Fetch all user-role mappings for the specified orgId
+    const userOrgRoles = await ctx.db
+      .query('userOrgRoles')
+      .filter((q) => q.eq(q.field('orgId'), args.orgId))
+      .collect();
+
+    // Map userIds to their roles for easy access
+    const userIdToRole = new Map(
+      userOrgRoles.map((mapping) => [mapping.userId.toString(), mapping.role])
+    );
+
+    // Fetch user details for each user in the userOrgRoles
+    const usersPromises = userOrgRoles.map(async (mapping) => {
+      const user = await ctx.db.get(mapping.userId); // Use the ID directly
+      return user
+        ? {
+            id: user._id.toString(),
+            name: user.name || 'Unknown Name',
+            email: user.email || 'No Email',
+            role: userIdToRole.get(user._id.toString()) as
+              | 'admin'
+              | 'member'
+              | undefined,
+          }
+        : null;
+    });
+
+    const usersWithRoles = await Promise.all(usersPromises);
+
+    // Filter out any null values and return the users with their roles
+    return usersWithRoles.filter(
+      (user): user is NonNullable<typeof user> => user !== null
+    );
   },
 });

@@ -10,25 +10,49 @@ import {
 } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { formDetailsAtom } from '@/jotai/state';
+import { useOrganization, useUser } from '@clerk/nextjs';
 import { useAtom } from 'jotai';
 import { ClipboardCheckIcon, ClipboardIcon } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function DashboardHeader() {
+  const pathname = usePathname();
   const [isCopied, setIsCopied] = useState(false);
+  const [isFormPage, setIsFormPage] = useState(false);
+  const organization = useOrganization();
+  const user = useUser();
   const [formDetails] = useAtom(formDetailsAtom);
   const isActive = (href: string) => pathname === href;
-  const {
-    orgId,
-    orgName,
-    orgUsers,
-    formName,
-    formId,
-    formDescription,
-    pathname,
-  } = formDetails;
-  const isFormPage = pathname?.includes('/form/');
+  const { formName, formId, formDescription } = formDetails;
+
+  let orgId: string | undefined = undefined;
+  let orgName: string | undefined = undefined;
+  if (organization.isLoaded && user.isLoaded) {
+    orgId = organization.organization?.id ?? user.user?.id;
+  }
+  if (organization.isLoaded && user.isLoaded) {
+    orgName = organization.organization?.name ?? 'Personal account';
+  }
+
+  useEffect(() => {
+    // Check if the current pathname includes '/form/'
+    const isForm = pathname.includes('/form/');
+    setIsFormPage(isForm);
+
+    // If it's a form page, you might want to do additional logic here
+    // For example, updating formDetails or handling form-specific UI changes
+    if (isForm) {
+      // Extract formId from the pathname, assuming a structure like '/dashboard/orgId/form/formId'
+      const pathSegments = pathname.split('/').filter(Boolean); // Filter out any empty segments
+      const formIdIndex = pathSegments.indexOf('form') + 1; // 'form' should precede the formId in your URL structure
+      const formId = pathSegments[formIdIndex];
+
+      // Update formDetails or perform other actions based on formId
+      // ...
+    }
+  }, [pathname]);
 
   const copyToClipboard = async (text: string) => {
     try {

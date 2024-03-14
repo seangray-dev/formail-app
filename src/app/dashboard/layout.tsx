@@ -22,13 +22,9 @@ export default function DashboardLayout({
   const user = useUser();
 
   let orgId: string | undefined = undefined;
-  let orgName: string | undefined = undefined;
-  if (organization.isLoaded && user.isLoaded) {
-    orgId = organization.organization?.id ?? user.user?.id;
-  }
 
   if (organization.isLoaded && user.isLoaded) {
-    orgName = organization.organization?.name ?? 'Personal account';
+    orgId = organization.organization?.id ?? user.user?.id;
   }
 
   // Parse the pathname to extract formId if present
@@ -43,15 +39,13 @@ export default function DashboardLayout({
   const form = useQuery(api.forms.getFormById, formQueryArg);
   let formName = form?.name ?? 'Unknown';
   const orgUsers = useQuery(
-    api.users.getAllUsersByOrgId,
+    api.users.getUsersByOrgIdWithRoles,
     orgId ? { orgId } : 'skip'
   );
 
   useEffect(() => {
     if (formId && form) {
       setFormDetails({
-        orgId,
-        orgName,
         orgUsers,
         formId,
         formName,
@@ -59,10 +53,10 @@ export default function DashboardLayout({
         pathname,
       });
     }
-  }, [formId, form, orgUsers, setFormDetails, orgId, orgName, pathname]);
+  }, [formId, form, orgUsers, setFormDetails, pathname]);
 
   return (
-    <section className='flex-1 flex flex-col'>
+    <section className='flex-1 flex flex-col pb-10'>
       <div className='container my-6'>
         <DashboardHeader />
       </div>

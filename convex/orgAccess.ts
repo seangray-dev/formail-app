@@ -1,5 +1,5 @@
 import { ConvexError, v } from 'convex/values';
-import { MutationCtx, QueryCtx } from './_generated/server';
+import { MutationCtx, QueryCtx, query } from './_generated/server';
 
 export async function hasAccessToOrg(
   ctx: QueryCtx | MutationCtx,
@@ -56,3 +56,10 @@ export async function isAdminOfOrg(
     .first();
   return roleRecord?.role === 'admin';
 }
+
+export const isAdminUserOfOrg = query({
+  args: { orgId: v.string() },
+  async handler(ctx, args) {
+    return isAdminOfOrg(ctx, args.orgId);
+  },
+});
