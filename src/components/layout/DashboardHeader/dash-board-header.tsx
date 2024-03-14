@@ -14,7 +14,7 @@ import { useOrganization, useUser } from '@clerk/nextjs';
 import { useAtom } from 'jotai';
 import { ClipboardCheckIcon, ClipboardIcon } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function DashboardHeader() {

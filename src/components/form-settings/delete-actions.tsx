@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { formDetailsAtom } from '@/jotai/state';
-import { useMutation, useQuery } from 'convex/react';
+import { useMutation } from 'convex/react';
 import { useAtom } from 'jotai';
 import { TrashIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -20,7 +20,6 @@ import { useToast } from '../ui/use-toast';
 
 export function DeleteSubmissions({ formId }: any) {
   const { toast } = useToast();
-  const router = useRouter();
   const deleteSubmissions = useMutation(api.forms.deleteSubmissionsForForm);
   async function handleDeleteSubmissions(formId: any) {
     try {
