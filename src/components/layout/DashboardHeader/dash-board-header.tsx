@@ -40,18 +40,6 @@ export default function DashboardHeader() {
     // Check if the current pathname includes '/form/'
     const isForm = pathname.includes('/form/');
     setIsFormPage(isForm);
-
-    // If it's a form page, you might want to do additional logic here
-    // For example, updating formDetails or handling form-specific UI changes
-    if (isForm) {
-      // Extract formId from the pathname, assuming a structure like '/dashboard/orgId/form/formId'
-      const pathSegments = pathname.split('/').filter(Boolean); // Filter out any empty segments
-      const formIdIndex = pathSegments.indexOf('form') + 1; // 'form' should precede the formId in your URL structure
-      const formId = pathSegments[formIdIndex];
-
-      // Update formDetails or perform other actions based on formId
-      // ...
-    }
   }, [pathname]);
 
   const copyToClipboard = async (text: string) => {
@@ -92,7 +80,7 @@ export default function DashboardHeader() {
           )}
         </BreadcrumbList>
       </Breadcrumb>
-      {formId && (
+      {isFormPage && (
         <>
           <div className='mt-6 text-muted-foreground'>
             <p>
