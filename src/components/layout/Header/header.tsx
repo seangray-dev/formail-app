@@ -17,11 +17,18 @@ export default function Header() {
           <SignedIn>
             <FormSheet />
           </SignedIn>
-        </div>
-        <div className='flex gap-4 items-center'>
           <div className='-mb-2'>
             <OrganizationSwitcher />
           </div>
+        </div>
+        <div className='flex gap-4 items-center'>
+          <SignedIn>
+            <Link
+              className='hover:underline hover:text-white text-muted-foreground'
+              href={'/dashboard'}>
+              Dashboard
+            </Link>
+          </SignedIn>
           <Link
             className='hover:underline hover:text-white text-muted-foreground'
             href={'/contact'}>
