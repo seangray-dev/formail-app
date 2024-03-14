@@ -38,7 +38,7 @@ const formSchema = z.object({
 export default function FormSettingsPage() {
   const [formDetails] = useAtom(formDetailsAtom);
 
-  const { formName, admins } = formDetails;
+  const { formName, orgUsers } = formDetails;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -102,35 +102,35 @@ export default function FormSettingsPage() {
                     Select admins to receive email notifications.
                   </FormDescription>
                 </div>
-                {admins?.map((admin) => (
+                {orgUsers?.map((user) => (
                   <FormField
-                    key={admin.id}
+                    key={user.id}
                     control={form.control}
                     name='email_recipients'
                     render={({ field }) => {
                       return (
                         <FormItem
-                          key={admin.id}
+                          key={user.id}
                           className='flex flex-row items-start space-x-3 space-y-0'>
                           <FormControl>
                             <Checkbox
-                              checked={field.value?.includes(admin.id)}
+                              checked={field.value?.includes(user.id || '')}
                               onCheckedChange={(checked) => {
                                 return checked
-                                  ? field.onChange([...field.value, admin.id])
+                                  ? field.onChange([...field.value, user.id])
                                   : field.onChange(
                                       field.value?.filter(
-                                        (value) => value !== admin.id
+                                        (value) => value !== user.id
                                       )
                                     );
                               }}
                             />
                           </FormControl>
                           <FormLabel className='font-normal cursor-pointer'>
-                            <span className='mr-1'>{admin.name}</span>
+                            <span className='mr-1'>{user.name}</span>
                             <span className='text-muted-foreground'>
                               {'('}
-                              {admin.email}
+                              {user.email}
                               {')'}
                             </span>
                           </FormLabel>

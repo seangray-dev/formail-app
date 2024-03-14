@@ -22,7 +22,7 @@ export default function DashboardHeader() {
   const {
     orgId,
     orgName,
-    admins,
+    orgUsers,
     formName,
     formId,
     formDescription,

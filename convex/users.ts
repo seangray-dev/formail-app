@@ -169,3 +169,28 @@ export const getAdminsByOrgId = query({
     }));
   },
 });
+
+export const getAllUsersByOrgId = query({
+  args: { orgId: v.string() },
+  async handler(ctx, args) {
+    const userOrgRoles = await ctx.db
+      .query('userOrgRoles')
+      .filter((q) => q.eq(q.field('orgId'), args.orgId))
+      .collect();
+
+    const userIds = userOrgRoles
+      .map((mapping) => mapping.userId)
+      .filter(Boolean); // Ensure userId is not undefined
+
+    const users = await Promise.all(
+      userIds.map((userId) => ctx.db.get(userId))
+    );
+    const validUsers = users.filter((user) => user && user._id);
+
+    return validUsers.map((user) => ({
+      id: user?._id.toString(),
+      name: user?.name || 'Unknown Name',
+      email: user?.email || 'No Email',
+    }));
+  },
+});
