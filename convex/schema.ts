@@ -23,6 +23,9 @@ export default defineSchema({
     email: v.optional(v.string()),
     image: v.optional(v.string()),
     orgIds: v.array(v.string()),
+    planType: v.string(),
+    formCount: v.number(),
+    remainingSubmissions: v.number(),
   }).index('by_tokenIdentifier', ['tokenIdentifier']),
   submissions: defineTable({
     formId: v.id('forms'),

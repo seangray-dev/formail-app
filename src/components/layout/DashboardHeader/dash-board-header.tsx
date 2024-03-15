@@ -126,6 +126,15 @@ export default function DashboardHeader() {
               Submissions
             </Link>
             <Link
+              href={`/dashboard/${orgId}/form/${formId}/files`}
+              className={
+                isActive(`/dashboard/${orgId}/form/${formId}/files`)
+                  ? 'text-white'
+                  : 'hover:text-white duration-150 transition-all'
+              }>
+              Files
+            </Link>
+            <Link
               href={`/dashboard/${orgId}/form/${formId}/analytics`}
               className={
                 isActive(`/dashboard/${orgId}/form/${formId}/analytics`)
