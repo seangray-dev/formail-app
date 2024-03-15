@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -12,17 +11,16 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, useWatch } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Textarea } from '../ui/textarea';
 import { useToast } from '../ui/use-toast';
 
 const formSchema = z.object({
-  name: z.string().min(2, {
-    message: 'name must be at least 2 characters.',
-  }),
-  email: z.string().min(2, { message: 'must be a valid email.' }),
-  file: z.any().optional(),
+  name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
+  file1: z
+    .instanceof(FileList)
+    .refine((files) => files.length > 0, 'At least one file is required.'),
+  file2: z.instanceof(FileList).optional(),
 });
 
 export function PlaygroundForm() {
@@ -31,25 +29,36 @@ export function PlaygroundForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
-      email: '',
-      file: '',
+      file1: undefined,
+      file2: undefined,
     },
   });
 
+  const file1Ref = form.register('file1');
+  const file2Ref = form.register('file2');
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    const formId = 'j574wd5phr7eevfvnf9bhgbrm16nbcqt';
+    const formData = new FormData();
+
+    formData.append('name', values.name);
+
+    // Append all files from the 'file1' input
+    Array.from(values.file1).forEach((file, index) => {
+      formData.append(`file1_${index}`, file);
+    });
+
+    // Append a single file from the 'file2' input, if present
+    if (values.file2 && values.file2[0]) {
+      formData.append('file2', values.file2[0]);
+    }
+
     try {
-      const formId = 'j57evqejd8wp63gb4rp1h63df56na96q';
       const response = await fetch(`http://localhost:3000/submit/${formId}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: values.name,
-          email: values.email,
-          file: values.file,
-        }),
+        body: formData,
       });
+
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -64,7 +73,7 @@ export function PlaygroundForm() {
       toast({
         variant: 'destructive',
         title: 'Your message was not sent',
-        description: 'Please try again ',
+        description: 'Please try again',
       });
     }
   }
@@ -89,16 +98,12 @@ export function PlaygroundForm() {
         />
         <FormField
           control={form.control}
-          name='email'
-          render={({ field }) => (
+          name='file1'
+          render={() => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>File(s)</FormLabel>
               <FormControl>
-                <Input
-                  type='email'
-                  placeholder='michaelscott@dundermifflin.com'
-                  {...field}
-                />
+                <Input type='file' {...file1Ref} multiple />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -106,18 +111,17 @@ export function PlaygroundForm() {
         />
         <FormField
           control={form.control}
-          name='file'
-          render={({ field }) => (
+          name='file2'
+          render={() => (
             <FormItem>
-              <FormLabel>File</FormLabel>
+              <FormLabel>File 2 (Optional)</FormLabel>
               <FormControl>
-                <Input type='file' {...field} />
+                <Input type='file' {...file2Ref} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-
         <Button type='submit'>Submit</Button>
       </form>
     </Form>
