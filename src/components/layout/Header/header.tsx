@@ -31,6 +31,11 @@ export default function Header() {
           </SignedIn>
           <Link
             className='hover:underline hover:text-white text-muted-foreground'
+            href={'/playground'}>
+            Playground
+          </Link>
+          <Link
+            className='hover:underline hover:text-white text-muted-foreground'
             href={'/contact'}>
             Contact
           </Link>
