@@ -1,6 +1,7 @@
 import { ConvexHttpClient } from 'convex/browser';
 import { NextRequest, NextResponse } from 'next/server';
 import { api } from '../../../../convex/_generated/api';
+import { generateUploadUrl } from '../../../../convex/submissions';
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // For example, 10MB
@@ -37,52 +38,54 @@ export async function POST(
       data = await req.json();
     } else if (contentType.includes('multipart/form-data')) {
       const formData = await req.formData();
-      let fileUploadPromises: Promise<{ key: string; url: string }>[] = [];
+      let fileUploadTasks: Promise<void>[] = [];
 
       for (const [key, value] of formData.entries()) {
-        // Assuming `value` is a file-like object if it's not a string
-        if (value && typeof value !== 'string') {
+        if (value instanceof Blob) {
+          const fileBlob = value;
+          const fileName = value.name;
+          const fileType = value.type;
+
           if (value.size > MAX_FILE_SIZE) {
             return new NextResponse(
               JSON.stringify({
                 error: `File size exceeds limit of ${MAX_FILE_SIZE} bytes`,
               }),
-              {
-                status: 400,
-              }
+              { status: 400 }
             );
           }
-          fileUploadPromises.push(
+
+          // Pushing tasks that directly modify the data object
+          fileUploadTasks.push(
             (async () => {
-              const uploadResult = await uploadFileToStorage(value as any);
-              return { key, url: uploadResult.url };
+              const fileUrl = await uploadFileToStorage(
+                fileBlob,
+                fileName,
+                fileType
+              );
+              data[key] = fileUrl;
             })()
           );
         } else {
-          // Handle non-file form data
           data[key] = value;
         }
       }
 
-      const uploadedFiles = await Promise.all(fileUploadPromises);
-      uploadedFiles.forEach(({ key, url }) => {
-        data[key] = url;
-      });
+      // Wait for all file uploads to complete
+      await Promise.all(fileUploadTasks);
     } else {
       throw new Error('Unsupported content type');
     }
 
+    // Only proceed to submit data after all files have been processed
     await convex.mutation(api.submissions.addSubmission, {
       formId,
       data: JSON.stringify(data),
     });
 
-    // Return a successful response
     return new NextResponse(
       JSON.stringify({ message: 'Submission received' }),
-      {
-        status: 200,
-      }
+      { status: 200 }
     );
   } catch (error: any) {
     console.error(error);
@@ -96,14 +99,37 @@ export async function POST(
   }
 }
 
-// Ensure uploadFileToStorage is properly defined and returns an object with a 'url' property
+async function uploadFileToStorage(
+  fileBlob: Blob,
+  fileName: string,
+  fileType: string
+) {
+  // Generate an upload URL for the file
+  const uploadUrlRes = await convex.mutation(api.submissions.generateUploadUrl);
+  const uploadUrl = uploadUrlRes;
 
-interface UploadResult {
-  url: string; // Define other properties if needed
-}
+  // Use the fetch API to upload the file directly to the generated URL
+  const uploadResult = await fetch(uploadUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': fileType,
+      'Content-Disposition': `attachment; filename="${fileName}"`,
+    },
+    body: fileBlob,
+  });
 
-async function uploadFileToStorage(file: File): Promise<UploadResult> {
-  // Implement the logic to upload the file to your storage solution here
-  // Ensure this function returns an object with a 'url' property
-  return { url: 'https://example.com/path/to/file' }; // Placeholder URL
+  if (!uploadResult.ok) {
+    throw new Error(`Failed to upload file: ${uploadResult.statusText}`);
+  }
+
+  // Extract the storage ID or URL from the response
+  const responseJson = await uploadResult.json();
+  const storageId = responseJson.storageId;
+
+  // Use the storageId to generate a publicly accessible URL
+  // const fileUrl = await convex.mutation(api.submissions.generateFileUrl, {
+  //   storageId,
+  // });
+
+  return storageId;
 }

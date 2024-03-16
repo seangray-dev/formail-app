@@ -85,3 +85,14 @@ export const deleteSubmissionById = mutation({
     await ctx.db.delete(args.submissionId);
   },
 });
+
+export const generateUploadUrl = mutation(async ({ storage }) => {
+  return await storage.generateUploadUrl();
+});
+
+export const generateFileUrl = mutation({
+  args: { storageId: v.id('_storage') },
+  handler: async (ctx, { storageId }) => {
+    return await ctx.storage.getUrl(storageId);
+  },
+});
