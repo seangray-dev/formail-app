@@ -70,7 +70,7 @@ export default function FormSheet() {
         </SignedOut>
         <SignedIn>
           <div className='flex-1'>
-            <div className='flex items-center justify-between mb-4'>
+            <div className='flex flex-col gap-4 items-center justify-between mb-4 md:flex-row'>
               <p className='font-bold text-xl'>Forms</p>
               <CreateFormDialog />
             </div>

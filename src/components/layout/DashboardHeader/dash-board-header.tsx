@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { formDetailsAtom } from '@/jotai/state';
-import { useOrganization, useUser } from '@clerk/nextjs';
+import { OrganizationSwitcher, useOrganization, useUser } from '@clerk/nextjs';
 import { useAtom } from 'jotai';
 import { ClipboardCheckIcon, ClipboardIcon } from 'lucide-react';
 import Link from 'next/link';
@@ -54,6 +54,9 @@ export default function DashboardHeader() {
 
   return (
     <>
+      <div className='mb-4'>
+        <OrganizationSwitcher />
+      </div>
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem className='hover:cursor-not-allowed'>

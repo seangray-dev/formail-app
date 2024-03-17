@@ -83,7 +83,7 @@ export default function CreateFormDialog() {
       <DialogTrigger asChild>
         <div className='text-sm rounded-md border px-4 py-2 cursor-pointer hover:bg-secondary transition-all duration-150 flex gap-2 items-center'>
           <PlusIcon className='h-4 w-4' />
-          <span className='hidden md:block'>Create New Form</span>
+          <span>Create New Form</span>
         </div>
       </DialogTrigger>
       <DialogContent>

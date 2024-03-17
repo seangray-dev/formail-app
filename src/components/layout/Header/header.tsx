@@ -47,9 +47,9 @@ export default function Header() {
             </Button>
           </SignedOut>
           <SignedIn>
-            <div className='-mb-2 hidden md:block'>
+            {/* <div className='-mb-2 hidden md:block'>
               <OrganizationSwitcher />
-            </div>
+            </div> */}
             <UserButton />
           </SignedIn>
         </div>

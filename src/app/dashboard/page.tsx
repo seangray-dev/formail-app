@@ -65,7 +65,7 @@ export default function DashboardHomePage() {
   return (
     <main className='container py-10 flex-1 flex flex-col'>
       <div className='flex items-center justify-between mb-8'>
-        <div className='text-3xl font-medium'>{orgName} Forms</div>
+        <div className='md:text-3xl font-medium'>{orgName} Forms</div>
         <CreateFormDialog />
       </div>
       {isLoading && (
