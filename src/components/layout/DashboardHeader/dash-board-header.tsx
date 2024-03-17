@@ -55,7 +55,10 @@ export default function DashboardHeader() {
   return (
     <>
       <div className='mb-4'>
-        <OrganizationSwitcher />
+        <OrganizationSwitcher
+          afterSelectOrganizationUrl='/dashboard'
+          afterLeaveOrganizationUrl='/dashboard'
+        />
       </div>
       <Breadcrumb>
         <BreadcrumbList>
