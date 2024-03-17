@@ -12,38 +12,30 @@ export default function Header() {
   return (
     <nav className='container border-b py-3 text-sm'>
       <div className='flex justify-between items-center'>
-        <div className='flex items-center gap-4'>
+        <div className='flex items-center gap-2'>
           <Link href={'/'}>Formail</Link>
-          <SignedIn>
-            <FormSheet />
-          </SignedIn>
-          <div className='-mb-2'>
-            <OrganizationSwitcher />
-          </div>
+          <FormSheet />
         </div>
         <div className='flex gap-4 items-center'>
-          <SignedIn>
+          <div className='hidden md:flex gap-4'>
+            <SignedIn>
+              <Link
+                className='hover:underline hover:text-white text-muted-foreground'
+                href={'/dashboard'}>
+                Dashboard
+              </Link>
+            </SignedIn>
             <Link
               className='hover:underline hover:text-white text-muted-foreground'
-              href={'/dashboard'}>
-              Dashboard
+              href={'/contact'}>
+              Contact
             </Link>
-          </SignedIn>
-          <Link
-            className='hover:underline hover:text-white text-muted-foreground'
-            href={'/playground'}>
-            Playground
-          </Link>
-          <Link
-            className='hover:underline hover:text-white text-muted-foreground'
-            href={'/contact'}>
-            Contact
-          </Link>
-          <Link
-            className='hover:underline hover:text-white text-muted-foreground'
-            href={'/documentation'}>
-            Documentaion
-          </Link>
+            <Link
+              className='hover:underline hover:text-white text-muted-foreground'
+              href={'/documentation'}>
+              Docs
+            </Link>
+          </div>
           <SignedOut>
             <Link
               className='hover:underline hover:text-white text-muted-foreground'
@@ -55,6 +47,9 @@ export default function Header() {
             </Button>
           </SignedOut>
           <SignedIn>
+            <div className='-mb-2 hidden md:block'>
+              <OrganizationSwitcher />
+            </div>
             <UserButton />
           </SignedIn>
         </div>
