@@ -10,7 +10,17 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
 import {
   Table,
   TableBody,
@@ -30,7 +40,16 @@ import { formDetailsAtom } from '@/jotai/state';
 import { useMutation, useQuery } from 'convex/react';
 import { formatRelative } from 'date-fns';
 import { useAtom } from 'jotai';
-import { MailIcon, ShieldAlertIcon, TrashIcon } from 'lucide-react';
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  FileDownIcon,
+  MailIcon,
+  MoveLeftIcon,
+  MoveRightIcon,
+  ShieldAlertIcon,
+  TrashIcon,
+} from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
 import { api } from '../../../../../../../convex/_generated/api';
@@ -81,9 +100,54 @@ export default function SubmissionsPage() {
 
   return (
     <section className='container flex-1 flex flex-col'>
-      <h3 className='mb-6'>Submissions</h3>
       {submissions && submissions.length > 0 ? (
         <>
+          <div className='bg-muted px-4 py-2 flex items-center justify-between mb-4'>
+            <div>Selected: 0</div>
+            <div className='flex items-center gap-4'>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant={'outline'}
+                    className='flex items-center gap-2 hover:bg-transparent hover:border-white'>
+                    <FileDownIcon size={18} />
+                    Export
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem>JSON</DropdownMenuItem>
+                  <DropdownMenuItem>CSV</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <Button size={'icon'} variant={'destructive'}>
+                <TrashIcon size={18} />
+              </Button>
+            </div>
+          </div>
+          <div className='bg-muted py-2 px-4 flex items-center justify-between'>
+            <div>
+              <Input type='text' placeholder='Search...' />
+            </div>
+            <div>
+              Showing {submissions.length} / {submissions.length} result{'(s)'}
+            </div>
+            <div className='flex items-center gap-4'>
+              <Button
+                variant={'outline'}
+                size={'icon'}
+                className='hover:bg-transparent hover:border-white'>
+                <ArrowLeftIcon size={18} />
+              </Button>
+              {/* Current Page out of Total Pages */}
+              <span className='text-sm'>Page 1 / 1</span>
+              <Button
+                variant={'outline'}
+                size={'icon'}
+                className='hover:bg-transparent hover:border-white'>
+                <ArrowRightIcon size={18} />
+              </Button>
+            </div>
+          </div>
           <Table className='w-full border'>
             <TableHeader>
               <TableRow>
