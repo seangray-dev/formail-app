@@ -30,6 +30,18 @@ export default defineSchema({
   submissions: defineTable({
     formId: v.id('forms'),
     data: v.string(),
+    files: v.optional(
+      v.array(
+        v.object({
+          storageId: v.string(),
+          type: v.union(
+            v.literal('image/jpeg'),
+            v.literal('image/png'),
+            v.literal('application/pdf')
+          ),
+        })
+      )
+    ),
   }),
   userOrgRoles: defineTable({
     userId: v.id('users'),

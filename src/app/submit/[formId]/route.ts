@@ -1,7 +1,11 @@
 import { ConvexHttpClient } from 'convex/browser';
 import { NextRequest, NextResponse } from 'next/server';
 import { api } from '../../../../convex/_generated/api';
-import { generateUploadUrl } from '../../../../convex/submissions';
+
+type FileMetadata = {
+  storageId: string;
+  type: 'image/jpeg' | 'image/png' | 'application/pdf'; // Add more types as needed
+};
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // For example, 10MB
@@ -33,6 +37,7 @@ export async function POST(
   try {
     const contentType = req.headers.get('content-type') || '';
     let data: { [key: string]: any } = {};
+    let filesMetadata: FileMetadata[] = [];
 
     if (contentType.includes('application/json')) {
       data = await req.json();
@@ -55,15 +60,19 @@ export async function POST(
             );
           }
 
-          // Pushing tasks that directly modify the data object
           fileUploadTasks.push(
             (async () => {
-              const fileUrl = await uploadFileToStorage(
+              const storageId = await uploadFileToStorage(
                 fileBlob,
                 fileName,
                 fileType
               );
-              data[key] = fileUrl;
+              filesMetadata.push({
+                storageId,
+                type: fileType as FileMetadata['type'],
+              });
+
+              data[key] = fileName;
             })()
           );
         } else {
@@ -81,6 +90,7 @@ export async function POST(
     await convex.mutation(api.submissions.addSubmission, {
       formId,
       data: JSON.stringify(data),
+      files: filesMetadata,
     });
 
     return new NextResponse(
@@ -125,11 +135,6 @@ async function uploadFileToStorage(
   // Extract the storage ID or URL from the response
   const responseJson = await uploadResult.json();
   const storageId = responseJson.storageId;
-
-  // Use the storageId to generate a publicly accessible URL
-  // const fileUrl = await convex.mutation(api.submissions.generateFileUrl, {
-  //   storageId,
-  // });
 
   return storageId;
 }

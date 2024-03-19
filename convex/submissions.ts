@@ -1,4 +1,5 @@
 import { ConvexError, v } from 'convex/values';
+import { Id } from './_generated/dataModel';
 import { mutation, query } from './_generated/server';
 import { hasAccessToOrg, isAdminOfOrg } from './orgAccess';
 
@@ -6,11 +7,24 @@ export const addSubmission = mutation({
   args: {
     formId: v.id('forms'),
     data: v.string(),
+    files: v.optional(
+      v.array(
+        v.object({
+          storageId: v.string(),
+          type: v.union(
+            v.literal('image/jpeg'),
+            v.literal('image/png'),
+            v.literal('application/pdf')
+          ),
+        })
+      )
+    ),
   },
-  async handler(ctx, { formId, data }) {
+  async handler(ctx, { formId, data, files = [] }) {
     await ctx.db.insert('submissions', {
       formId,
       data,
+      files,
     });
   },
 });
@@ -40,10 +54,36 @@ export const getSubmissionsByFormId = query({
     }
 
     // Fetch and return all submissions for the provided formId
-    const submissions = await ctx.db
+    const _submissions = await ctx.db
       .query('submissions')
       .filter((q) => q.eq(q.field('formId'), args.formId))
       .collect();
+
+    // Map over submissions and generate URLs for any file storage IDs
+    const submissions = await Promise.all(
+      _submissions.map(async (submission) => {
+        const _files = await Promise.all(
+          (submission.files || []).map(async (fileMetadata) => {
+            const storageId = fileMetadata.storageId as Id<'_storage'>;
+            const fileUrl = await ctx.storage.getUrl(storageId);
+            if (!fileUrl) {
+              return '';
+            }
+            // Combine the original file metadata with the generated URL
+            return {
+              ...fileMetadata,
+              url: fileUrl,
+            };
+          })
+        );
+
+        // Return the submission with the new files array
+        return {
+          ...submission,
+          files: _files,
+        };
+      })
+    );
 
     return submissions;
   },

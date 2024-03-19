@@ -10,15 +10,46 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/use-toast';
 import { formDetailsAtom } from '@/jotai/state';
 import { useMutation, useQuery } from 'convex/react';
+import { formatRelative } from 'date-fns';
 import { useAtom } from 'jotai';
+import { FilesIcon } from 'lucide-react';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { api } from '../../../../../../../convex/_generated/api';
 import { Id } from '../../../../../../../convex/_generated/dataModel';
 type submissionId = Id<'submissions'>;
+type FileWithUrl = {
+  url: string;
+  type: 'image/jpeg' | 'image/png' | 'application/pdf';
+  storageId: string;
+};
 
 export default function SubmissionsPage() {
   const { toast } = useToast();
@@ -26,19 +57,24 @@ export default function SubmissionsPage() {
   const { formId } = formDetails;
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedSubmissionId, setSelectedSubmissionId] =
-    useState<submissionId | null>(null);
+    useState<Id<'submissions'> | null>(null);
+  const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
 
   const formQueryArg = formId ? { formId: formId as Id<'forms'> } : 'skip';
   const submissions = useQuery(
     api.submissions.getSubmissionsByFormId,
     formQueryArg
   );
-
   const deleteSubmission = useMutation(api.submissions.deleteSubmissionById);
 
-  const handleDeleteClick = (submissionId: submissionId) => {
+  const handleDeleteClick = (submissionId: Id<'submissions'>) => {
     setSelectedSubmissionId(submissionId);
     setIsDeleteDialogOpen(true);
+  };
+
+  const handleDetailsClick = (submissionId: Id<'submissions'>) => {
+    setSelectedSubmissionId(submissionId);
+    setIsDetailsDialogOpen(true);
   };
 
   const handleDeleteConfirmation = async () => {
@@ -47,32 +83,109 @@ export default function SubmissionsPage() {
         await deleteSubmission({ submissionId: selectedSubmissionId });
         setIsDeleteDialogOpen(false);
         setSelectedSubmissionId(null);
-        toast({
-          variant: 'default',
-          title: 'Submission deleted successfully',
-        });
+        toast({ variant: 'default', title: 'Submission deleted successfully' });
       } catch (error) {
         toast({
           variant: 'destructive',
           title: 'Deleting submission failed, please try again.',
-          description:
-            'You may not have permission to delete this submission. Contact your organization admin',
         });
       }
     }
   };
 
+  const selectedSubmission = submissions?.find(
+    (sub) => sub._id === selectedSubmissionId
+  );
+
+  const handleDownloadAllFiles = () => {
+    selectedSubmission?.files?.forEach((file, index) => {
+      setTimeout(() => {
+        const link = document.createElement('a');
+        link.href = file.url;
+        link.download = `File_${index + 1}`; // You might want to use a more descriptive name
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }, index * 100); // 100ms delay between each download
+    });
+  };
+
+  function RenderFile({
+    file,
+    index,
+  }: {
+    file: { url: string; type: string };
+    index: number;
+  }) {
+    // Use the 'url' from the file metadata directly
+    switch (file.type) {
+      case 'image/jpeg':
+      case 'image/png':
+      case 'image/gif':
+        return (
+          <img
+            src={file.url}
+            alt={`File ${index + 1}`}
+            className='w-full h-fit object-cover'
+          />
+        );
+      case 'application/pdf':
+        // For PDFs, using an iframe to embed the PDF content
+        return (
+          <iframe
+            src={file.url}
+            title={`PDF File ${index + 1}`}
+            width='500'
+            height='600'></iframe>
+        );
+      default:
+        // Fallback for unknown or unsupported file types - provide a download link
+        return (
+          <a href={file.url} download={`File ${index + 1}`}>
+            Download File
+          </a>
+        );
+    }
+  }
+
   return (
-    <section className='container flex-1 flex flex-col'>
-      <h3 className='mb-6'>Files</h3>
+    <section className='container flex-1 flex flex-col mx-auto p-4'>
+      <h3 className='text-lg font-semibold mb-4'>Files</h3>
       {submissions && submissions.length > 0 ? (
-        <></>
+        <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+          {submissions.map((submission) => (
+            <Card
+              key={submission._id}
+              className='max-w-xs flex flex-col gap-4 items-center p-4'>
+              <CardHeader>
+                <FilesIcon size={48} />
+              </CardHeader>
+              <CardContent>
+                <p>{formatRelative(submission._creationTime, new Date())}</p>
+              </CardContent>
+              <CardFooter className='p-0 flex flex-col gap-2 w-full'>
+                <Button
+                  variant='secondary'
+                  className='w-full'
+                  onClick={() => handleDetailsClick(submission._id)}>
+                  View Details
+                </Button>
+                <Button
+                  variant='destructive'
+                  className='w-full'
+                  onClick={() => handleDeleteClick(submission._id)}>
+                  Delete
+                </Button>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
       ) : (
         <div className='flex-1 flex flex-col justify-center items-center gap-10'>
-          <Image alt='' width={200} height={200} src='/no_files.svg' />
-          <div className='text-base md:text-2xl text-center'>
-            You don&apos;t have any file submissions for this form yet.
-          </div>
+          <Image alt='No files' src='/no_files.svg' width={200} height={200} />
+          <p className='text-base md:text-2xl text-center'>
+            You don't have any file submissions for this form yet.
+          </p>
         </div>
       )}
 
@@ -82,7 +195,7 @@ export default function SubmissionsPage() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              Are you sure you want to delete this file?
+              Are you sure you want to delete this submission?
             </AlertDialogTitle>
             <AlertDialogDescription>
               This action cannot be undone. This will permanently delete this
@@ -99,6 +212,60 @@ export default function SubmissionsPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog open={isDetailsDialogOpen} onOpenChange={setIsDetailsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>File Details</DialogTitle>
+          </DialogHeader>
+          <DialogDescription>
+            {selectedSubmission && (
+              <>
+                <h4>Submission Info:</h4>
+                <ul>
+                  {Object.entries(JSON.parse(selectedSubmission.data)).map(
+                    ([key, value]) => (
+                      <li
+                        className='indent-4'
+                        key={key}>{`${key}: ${value}`}</li>
+                    )
+                  )}
+                </ul>
+              </>
+            )}
+          </DialogDescription>
+          {selectedSubmission?.files && selectedSubmission.files.length > 0 && (
+            <>
+              <Carousel>
+                <CarouselContent>
+                  {selectedSubmission.files.map((file, index) => (
+                    <CarouselItem className='px-10'>
+                      <RenderFile
+                        file={file as FileWithUrl}
+                        index={index ?? 0}
+                      />
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className='ml-8' />
+                <CarouselNext className='mr-8' />
+              </Carousel>
+              <DialogFooter className='mx-auto'>
+                <div className='mt-4 text-center'>
+                  <Button
+                    onClick={() => {
+                      selectedSubmission.files.forEach((file) => {
+                        window.open(file.url, '_blank');
+                      });
+                    }}>
+                    Download File{'(s)'}
+                  </Button>
+                </div>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }
