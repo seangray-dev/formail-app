@@ -163,55 +163,59 @@ export default function SubmissionsPage() {
 
   return (
     <section className='container flex-1 flex flex-col mx-auto p-4'>
-      <div className='self-end mb-10 flex gap-4'>
-        <Button className='max-w-44'>Download All Files</Button>
-        <Select
-          onValueChange={(value) => {
-            handleSortChange(value);
-          }}>
-          <SelectTrigger className='w-44'>
-            <SelectValue placeholder='Sort' />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value='newest'>Newest</SelectItem>
-            <SelectItem value='oldest'>Oldest</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
       {sortedSubmissions && sortedSubmissions.length > 0 ? (
-        <div className='flex flex-col sm:flex-row flex-wrap gap-4 justify-between'>
-          {sortedSubmissions.map((submission) => (
-            <Card
-              key={submission._id}
-              className='sm:w-80 flex flex-col items-center p-4'>
-              <CardHeader className='p-0 mb-6'>
-                <CardTitle className='text-xs'>ID: {submission._id}</CardTitle>
-              </CardHeader>
-              <CardContent className='flex flex-col items-center p-0 mb-6'>
-                <FilesIcon className='w-20 h-20 mb-4' />
-                <p className='text-sm text-muted-foreground'>
-                  {formatRelative(submission._creationTime, new Date())}
-                </p>
-              </CardContent>
-              <CardFooter className='p-0 flex flex-col md:flew-row gap-2 w-full'>
-                <Button
-                  variant='secondary'
-                  className='w-full flex items-center gap-2'
-                  onClick={() => handleDetailsClick(submission._id)}>
-                  <EyeIcon size={18} />
-                  View Details
-                </Button>
-                <Button
-                  variant='destructive'
-                  className='w-full flex items-center gap-2'
-                  onClick={() => handleDeleteClick(submission._id)}>
-                  <TrashIcon size={18} />
-                  Delete
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
+        <>
+          <div className='self-end mb-10 flex gap-4'>
+            <Button className='max-w-44'>Download All Files</Button>
+            <Select
+              onValueChange={(value) => {
+                handleSortChange(value);
+              }}>
+              <SelectTrigger className='w-44'>
+                <SelectValue placeholder='Sort' />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value='newest'>Newest</SelectItem>
+                <SelectItem value='oldest'>Oldest</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className='flex flex-col sm:flex-row flex-wrap gap-4 justify-between'>
+            {sortedSubmissions.map((submission) => (
+              <Card
+                key={submission._id}
+                className='sm:w-80 flex flex-col items-center p-4'>
+                <CardHeader className='p-0 mb-6'>
+                  <CardTitle className='text-xs'>
+                    ID: {submission._id}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className='flex flex-col items-center p-0 mb-6'>
+                  <FilesIcon className='w-20 h-20 mb-4' />
+                  <p className='text-sm text-muted-foreground'>
+                    {formatRelative(submission._creationTime, new Date())}
+                  </p>
+                </CardContent>
+                <CardFooter className='p-0 flex flex-col md:flew-row gap-2 w-full'>
+                  <Button
+                    variant='secondary'
+                    className='w-full flex items-center gap-2'
+                    onClick={() => handleDetailsClick(submission._id)}>
+                    <EyeIcon size={18} />
+                    View Details
+                  </Button>
+                  <Button
+                    variant='destructive'
+                    className='w-full flex items-center gap-2'
+                    onClick={() => handleDeleteClick(submission._id)}>
+                    <TrashIcon size={18} />
+                    Delete
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        </>
       ) : (
         <div className='flex-1 flex flex-col justify-center items-center gap-10'>
           <Image alt='No files' src='/no_files.svg' width={200} height={200} />
