@@ -16,8 +16,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
@@ -45,13 +43,11 @@ import {
   ArrowRightIcon,
   FileDownIcon,
   MailIcon,
-  MoveLeftIcon,
-  MoveRightIcon,
   ShieldAlertIcon,
   TrashIcon,
 } from 'lucide-react';
 import Image from 'next/image';
-import { useState } from 'react';
+import { ChangeEvent, FormEvent, useState } from 'react';
 import { api } from '../../../../../../../convex/_generated/api';
 import { Id } from '../../../../../../../convex/_generated/dataModel';
 type submissionId = Id<'submissions'>;
@@ -63,6 +59,9 @@ export default function SubmissionsPage() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedSubmissionId, setSelectedSubmissionId] =
     useState<submissionId | null>(null);
+  const [checkedSubmissions, setcheckedSubmissions] = useState(
+    new Set<submissionId>()
+  );
 
   const formQueryArg = formId ? { formId: formId as Id<'forms'> } : 'skip';
   const submissions = useQuery(
@@ -98,12 +97,35 @@ export default function SubmissionsPage() {
     }
   };
 
+  // Handle individual checkbox change
+  const handleCheckboxChange = (submissionId: submissionId) => {
+    setcheckedSubmissions((prevSelected) => {
+      const newSelected = new Set(prevSelected);
+      if (newSelected.has(submissionId)) {
+        newSelected.delete(submissionId);
+      } else {
+        newSelected.add(submissionId);
+      }
+      return newSelected;
+    });
+  };
+
+  // Handle select all checkboxes
+  const handleSelectAllChange = () => {
+    if (checkedSubmissions.size === submissions?.length) {
+      setcheckedSubmissions(new Set());
+    } else {
+      const allSubmissionIds = new Set(submissions?.map((sub) => sub._id));
+      setcheckedSubmissions(allSubmissionIds);
+    }
+  };
+
   return (
     <section className='container flex-1 flex flex-col'>
       {submissions && submissions.length > 0 ? (
         <>
           <div className='bg-muted px-4 py-2 flex items-center justify-between mb-4'>
-            <div>Selected: 0</div>
+            <div>Selected: {checkedSubmissions.size}</div>
             <div className='flex items-center gap-4'>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -124,14 +146,14 @@ export default function SubmissionsPage() {
               </Button>
             </div>
           </div>
-          <div className='bg-muted py-2 px-4 flex items-center justify-between'>
+          <div className='bg-muted py-2 px-4 flex flex-col gap-4 md:flex-row md:items-center justify-between'>
             <div>
               <Input type='text' placeholder='Search...' />
             </div>
-            <div>
+            <div className='text-center md:text-left'>
               Showing {submissions.length} / {submissions.length} result{'(s)'}
             </div>
-            <div className='flex items-center gap-4'>
+            <div className='flex items-center gap-4 mx-auto md:mx-0'>
               <Button
                 variant={'outline'}
                 size={'icon'}
@@ -152,7 +174,10 @@ export default function SubmissionsPage() {
             <TableHeader>
               <TableRow>
                 <TableHead className='w-[100px] border-r'>
-                  <Checkbox />
+                  <Checkbox
+                    checked={checkedSubmissions.size === submissions?.length}
+                    onClick={handleSelectAllChange}
+                  />
                 </TableHead>
                 <TableHead className='border-r'>Date</TableHead>
                 <TableHead className='border-r'>Data</TableHead>
@@ -161,9 +186,16 @@ export default function SubmissionsPage() {
             </TableHeader>
             <TableBody>
               {submissions?.map((submission, index) => (
-                <TableRow key={index}>
+                <TableRow
+                  key={index}
+                  className={`${
+                    checkedSubmissions.has(submission._id) ? 'bg-muted' : ''
+                  }`}>
                   <TableCell className='font-medium border-r'>
-                    <Checkbox />
+                    <Checkbox
+                      checked={checkedSubmissions.has(submission._id)}
+                      onClick={() => handleCheckboxChange(submission._id)} // Note: Using onClick instead of onChange
+                    />
                   </TableCell>
                   <TableCell className='border-r'>
                     <div className='flex flex-col gap-2'>
