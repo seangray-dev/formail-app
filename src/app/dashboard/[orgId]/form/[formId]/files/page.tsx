@@ -108,6 +108,7 @@ export default function SubmissionsPage() {
     console.log('Downloading all files');
     console.log('Selected Submission', selectedSubmission);
     selectedSubmission?.files?.forEach((file) => {
+      // @ts-ignore
       window.open(`/download-files?fileId=${file.storageId}`, '_blank');
     });
   };
