@@ -53,7 +53,7 @@ export default function DashboardLayout({
         pathname,
       });
     }
-  }, [formId, form, orgUsers, setFormDetails, pathname]);
+  }, [formId, formName, form, orgUsers, setFormDetails, pathname]);
 
   return (
     <section className='flex-1 flex flex-col pb-10'>

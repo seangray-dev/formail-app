@@ -221,7 +221,7 @@ export default function SubmissionsPage() {
         <div className='flex-1 flex flex-col justify-center items-center gap-10'>
           <Image alt='No files' src='/no_files.svg' width={200} height={200} />
           <p className='text-base md:text-2xl text-center'>
-            You don't have any file submissions for this form yet.
+            You don&apos;t have any file submissions for this form yet.
           </p>
         </div>
       )}
@@ -274,7 +274,9 @@ export default function SubmissionsPage() {
               <Carousel>
                 <CarouselContent>
                   {selectedSubmission.files.map((file, index) => (
-                    <CarouselItem className='flex flex-col justify-center items-center'>
+                    <CarouselItem
+                      key={index}
+                      className='flex flex-col justify-center items-center'>
                       <RenderFile
                         file={file as FileWithUrl}
                         index={index ?? 0}
