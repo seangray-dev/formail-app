@@ -98,8 +98,11 @@ export default function DashboardHeader() {
             <p>
               Description: <span className='text-white'>{formDescription}</span>
             </p>
-            <p className='flex gap-2 items-center'>
-              Form ID: <span className='text-white'>{formId}</span>
+            <p className='flex gap-2 items-center whitespace-nowrap'>
+              Form ID:{' '}
+              <span className='text-white overflow-x-clip text-ellipsis'>
+                {formId}
+              </span>
               <Button
                 title='Copy to clipboard'
                 size={'icon'}
@@ -121,7 +124,7 @@ export default function DashboardHeader() {
               </Button>
             </p>
           </div>
-          <nav className='mt-6 border-b pb-2 flex gap-4 text-muted-foreground'>
+          <nav className='mt-6 border-b pb-2 flex gap-4 text-muted-foreground overflow-x-scroll whitespace-nowrap'>
             <Link
               href={`/dashboard/${orgId}/form/${formId}/submissions`}
               className={
