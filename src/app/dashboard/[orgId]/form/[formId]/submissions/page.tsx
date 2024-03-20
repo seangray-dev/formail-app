@@ -131,6 +131,7 @@ export default function SubmissionsPage() {
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant={'outline'}
+                    disabled={checkedSubmissions.size === 0}
                     className='flex items-center gap-2 hover:bg-transparent hover:border-white'>
                     <FileDownIcon size={18} />
                     Export
@@ -141,7 +142,10 @@ export default function SubmissionsPage() {
                   <DropdownMenuItem>CSV</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <Button size={'icon'} variant={'destructive'}>
+              <Button
+                size={'icon'}
+                variant={'destructive'}
+                disabled={checkedSubmissions.size === 0}>
                 <TrashIcon size={18} />
               </Button>
             </div>
