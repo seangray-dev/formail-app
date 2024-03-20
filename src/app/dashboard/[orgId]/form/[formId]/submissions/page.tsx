@@ -47,7 +47,7 @@ import {
   TrashIcon,
 } from 'lucide-react';
 import Image from 'next/image';
-import { ChangeEvent, FormEvent, useState } from 'react';
+import { useState } from 'react';
 import { api } from '../../../../../../../convex/_generated/api';
 import { Id } from '../../../../../../../convex/_generated/dataModel';
 type submissionId = Id<'submissions'>;
@@ -60,8 +60,9 @@ export default function SubmissionsPage() {
   const [formDetails] = useAtom(formDetailsAtom);
   const { formId } = formDetails;
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [selectedSubmissionId, setSelectedSubmissionId] =
-    useState<submissionId | null>(null);
+  const [selectedSubmissionIds, setSelectedSubmissionIds] = useState<
+    submissionId[]
+  >([]);
   const [checkedSubmissions, setcheckedSubmissions] = useState(
     new Set<submissionId>()
   );
@@ -74,30 +75,42 @@ export default function SubmissionsPage() {
 
   const deleteSubmission = useMutation(api.submissions.deleteSubmissionById);
 
-  const handleDeleteClick = (submissionId: submissionId) => {
-    setSelectedSubmissionId(submissionId);
+  const onDeleteSingle = (submissionId: submissionId) => {
+    handleDeleteClick([submissionId]);
+  };
+
+  const onDeleteMultiple = () => {
+    handleDeleteClick(Array.from(checkedSubmissions));
+  };
+
+  const handleDeleteClick = (submissionIds: submissionId[]) => {
+    setSelectedSubmissionIds(submissionIds);
     setIsDeleteDialogOpen(true);
   };
 
   const handleDeleteConfirmation = async () => {
-    if (selectedSubmissionId) {
+    for (const submissionId of selectedSubmissionIds) {
       try {
-        await deleteSubmission({ submissionId: selectedSubmissionId });
-        setIsDeleteDialogOpen(false);
-        setSelectedSubmissionId(null);
-        toast({
-          variant: 'default',
-          title: 'Submission deleted successfully',
+        await deleteSubmission({ submissionId });
+        setcheckedSubmissions((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(submissionId);
+          return newSet;
         });
       } catch (error) {
         toast({
           variant: 'destructive',
-          title: 'Deleting submission failed, please try again.',
-          description:
-            'You may not have permission to delete this submission. Contact your organization admin',
+          title: 'Error deleting submission',
+          description: `Could not delete submission with ID ${submissionId}.`,
         });
       }
     }
+    setIsDeleteDialogOpen(false);
+    setSelectedSubmissionIds([]);
+    toast({
+      variant: 'default',
+      title: 'Selected submissions deleted successfully',
+    });
   };
 
   // Handle individual checkbox change
@@ -210,6 +223,7 @@ export default function SubmissionsPage() {
               <Button
                 size={'icon'}
                 variant={'destructive'}
+                onClick={onDeleteMultiple}
                 disabled={checkedSubmissions.size === 0}>
                 <TrashIcon size={18} />
               </Button>
@@ -263,7 +277,7 @@ export default function SubmissionsPage() {
                   <TableCell className='font-medium border-r'>
                     <Checkbox
                       checked={checkedSubmissions.has(submission._id)}
-                      onClick={() => handleCheckboxChange(submission._id)} // Note: Using onClick instead of onChange
+                      onClick={() => handleCheckboxChange(submission._id)}
                     />
                   </TableCell>
                   <TableCell className='border-r'>
@@ -314,10 +328,7 @@ export default function SubmissionsPage() {
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger
-                            onClick={() => {
-                              setIsDeleteDialogOpen(true);
-                              handleDeleteClick(submission._id);
-                            }}>
+                            onClick={() => onDeleteSingle(submission._id)}>
                             <TrashIcon
                               className='text-muted-foreground hover:text-destructive transition-all duration-150'
                               size={20}
@@ -350,7 +361,9 @@ export default function SubmissionsPage() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              Are you sure you want to delete this submission?
+              {selectedSubmissionIds.length > 1
+                ? 'Are you sure you want to delete these submissions?'
+                : 'Are you sure you want to delete this submission?'}
             </AlertDialogTitle>
             <AlertDialogDescription>
               This action cannot be undone. This will permanently delete this
