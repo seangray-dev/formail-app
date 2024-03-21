@@ -103,7 +103,10 @@ export async function POST(
       (id) => id as unknown as Id<'users'>
     );
 
-    if (emailRecipientIds.length > 0) {
+    // testing purposes: flag for skipping emails
+    const emailActive = false;
+
+    if (emailRecipientIds.length > 0 && emailActive) {
       const recipientEmails = (
         await convex.query(api.users.getEmailsForUserIds, {
           userIds: emailRecipientIds,
