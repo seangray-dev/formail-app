@@ -2,7 +2,7 @@ import { ContactForm } from '@/components/contact/contact-form';
 
 export default function ContactPage() {
   return (
-    <section className='container py-10'>
+    <section className='container py-10 flex-1'>
       <div className='mb-6 text-center md:text-left'>
         <h2 className='text-2xl mb-4'>Get in touch with us Today!</h2>
         <p className='text-muted-foreground font-light max-w-[65ch] mx-auto md:text-left md:mx-0'>
