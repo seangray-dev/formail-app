@@ -124,6 +124,10 @@ export default function SubmissionsPage() {
     return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
   });
 
+  const submissionsWithFiles = sortedSubmissions.filter(
+    (submission) => submission.files && submission.files.length > 0
+  );
+
   function RenderFile({
     file,
     index,
@@ -164,7 +168,7 @@ export default function SubmissionsPage() {
 
   return (
     <section className='container flex-1 flex flex-col mx-auto p-4'>
-      {sortedSubmissions && sortedSubmissions.length > 0 ? (
+      {submissionsWithFiles && submissionsWithFiles.length > 0 ? (
         <>
           <div className='self-end mb-10 flex gap-4'>
             <Button className='max-w-44'>Download All Files</Button>
