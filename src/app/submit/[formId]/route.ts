@@ -1,12 +1,16 @@
+import { EmailTemplate } from '@/components/resend/email-template';
 import { ConvexHttpClient } from 'convex/browser';
 import { NextRequest, NextResponse } from 'next/server';
+import { Resend } from 'resend';
 import { api } from '../../../../convex/_generated/api';
+import { Id } from '../../../../convex/_generated/dataModel';
 
 type FileMetadata = {
   storageId: string;
-  type: 'image/jpeg' | 'image/png' | 'application/pdf'; // Add more types as needed
+  type: 'image/jpeg' | 'image/png' | 'application/pdf';
 };
 
+const resend = new Resend('re_7X4PJfyP_LXqYC7ZoDu1rq9DSTXe4qHXp');
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // For example, 10MB
 
@@ -36,11 +40,11 @@ export async function POST(
 
   try {
     const contentType = req.headers.get('content-type') || '';
-    let data: { [key: string]: any } = {};
+    let submissionData: { [key: string]: any } = {};
     let filesMetadata: FileMetadata[] = [];
 
     if (contentType.includes('application/json')) {
-      data = await req.json();
+      submissionData = await req.json();
     } else if (contentType.includes('multipart/form-data')) {
       const formData = await req.formData();
       let fileUploadTasks: Promise<void>[] = [];
@@ -72,11 +76,11 @@ export async function POST(
                 type: fileType as FileMetadata['type'],
               });
 
-              data[key] = fileName;
+              submissionData[key] = fileName;
             })()
           );
         } else {
-          data[key] = value;
+          submissionData[key] = value;
         }
       }
 
@@ -89,12 +93,64 @@ export async function POST(
     // Only proceed to submit data after all files have been processed
     await convex.mutation(api.submissions.addSubmission, {
       formId,
-      data: JSON.stringify(data),
+      data: JSON.stringify(submissionData),
       files: filesMetadata,
     });
 
+    const form = await convex.query(api.forms.getFormByIdServer, { formId });
+    const { emailRecipients, emailThreads } = form.settings;
+    const emailRecipientIds: Id<'users'>[] = emailRecipients.map(
+      (id) => id as unknown as Id<'users'>
+    );
+
+    if (emailRecipientIds.length > 0) {
+      const recipientEmails = (
+        await convex.query(api.users.getEmailsForUserIds, {
+          userIds: emailRecipientIds,
+        })
+      ).filter((email): email is string => !!email);
+
+      const subject = `New Submission - ${form.name}`;
+
+      let headers = {} as any;
+      if (emailThreads) {
+        // When threading is enabled, use a consistent Message-ID
+        headers['Message-ID'] = `<form-${formId}@formail.dev>`;
+      } else {
+        // When threading is disabled, use a unique X-Entity-Ref-ID
+        headers[
+          'X-Entity-Ref-ID'
+        ] = `submission-${formId}-${new Date().getTime()}`;
+      }
+
+      try {
+        const { error } = await resend.emails.send({
+          from: 'Formail Notification <noreply@formail.dev>',
+          to: recipientEmails,
+          subject,
+          text: `New submission received for ${form.name}. Check the dashboard for more details.`,
+          react: EmailTemplate({
+            submissionData: submissionData,
+          }),
+          headers,
+        });
+
+        if (error) {
+          return new NextResponse(
+            JSON.stringify({
+              error: 'Email failed',
+              details: error.message,
+            }),
+            { status: 500 }
+          );
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
     return new NextResponse(
-      JSON.stringify({ message: 'Submission received' }),
+      JSON.stringify({ message: 'Submission received and email sent!' }),
       { status: 200 }
     );
   } catch (error: any) {

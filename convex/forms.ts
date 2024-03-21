@@ -165,6 +165,19 @@ export const getFormById = query({
   },
 });
 
+export const getFormByIdServer = query({
+  args: { formId: v.id('forms') },
+  async handler(ctx, args) {
+    const form = await ctx.db.get(args.formId);
+
+    if (!form) {
+      throw new ConvexError('Form not found.');
+    }
+
+    return form;
+  },
+});
+
 export const updateFormSettings = mutation({
   args: {
     formId: v.id('forms'),

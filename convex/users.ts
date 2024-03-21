@@ -236,3 +236,23 @@ export const getUsersByOrgIdWithRoles = query({
     );
   },
 });
+
+export const getEmailsForUserIds = query({
+  args: { userIds: v.array(v.id('users')) },
+  async handler(ctx, { userIds }) {
+    // Fetch details for each user ID
+    const usersPromises = userIds.map(async (userId) => {
+      const user = await ctx.db.get(userId);
+      return user ? { id: user._id, email: user.email } : null;
+    });
+
+    const users = await Promise.all(usersPromises);
+
+    // Filter out any null values and return the emails
+    const emails = users
+      .filter(Boolean)
+      .map((user) => user?.email)
+      .filter(Boolean);
+    return emails;
+  },
+});
