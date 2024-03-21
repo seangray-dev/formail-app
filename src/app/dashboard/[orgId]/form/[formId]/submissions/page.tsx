@@ -97,18 +97,31 @@ export default function SubmissionsPage() {
     1,
     Math.ceil(filteredSubmissions.length / rowsPerPage)
   );
-  const indexOfLastSubmission = currentPage * rowsPerPage;
-  const indexOfFirstSubmission = indexOfLastSubmission - rowsPerPage;
+  const indexOfLastSubmission = Math.min(
+    currentPage * rowsPerPage,
+    filteredSubmissions.length
+  );
+  const indexOfFirstSubmission = (currentPage - 1) * rowsPerPage;
   const currentSubmissions = filteredSubmissions.slice(
     indexOfFirstSubmission,
     indexOfLastSubmission
   );
 
-  const handlePreviousPage = () => setCurrentPage(currentPage - 1);
-  const handleNextPage = () => setCurrentPage(currentPage + 1);
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
   const handleRowsPerPageChange = (value: string) => {
     setRowsPerPage(parseInt(value, 10));
-    setCurrentPage(1); // Reset to first page when rows per page change
+    setCurrentPage(1);
   };
 
   const deleteSubmission = useMutation(api.submissions.deleteSubmissionById);
@@ -228,7 +241,8 @@ export default function SubmissionsPage() {
               />
             </div>
             <div className='text-center md:text-left'>
-              Showing {currentSubmissions?.length} / {submissions.length} result
+              Showing {currentSubmissions?.length} /{' '}
+              {filteredSubmissions.length} result
               {'(s)'}
             </div>
             <div className='flex gap-2 item-center'>
@@ -274,7 +288,7 @@ export default function SubmissionsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredSubmissions?.map((submission, index) => (
+              {currentSubmissions?.map((submission, index) => (
                 <TableRow
                   key={index}
                   className={`${
