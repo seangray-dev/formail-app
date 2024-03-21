@@ -19,6 +19,14 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   Table,
   TableBody,
@@ -35,6 +43,7 @@ import {
 } from '@/components/ui/tooltip';
 import { useToast } from '@/components/ui/use-toast';
 import { formDetailsAtom } from '@/jotai/state';
+import { exportToCsv, exportToJson } from '@/lib/utils';
 import { useMutation, useQuery } from 'convex/react';
 import { formatRelative } from 'date-fns';
 import { useAtom } from 'jotai';
@@ -66,12 +75,31 @@ export default function SubmissionsPage() {
   const [checkedSubmissions, setcheckedSubmissions] = useState(
     new Set<submissionId>()
   );
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const formQueryArg = formId ? { formId: formId as Id<'forms'> } : 'skip';
   const submissions = useQuery(
     api.submissions.getSubmissionsByFormId,
     formQueryArg
   );
+
+  const totalPages = submissions
+    ? Math.ceil(submissions.length / rowsPerPage)
+    : 0;
+  const indexOfLastSubmission = currentPage * rowsPerPage;
+  const indexOfFirstSubmission = indexOfLastSubmission - rowsPerPage;
+  const currentSubmissions = submissions?.slice(
+    indexOfFirstSubmission,
+    indexOfLastSubmission
+  );
+
+  const handlePreviousPage = () => setCurrentPage(currentPage - 1);
+  const handleNextPage = () => setCurrentPage(currentPage + 1);
+  const handleRowsPerPageChange = (value: string) => {
+    setRowsPerPage(parseInt(value, 10));
+    setCurrentPage(1); // Reset to first page when rows per page change
+  };
 
   const deleteSubmission = useMutation(api.submissions.deleteSubmissionById);
 
@@ -141,59 +169,6 @@ export default function SubmissionsPage() {
       ?.filter((submission) => checkedSubmissions.has(submission._id))
       .map((submission) => JSON.parse(submission.data)) || [];
 
-  const exportToJson = (selectedData: SubmissionData[]) => {
-    if (!selectedData) return;
-
-    const dataStr = JSON.stringify(selectedData);
-    const dataUri =
-      'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-    const exportFileDefaultName = 'data.json';
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', exportFileDefaultName);
-    linkElement.click();
-  };
-
-  const convertToCSV = (objArray: SubmissionData[]) => {
-    if (!objArray || objArray.length === 0) return '';
-
-    // Collect all unique headers/keys from all objects
-    const allHeaders = new Set<string>();
-    objArray.forEach((obj) =>
-      Object.keys(obj).forEach((key) => allHeaders.add(key))
-    );
-
-    // Convert Set of headers to Array
-    const headers = Array.from(allHeaders);
-
-    // Construct CSV string
-    const csvRows = [
-      // Headers row
-      headers.join(','),
-      ...objArray.map((row) =>
-        // Map each value under its header
-        headers.map((header) => JSON.stringify(row[header] || '')).join(',')
-      ),
-    ];
-
-    // Join all rows with new line
-    return csvRows.join('\r\n');
-  };
-
-  const exportToCsv = (selectedData: SubmissionData[]) => {
-    // Ensure there is data to export
-    if (!selectedData || selectedData.length === 0) return;
-
-    const csvStr = convertToCSV(selectedData);
-    const dataUri = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvStr);
-    const exportFileDefaultName = 'data.csv';
-
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', exportFileDefaultName);
-    linkElement.click();
-  };
-
   return (
     <section className='container flex-1 flex flex-col'>
       {submissions && submissions.length > 0 ? (
@@ -234,23 +209,35 @@ export default function SubmissionsPage() {
               <Input type='text' placeholder='Search...' />
             </div>
             <div className='text-center md:text-left'>
-              Showing {submissions.length} / {submissions.length} result{'(s)'}
+              Showing {currentSubmissions?.length} / {submissions.length} result
+              {'(s)'}
             </div>
-            <div className='flex items-center gap-4 mx-auto md:mx-0'>
-              <Button
-                variant={'outline'}
-                size={'icon'}
-                className='hover:bg-transparent hover:border-white'>
-                <ArrowLeftIcon size={18} />
-              </Button>
-              {/* Current Page out of Total Pages */}
-              <span className='text-sm'>Page 1 / 1</span>
-              <Button
-                variant={'outline'}
-                size={'icon'}
-                className='hover:bg-transparent hover:border-white'>
-                <ArrowRightIcon size={18} />
-              </Button>
+            <div className='flex gap-2 item-center'>
+              <div className='flex items-center gap-4 mx-auto md:mx-0'>
+                <Button
+                  onClick={() => {
+                    handlePreviousPage();
+                  }}
+                  variant={'outline'}
+                  size={'icon'}
+                  className='hover:bg-transparent hover:border-white'
+                  disabled={currentPage === 1}>
+                  <ArrowLeftIcon size={18} />
+                </Button>
+                <span className='text-sm'>
+                  Page {currentPage} / {totalPages}
+                </span>
+                <Button
+                  onClick={() => {
+                    handleNextPage();
+                  }}
+                  variant={'outline'}
+                  size={'icon'}
+                  className='hover:bg-transparent hover:border-white'
+                  disabled={currentPage === totalPages || totalPages === 0}>
+                  <ArrowRightIcon size={18} />
+                </Button>
+              </div>
             </div>
           </div>
           <Table className='w-full border'>
@@ -268,7 +255,7 @@ export default function SubmissionsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {submissions?.map((submission, index) => (
+              {currentSubmissions?.map((submission, index) => (
                 <TableRow
                   key={index}
                   className={`${
@@ -345,6 +332,50 @@ export default function SubmissionsPage() {
               ))}
             </TableBody>
           </Table>
+          <div className='flex items-center gap-2 justify-between bg-muted py-2 px-4'>
+            <div className='flex items-center gap-4 mx-auto md:mx-0'>
+              <Button
+                onClick={() => {
+                  handlePreviousPage();
+                }}
+                variant={'outline'}
+                size={'icon'}
+                className='hover:bg-transparent hover:border-white'
+                disabled={currentPage === 1}>
+                <ArrowLeftIcon size={18} />
+              </Button>
+              <span className='text-sm'>
+                Page {currentPage} / {totalPages}
+              </span>
+              <Button
+                onClick={() => {
+                  handleNextPage();
+                }}
+                variant={'outline'}
+                size={'icon'}
+                className='hover:bg-transparent hover:border-white'
+                disabled={currentPage === totalPages || totalPages === 0}>
+                <ArrowRightIcon size={18} />
+              </Button>
+            </div>
+            <div className='flex items-center gap-2'>
+              <Label>Rows per page</Label>
+              <Select
+                onValueChange={handleRowsPerPageChange}
+                value={rowsPerPage.toLocaleString()}>
+                <SelectTrigger className='w-[70px]'>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value='10'>10</SelectItem>
+                  <SelectItem value='20'>20</SelectItem>
+                  <SelectItem value='30'>30</SelectItem>
+                  <SelectItem value='40'>40</SelectItem>
+                  <SelectItem value='50'>50</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
         </>
       ) : (
         <div className='flex-1 flex flex-col justify-center items-center gap-10'>
