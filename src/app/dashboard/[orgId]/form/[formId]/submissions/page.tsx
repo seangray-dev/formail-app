@@ -77,6 +77,7 @@ export default function SubmissionsPage() {
   );
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const formQueryArg = formId ? { formId: formId as Id<'forms'> } : 'skip';
   const submissions = useQuery(
@@ -84,12 +85,21 @@ export default function SubmissionsPage() {
     formQueryArg
   );
 
-  const totalPages = submissions
-    ? Math.ceil(submissions.length / rowsPerPage)
-    : 0;
+  const filteredSubmissions =
+    submissions?.filter((submission) => {
+      const submissionData = JSON.parse(submission.data);
+      return Object.values(submissionData).some((value) =>
+        String(value).toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }) || [];
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredSubmissions.length / rowsPerPage)
+  );
   const indexOfLastSubmission = currentPage * rowsPerPage;
   const indexOfFirstSubmission = indexOfLastSubmission - rowsPerPage;
-  const currentSubmissions = submissions?.slice(
+  const currentSubmissions = filteredSubmissions.slice(
     indexOfFirstSubmission,
     indexOfLastSubmission
   );
@@ -169,6 +179,10 @@ export default function SubmissionsPage() {
       ?.filter((submission) => checkedSubmissions.has(submission._id))
       .map((submission) => JSON.parse(submission.data)) || [];
 
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+  };
+
   return (
     <section className='container flex-1 flex flex-col'>
       {submissions && submissions.length > 0 ? (
@@ -206,7 +220,12 @@ export default function SubmissionsPage() {
           </div>
           <div className='bg-muted py-2 px-4 flex flex-col gap-4 md:flex-row md:items-center justify-between'>
             <div>
-              <Input type='text' placeholder='Search...' />
+              <Input
+                type='text'
+                placeholder='Search...'
+                value={searchTerm}
+                onChange={handleSearchChange}
+              />
             </div>
             <div className='text-center md:text-left'>
               Showing {currentSubmissions?.length} / {submissions.length} result
@@ -255,7 +274,7 @@ export default function SubmissionsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {currentSubmissions?.map((submission, index) => (
+              {filteredSubmissions?.map((submission, index) => (
                 <TableRow
                   key={index}
                   className={`${
@@ -345,7 +364,7 @@ export default function SubmissionsPage() {
                 <ArrowLeftIcon size={18} />
               </Button>
               <span className='text-sm'>
-                Page {currentPage} / {totalPages}
+                Page {Math.min(currentPage, totalPages)} / {totalPages}
               </span>
               <Button
                 onClick={() => {
