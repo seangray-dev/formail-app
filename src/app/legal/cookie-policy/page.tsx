@@ -1,5 +1,5 @@
 import React from 'react';
 
 export default function CookiePolicyPage() {
-  return <div>CookiePolicyPage</div>;
+  return <div className='flex-1 container'>CookiePolicyPage</div>;
 }

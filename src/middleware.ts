@@ -5,6 +5,11 @@ export default authMiddleware({
   publicRoutes: ['/', '/submit/(.*)', '/contact', '/documentation'],
   // Routes that can always be accessed, and have
   // no authentication information
+  ignoredRoutes: [
+    '/legal/cookie-policy',
+    '/legal/privacy-policy',
+    '/legal/terms-&-conditions',
+  ],
 });
 
 export const config = {
