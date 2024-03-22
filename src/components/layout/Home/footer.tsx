@@ -20,7 +20,7 @@ export default function Footer() {
           </Link>
           <Link
             className='hover:text-white hover:underline'
-            href={'/legal/privacy-policy'}>
+            href={'/legal/cookie-policy'}>
             Cookie Policy
           </Link>
         </div>
