@@ -24,8 +24,7 @@ http.route({
       switch (result.type) {
         case 'user.created':
           await ctx.runMutation(internal.users.createUser, {
-            // tokenIdentifier: `https://${process.env.CLERK_HOSTNAME}|${result.data.id}`,
-            tokenIdentifier: `https://known-ox-51.clerk.accounts.dev|${result.data.id}`,
+            tokenIdentifier: `${result.data.id}`,
             name: `${result.data.first_name ?? ''} ${
               result.data.last_name ?? ''
             }`,
@@ -36,8 +35,7 @@ http.route({
 
         case 'user.updated':
           await ctx.runMutation(internal.users.updateUser, {
-            // tokenIdentifier: `https://${process.env.CLERK_HOSTNAME}|${result.data.id}`,
-            tokenIdentifier: `https://known-ox-51.clerk.accounts.dev|${result.data.id}`,
+            tokenIdentifier: `${result.data.id}`,
             name: `${result.data.first_name ?? ''} ${
               result.data.last_name ?? ''
             }`,
@@ -47,7 +45,7 @@ http.route({
 
         case 'organizationMembership.created':
           await ctx.runMutation(internal.users.addOrgIdToUser, {
-            tokenIdentifier: `https://known-ox-51.clerk.accounts.dev|${result.data.public_user_data.user_id}`,
+            tokenIdentifier: `${result.data.id}`,
             orgId: result.data.organization.id,
             role: result.data.role === 'org:admin' ? 'admin' : 'member',
           });
@@ -55,7 +53,7 @@ http.route({
 
         case 'organizationMembership.updated':
           await ctx.runMutation(internal.users.updateRoleInOrgForUser, {
-            tokenIdentifier: `https://known-ox-51.clerk.accounts.dev|${result.data.public_user_data.user_id}`,
+            tokenIdentifier: `${result.data.id}`,
             orgId: result.data.organization.id,
             role: result.data.role === 'org:admin' ? 'admin' : 'member',
           });
@@ -66,6 +64,29 @@ http.route({
         status: 200,
       });
     } catch (err) {
+      return new Response('Webhook Error', {
+        status: 400,
+      });
+    }
+  }),
+});
+
+http.route({
+  path: '/stripe',
+  method: 'POST',
+  handler: httpAction(async (ctx, request) => {
+    const signature = request.headers.get('stripe-signature') as string;
+
+    const result = await ctx.runAction(internal.stripe.fulfill, {
+      payload: await request.text(),
+      signature,
+    });
+
+    if (result.success) {
+      return new Response(null, {
+        status: 200,
+      });
+    } else {
       return new Response('Webhook Error', {
         status: 400,
       });

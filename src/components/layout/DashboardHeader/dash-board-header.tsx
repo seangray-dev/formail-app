@@ -33,7 +33,7 @@ export default function DashboardHeader() {
     orgId = organization.organization?.id ?? user.user?.id;
   }
   if (organization.isLoaded && user.isLoaded) {
-    orgName = organization.organization?.name ?? 'Personal account';
+    orgName = organization.organization?.name ?? 'Personal Account';
   }
 
   useEffect(() => {

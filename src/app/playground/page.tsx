@@ -9,7 +9,7 @@ export default function PlaygroundPage() {
 
   return (
     <section className='container py-10'>
-      <PlaygroundForm />
+      {/* <PlaygroundForm /> */}
       <div className='mt-10'>
         <p>Email Template</p>
         <div

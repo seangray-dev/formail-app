@@ -26,7 +26,11 @@ export default defineSchema({
     planType: v.string(),
     formCount: v.number(),
     remainingSubmissions: v.number(),
-  }).index('by_tokenIdentifier', ['tokenIdentifier']),
+    subscriptionId: v.optional(v.string()),
+    endsOn: v.optional(v.number()),
+  })
+    .index('by_tokenIdentifier', ['tokenIdentifier'])
+    .index('by_subscriptionId', ['subscriptionId']),
   submissions: defineTable({
     formId: v.id('forms'),
     data: v.string(),

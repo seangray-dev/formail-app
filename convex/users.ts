@@ -7,19 +7,41 @@ import {
 } from './_generated/server';
 import { roles } from './schema';
 
+export const getMe = query({
+  args: {},
+  async handler(ctx) {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity) {
+      return null;
+    }
+
+    const user = await getUser(ctx, identity.tokenIdentifier);
+
+    if (!user) {
+      console.error('No user found');
+      return;
+    }
+
+    return user;
+  },
+});
+
 export async function getUser(
   ctx: QueryCtx | MutationCtx,
   tokenIdentifier: string
 ) {
+  // Extract the ID part from the tokenIdentifier
+  const tokenId = tokenIdentifier.split('|').pop() as string;
+
   const user = await ctx.db
     .query('users')
-    .withIndex('by_tokenIdentifier', (q) =>
-      q.eq('tokenIdentifier', tokenIdentifier)
-    )
+    .withIndex('by_tokenIdentifier', (q) => q.eq('tokenIdentifier', tokenId))
     .first();
 
   if (!user) {
-    throw new ConvexError('expected user to be defined');
+    console.error('No user found with tokenIdentifier', tokenId);
+    return;
   }
 
   return user;
@@ -33,11 +55,9 @@ export const createUser = internalMutation({
     image: v.string(),
   },
   async handler(ctx, args) {
-    const clerkUserId = args.tokenIdentifier.split('|')[1];
-
     const userId = await ctx.db.insert('users', {
       tokenIdentifier: args.tokenIdentifier,
-      orgIds: [clerkUserId],
+      orgIds: [args.tokenIdentifier],
       name: args.name,
       email: args.email,
       image: args.image,
@@ -48,7 +68,7 @@ export const createUser = internalMutation({
 
     await ctx.db.insert('userOrgRoles', {
       userId: userId,
-      orgId: clerkUserId,
+      orgId: args.tokenIdentifier,
       role: 'admin',
     });
   },
@@ -80,6 +100,10 @@ export const addOrgIdToUser = internalMutation({
   async handler(ctx, args) {
     const user = await getUser(ctx, args.tokenIdentifier);
 
+    if (!user) {
+      return;
+    }
+
     await ctx.db.patch(user._id, {
       orgIds: [...user.orgIds, args.orgId],
     });
@@ -96,6 +120,10 @@ export const updateRoleInOrgForUser = internalMutation({
   args: { tokenIdentifier: v.string(), orgId: v.string(), role: roles },
   async handler(ctx, args) {
     const user = await getUser(ctx, args.tokenIdentifier);
+
+    if (!user) {
+      return;
+    }
 
     const userOrgRole = await ctx.db
       .query('userOrgRoles')
@@ -124,25 +152,6 @@ export const getUserProfile = query({
       name: user?.name,
       image: user?.image,
     };
-  },
-});
-
-export const getMe = query({
-  args: {},
-  async handler(ctx) {
-    const identity = await ctx.auth.getUserIdentity();
-
-    if (!identity) {
-      return null;
-    }
-
-    const user = await getUser(ctx, identity.tokenIdentifier);
-
-    if (!user) {
-      return null;
-    }
-
-    return user;
   },
 });
 
@@ -254,5 +263,45 @@ export const getEmailsForUserIds = query({
       .map((user) => user?.email)
       .filter(Boolean);
     return emails;
+  },
+});
+
+export const updateSubscription = internalMutation({
+  args: {
+    tokenIdentifier: v.string(),
+    subscriptionId: v.string(),
+    endsOn: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const user = await getUser(ctx, args.tokenIdentifier);
+
+    if (!user) {
+      throw new Error('no user found with that user id');
+    }
+
+    await ctx.db.patch(user._id, {
+      subscriptionId: args.subscriptionId,
+      endsOn: args.endsOn,
+    });
+  },
+});
+
+export const updateSubscriptionBySubId = internalMutation({
+  args: { subscriptionId: v.string(), endsOn: v.number() },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query('users')
+      .withIndex('by_subscriptionId', (q) =>
+        q.eq('subscriptionId', args.subscriptionId)
+      )
+      .first();
+
+    if (!user) {
+      throw new Error('no user found with that subscription id');
+    }
+
+    await ctx.db.patch(user._id, {
+      endsOn: args.endsOn,
+    });
   },
 });

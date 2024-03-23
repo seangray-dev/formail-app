@@ -10,12 +10,11 @@ export async function hasAccessToOrg(
   if (!identity) {
     throw new ConvexError('No user identity provided');
   }
+  const tokenId = identity.tokenIdentifier.split('|').pop() as string;
 
   const user = await ctx.db
     .query('users')
-    .withIndex('by_tokenIdentifier', (q) =>
-      q.eq('tokenIdentifier', identity.tokenIdentifier)
-    )
+    .withIndex('by_tokenIdentifier', (q) => q.eq('tokenIdentifier', tokenId))
     .first();
 
   if (!user) {
@@ -40,11 +39,11 @@ export async function isAdminOfOrg(
 
   if (!identity) throw new ConvexError('No user found');
 
+  const tokenId = identity.tokenIdentifier.split('|').pop() as string;
+
   const user = await ctx.db
     .query('users')
-    .withIndex('by_tokenIdentifier', (q) =>
-      q.eq('tokenIdentifier', identity.tokenIdentifier)
-    )
+    .withIndex('by_tokenIdentifier', (q) => q.eq('tokenIdentifier', tokenId))
     .first();
   if (!user) throw new ConvexError('No user found');
 
