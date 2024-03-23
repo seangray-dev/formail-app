@@ -19,7 +19,8 @@ export const getMe = query({
     const user = await getUser(ctx, identity.tokenIdentifier);
 
     if (!user) {
-      return null;
+      console.error('No user found');
+      return;
     }
 
     return user;
@@ -39,9 +40,8 @@ export async function getUser(
     .first();
 
   if (!user) {
-    throw new ConvexError(
-      `No user found with tokenIdentifier: ${tokenIdentifier}`
-    );
+    console.error('No user found with tokenIdentifier', tokenId);
+    return;
   }
 
   return user;
@@ -100,6 +100,10 @@ export const addOrgIdToUser = internalMutation({
   async handler(ctx, args) {
     const user = await getUser(ctx, args.tokenIdentifier);
 
+    if (!user) {
+      return;
+    }
+
     await ctx.db.patch(user._id, {
       orgIds: [...user.orgIds, args.orgId],
     });
@@ -116,6 +120,10 @@ export const updateRoleInOrgForUser = internalMutation({
   args: { tokenIdentifier: v.string(), orgId: v.string(), role: roles },
   async handler(ctx, args) {
     const user = await getUser(ctx, args.tokenIdentifier);
+
+    if (!user) {
+      return;
+    }
 
     const userOrgRole = await ctx.db
       .query('userOrgRoles')

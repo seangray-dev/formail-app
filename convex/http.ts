@@ -24,7 +24,6 @@ http.route({
       switch (result.type) {
         case 'user.created':
           await ctx.runMutation(internal.users.createUser, {
-            // tokenIdentifier: `https://${process.env.CLERK_HOSTNAME}|${result.data.id}`,
             tokenIdentifier: `${result.data.id}`,
             name: `${result.data.first_name ?? ''} ${
               result.data.last_name ?? ''
@@ -36,7 +35,6 @@ http.route({
 
         case 'user.updated':
           await ctx.runMutation(internal.users.updateUser, {
-            // tokenIdentifier: `https://${process.env.CLERK_HOSTNAME}|${result.data.id}`,
             tokenIdentifier: `${result.data.id}`,
             name: `${result.data.first_name ?? ''} ${
               result.data.last_name ?? ''
@@ -47,7 +45,7 @@ http.route({
 
         case 'organizationMembership.created':
           await ctx.runMutation(internal.users.addOrgIdToUser, {
-            tokenIdentifier: `${result.data.public_user_data.user_id}`,
+            tokenIdentifier: `${result.data.id}`,
             orgId: result.data.organization.id,
             role: result.data.role === 'org:admin' ? 'admin' : 'member',
           });
@@ -55,7 +53,7 @@ http.route({
 
         case 'organizationMembership.updated':
           await ctx.runMutation(internal.users.updateRoleInOrgForUser, {
-            tokenIdentifier: `${result.data.public_user_data.user_id}`,
+            tokenIdentifier: `${result.data.id}`,
             orgId: result.data.organization.id,
             role: result.data.role === 'org:admin' ? 'admin' : 'member',
           });
