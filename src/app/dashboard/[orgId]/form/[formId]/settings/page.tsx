@@ -144,7 +144,7 @@ export default function FormSettingsPage() {
       return;
     }
 
-    if (!formId || !form_name || !form_description) {
+    if (!formId) {
       console.error('Form ID is undefined.');
       return;
     }
@@ -152,8 +152,8 @@ export default function FormSettingsPage() {
     try {
       await updateFormSettingsMutation({
         formId: typedFormId,
-        name: form_name,
-        description: form_description,
+        name: form_name || '',
+        description: form_description || '',
         settings,
       });
       toast({

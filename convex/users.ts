@@ -3,24 +3,45 @@ import {
   MutationCtx,
   QueryCtx,
   internalMutation,
-  internalQuery,
   query,
 } from './_generated/server';
 import { roles } from './schema';
+
+export const getMe = query({
+  args: {},
+  async handler(ctx) {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity) {
+      return null;
+    }
+
+    const user = await getUser(ctx, identity.tokenIdentifier);
+
+    if (!user) {
+      return null;
+    }
+
+    return user;
+  },
+});
 
 export async function getUser(
   ctx: QueryCtx | MutationCtx,
   tokenIdentifier: string
 ) {
+  // Extract the ID part from the tokenIdentifier
+  const tokenId = tokenIdentifier.split('|').pop() as string;
+
   const user = await ctx.db
     .query('users')
-    .withIndex('by_tokenIdentifier', (q) =>
-      q.eq('tokenIdentifier', tokenIdentifier)
-    )
+    .withIndex('by_tokenIdentifier', (q) => q.eq('tokenIdentifier', tokenId))
     .first();
 
   if (!user) {
-    throw new ConvexError('expected user to be defined');
+    throw new ConvexError(
+      `No user found with tokenIdentifier: ${tokenIdentifier}`
+    );
   }
 
   return user;
@@ -123,25 +144,6 @@ export const getUserProfile = query({
       name: user?.name,
       image: user?.image,
     };
-  },
-});
-
-export const getMe = query({
-  args: {},
-  async handler(ctx) {
-    const identity = await ctx.auth.getUserIdentity();
-
-    if (!identity) {
-      return null;
-    }
-
-    const user = await getUser(ctx, identity.tokenIdentifier);
-
-    if (!user) {
-      return null;
-    }
-
-    return user;
   },
 });
 
@@ -287,7 +289,7 @@ export const updateSubscriptionBySubId = internalMutation({
       .first();
 
     if (!user) {
-      throw new Error('no user found with that user id');
+      throw new Error('no user found with that subscription id');
     }
 
     await ctx.db.patch(user._id, {

@@ -1,7 +1,7 @@
 'use client';
 
 import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
-import { useAction } from 'convex/react';
+import { useAction, useQuery } from 'convex/react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { api } from '../../../../convex/_generated/api';
@@ -11,6 +11,8 @@ import FormSheet from './forms-sheet';
 export default function Header() {
   const pay = useAction(api.stripe.pay);
   const router = useRouter();
+  const user = useQuery(api.users.getMe);
+  const isSubbed = user && (user.endsOn ?? 0) > Date.now();
 
   const handleUpgradeClick = async () => {
     const url = await pay();
@@ -56,9 +58,11 @@ export default function Header() {
           </SignedOut>
           <SignedIn>
             <div className='flex items-center gap-3'>
-              <Button variant={'secondary'} onClick={handleUpgradeClick}>
-                Upgrade
-              </Button>
+              {!isSubbed && (
+                <Button variant={'secondary'} onClick={handleUpgradeClick}>
+                  Upgrade
+                </Button>
+              )}
               <UserButton />
             </div>
           </SignedIn>
