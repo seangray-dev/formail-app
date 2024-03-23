@@ -3,6 +3,7 @@ import {
   MutationCtx,
   QueryCtx,
   internalMutation,
+  internalQuery,
   query,
 } from './_generated/server';
 import { roles } from './schema';
@@ -33,11 +34,9 @@ export const createUser = internalMutation({
     image: v.string(),
   },
   async handler(ctx, args) {
-    const clerkUserId = args.tokenIdentifier.split('|')[1];
-
     const userId = await ctx.db.insert('users', {
       tokenIdentifier: args.tokenIdentifier,
-      orgIds: [clerkUserId],
+      orgIds: [args.tokenIdentifier],
       name: args.name,
       email: args.email,
       image: args.image,
@@ -48,7 +47,7 @@ export const createUser = internalMutation({
 
     await ctx.db.insert('userOrgRoles', {
       userId: userId,
-      orgId: clerkUserId,
+      orgId: args.tokenIdentifier,
       role: 'admin',
     });
   },
@@ -254,5 +253,45 @@ export const getEmailsForUserIds = query({
       .map((user) => user?.email)
       .filter(Boolean);
     return emails;
+  },
+});
+
+export const updateSubscription = internalMutation({
+  args: {
+    tokenIdentifier: v.string(),
+    subscriptionId: v.string(),
+    endsOn: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const user = await getUser(ctx, args.tokenIdentifier);
+
+    if (!user) {
+      throw new Error('no user found with that user id');
+    }
+
+    await ctx.db.patch(user._id, {
+      subscriptionId: args.subscriptionId,
+      endsOn: args.endsOn,
+    });
+  },
+});
+
+export const updateSubscriptionBySubId = internalMutation({
+  args: { subscriptionId: v.string(), endsOn: v.number() },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query('users')
+      .withIndex('by_subscriptionId', (q) =>
+        q.eq('subscriptionId', args.subscriptionId)
+      )
+      .first();
+
+    if (!user) {
+      throw new Error('no user found with that user id');
+    }
+
+    await ctx.db.patch(user._id, {
+      endsOn: args.endsOn,
+    });
   },
 });

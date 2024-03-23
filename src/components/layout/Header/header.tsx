@@ -1,14 +1,22 @@
-import {
-  OrganizationSwitcher,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from '@clerk/nextjs';
+'use client';
+
+import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import { useAction } from 'convex/react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { api } from '../../../../convex/_generated/api';
 import { Button } from '../../ui/button';
 import FormSheet from './forms-sheet';
 
 export default function Header() {
+  const pay = useAction(api.stripe.pay);
+  const router = useRouter();
+
+  const handleUpgradeClick = async () => {
+    const url = await pay();
+    router.push(url);
+  };
+
   return (
     <nav className='container border-b py-3 text-sm'>
       <div className='flex justify-between items-center'>
@@ -47,10 +55,12 @@ export default function Header() {
             </Button>
           </SignedOut>
           <SignedIn>
-            {/* <div className='-mb-2 hidden md:block'>
-              <OrganizationSwitcher />
-            </div> */}
-            <UserButton />
+            <div className='flex items-center gap-3'>
+              <Button variant={'secondary'} onClick={handleUpgradeClick}>
+                Upgrade
+              </Button>
+              <UserButton />
+            </div>
           </SignedIn>
         </div>
       </div>
