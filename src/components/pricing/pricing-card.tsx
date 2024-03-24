@@ -71,7 +71,7 @@ export default function PricingCard({
             <Link href={buttonLink}>{buttonText}</Link>
           </Button>
         ) : (
-          <Button variant={buttonVariant} onClick={onClick}>
+          <Button disabled variant={buttonVariant} onClick={onClick}>
             {buttonText}
           </Button>
         )}

@@ -74,7 +74,7 @@ export default function PricingPage() {
           description='Best for professionals and teams needing advanced features'
           price='$4.99/mo'
           features={premiumFeatures}
-          buttonText='Upgrade Now'
+          buttonText='Coming Soon!'
           buttonVariant='default'
           onClick={handleUpgradeClick}
         />
