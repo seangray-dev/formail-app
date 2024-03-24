@@ -106,40 +106,50 @@ export const getSubmissionsByFormId = query({
   },
 });
 
-export const deleteSubmissionById = mutation({
-  args: { submissionId: v.id('submissions') },
-  async handler(ctx, args) {
+export const getSubmissionsByDateRange = query({
+  args: {
+    formId: v.id('forms'),
+    fromDate: v.number(),
+    toDate: v.number(),
+  },
+  async handler(ctx, { formId, fromDate, toDate }) {
     const identity = await ctx.auth.getUserIdentity();
 
     if (!identity) {
-      throw new ConvexError('No user identity provided');
+      throw new ConvexError('You must be signed in to access form details.');
     }
 
-    // Retrieve the submission
-    const submission = await ctx.db.get(args.submissionId);
-    if (!submission) {
-      throw new ConvexError('This submission does not exist');
-    }
+    const form = await ctx.db.get(formId);
 
-    // Retrieve the form associated with the submission to get the orgId
-    const form = await ctx.db.get(submission.formId);
     if (!form) {
-      throw new ConvexError(
-        'Form associated with this submission does not exist'
-      );
+      throw new ConvexError('Form not found.');
     }
 
-    // Check if the user has access to the org and is an admin
-    const hasAccess = await isAdminOfOrg(ctx, form.orgId);
+    const hasAccess = await hasAccessToOrg(ctx, form.orgId);
 
     if (!hasAccess) {
       throw new ConvexError(
-        'You do not have permission to delete this submission'
+        'You do not have permission to view these form submissions.'
       );
     }
 
-    // Proceed with deletion
-    await ctx.db.delete(args.submissionId);
+    // Fetch and return all submissions for the provided formId within the date range
+    const _submissions = await ctx.db
+      .query('submissions')
+      .filter((q) =>
+        q.and(
+          q.eq(q.field('formId'), formId),
+          q.gte(q.field('_creationTime'), fromDate),
+          q.lte(q.field('_creationTime'), toDate)
+        )
+      )
+      .collect();
+
+    const submissions = _submissions.map((submission) =>
+      JSON.parse(submission.data)
+    );
+
+    return submissions;
   },
 });
 
