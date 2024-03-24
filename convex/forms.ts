@@ -2,7 +2,7 @@ import { useMutation, useQuery } from 'convex/react';
 import { ConvexError, v } from 'convex/values';
 import { api } from './_generated/api';
 import { mutation, query } from './_generated/server';
-import { hasAccessToOrg, isAdminOfOrg } from './orgAccess';
+import { hasAccessToOrg, isAdminOfOrg } from './utils';
 
 export const createForm = mutation({
   args: { name: v.string(), description: v.string(), orgId: v.string() },
