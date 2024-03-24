@@ -49,5 +49,7 @@ export default defineSchema({
     userId: v.id('users'),
     orgId: v.string(),
     role: roles,
-  }).index('by_orgId_and_role', ['orgId', 'role']),
+  })
+    .index('by_orgId_and_role', ['orgId', 'role'])
+    .index('by_orgId', ['orgId']),
 });

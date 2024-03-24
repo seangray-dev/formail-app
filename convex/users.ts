@@ -303,3 +303,36 @@ export const updateSubscriptionBySubId = internalMutation({
     });
   },
 });
+
+export const getUserByFormId = query({
+  args: {
+    formId: v.id('forms'),
+  },
+  handler: async (ctx, args) => {
+    const form = await ctx.db.get(args.formId);
+    if (!form) {
+      throw new Error('Form not found');
+    }
+
+    // Use the orgId from the form to find associated userOrgRoles
+    const userOrgRoles = await ctx.db
+      .query('userOrgRoles')
+      .withIndex('by_orgId', (q) => q.eq('orgId', form.orgId))
+      .collect();
+
+    if (userOrgRoles.length === 0) {
+      throw new Error("No users found for the given form's organization");
+    }
+
+    // Assuming you want the first userOrgRole for simplicity
+    const firstUserOrgRole = userOrgRoles[0];
+
+    // Fetch the user details using the userId from the firstUserOrgRole
+    const user = await ctx.db.get(firstUserOrgRole.userId);
+    if (!user) {
+      throw new Error('User not found for the given form');
+    }
+
+    return user;
+  },
+});

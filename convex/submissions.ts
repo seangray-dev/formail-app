@@ -1,7 +1,8 @@
 import { ConvexError, v } from 'convex/values';
 import { Id } from './_generated/dataModel';
 import { mutation, query } from './_generated/server';
-import { hasAccessToOrg, isAdminOfOrg } from './utils';
+import { getUserByFormId } from './users';
+import { checkSubStatus, hasAccessToOrg, isAdminOfOrg } from './utils';
 
 export const addSubmission = mutation({
   args: {
@@ -20,12 +21,28 @@ export const addSubmission = mutation({
       )
     ),
   },
+
   async handler(ctx, { formId, data, files = [] }) {
+    const user = await getUserByFormId(ctx, { formId });
+    const { hasActiveSubscription } = await checkSubStatus(ctx, user._id);
+
+    if (!hasActiveSubscription && user.remainingSubmissions <= 0) {
+      throw new Error(
+        'Submission limit reached. Please upgrade your plan for more submissions.'
+      );
+    }
+
     await ctx.db.insert('submissions', {
       formId,
       data,
       files,
     });
+
+    if (!hasActiveSubscription) {
+      await ctx.db.patch(user._id, {
+        remainingSubmissions: user.remainingSubmissions - 1,
+      });
+    }
   },
 });
 

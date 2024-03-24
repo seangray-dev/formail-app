@@ -1,4 +1,5 @@
 import { ConvexError, v } from 'convex/values';
+import { Id } from './_generated/dataModel';
 import { MutationCtx, QueryCtx, query } from './_generated/server';
 
 export async function hasAccessToOrg(
@@ -105,3 +106,23 @@ export async function checkSubscriptionStatusAndFormCount(
     formCount,
   };
 }
+
+export const checkSubStatus = async (
+  ctx: QueryCtx | MutationCtx,
+  userId: Id<'users'>
+) => {
+  const user = await ctx.db.get(userId);
+
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  const currentTime = Date.now();
+  const hasActiveSubscription =
+    user.subscriptionId && user.endsOn && user.endsOn > currentTime;
+
+  return {
+    hasActiveSubscription,
+    remainingSubmissions: user.remainingSubmissions,
+  };
+};
