@@ -8,13 +8,18 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const exportToJson = (selectedData: SubmissionData[]) => {
+export const exportToJson = (
+  selectedData: SubmissionData[],
+  filename?: string
+) => {
   if (!selectedData) return;
 
   const dataStr = JSON.stringify(selectedData);
   const dataUri =
     'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-  const exportFileDefaultName = 'data.json';
+  // Use the provided filename or fall back to the default name
+  const exportFileDefaultName = filename || 'data.json';
+
   const linkElement = document.createElement('a');
   linkElement.setAttribute('href', dataUri);
   linkElement.setAttribute('download', exportFileDefaultName);
@@ -47,13 +52,16 @@ export const convertToCSV = (objArray: SubmissionData[]) => {
   return csvRows.join('\r\n');
 };
 
-export const exportToCsv = (selectedData: SubmissionData[]) => {
-  // Ensure there is data to export
+export const exportToCsv = (
+  selectedData: SubmissionData[],
+  filename?: string
+) => {
   if (!selectedData || selectedData.length === 0) return;
 
   const csvStr = convertToCSV(selectedData);
   const dataUri = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvStr);
-  const exportFileDefaultName = 'data.csv';
+  // Use the provided filename or fall back to the default name
+  const exportFileDefaultName = filename || 'data.csv';
 
   const linkElement = document.createElement('a');
   linkElement.setAttribute('href', dataUri);
