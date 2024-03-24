@@ -63,11 +63,11 @@ export default function Header() {
           </SignedOut>
           <SignedIn>
             <div className='flex items-center gap-3'>
-              {!isSubbed && (
+              {/* {!isSubbed && (
                 <Button variant={'secondary'} onClick={handleUpgradeClick}>
                   Upgrade
                 </Button>
-              )}
+              )} */}
               <UserButton />
             </div>
           </SignedIn>
