@@ -3,20 +3,13 @@
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import {
-  SignedIn,
-  SignedOut,
-  UserButton,
-  useOrganization,
-  useUser,
-} from '@clerk/nextjs';
+import { SignedIn, SignedOut, useOrganization, useUser } from '@clerk/nextjs';
 import { useQuery } from 'convex/react';
 import { ChevronRightIcon, MenuIcon } from 'lucide-react';
 import Image from 'next/image';
