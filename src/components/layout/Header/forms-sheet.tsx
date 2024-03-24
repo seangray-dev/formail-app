@@ -121,6 +121,14 @@ export default function FormSheet() {
                 setIsSheetOpen(false);
               }}
               className='hover:underline hover:text-white text-muted-foreground'
+              href={'/pricing'}>
+              Pricing
+            </Link>
+            <Link
+              onClick={() => {
+                setIsSheetOpen(false);
+              }}
+              className='hover:underline hover:text-white text-muted-foreground'
               href={'/contact'}>
               Contact
             </Link>
