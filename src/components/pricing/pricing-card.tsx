@@ -37,7 +37,7 @@ export default function PricingCard({
   onClick,
 }: PricingCardProps) {
   return (
-    <Card className='w-72 mx-auto'>
+    <Card className='w-72 mx-auto shadow-[0_2px_20px_0_rgba(250,_250,_249,_0.1)]'>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
