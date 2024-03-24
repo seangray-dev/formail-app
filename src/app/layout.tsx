@@ -1,5 +1,5 @@
 import Header from '@/components/layout/Header/header';
-import Footer from '@/components/layout/Home/footer';
+import Footer from '@/components/layout/footer';
 import { Toaster } from '@/components/ui/toaster';
 import type { Metadata } from 'next';
 import { Sora } from 'next/font/google';
