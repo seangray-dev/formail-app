@@ -61,8 +61,6 @@ export const createUser = internalMutation({
       name: args.name,
       email: args.email,
       image: args.image,
-      planType: 'Free',
-      formCount: 0,
       remainingSubmissions: 500,
     });
 

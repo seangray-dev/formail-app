@@ -1,8 +1,10 @@
-import { useMutation, useQuery } from 'convex/react';
 import { ConvexError, v } from 'convex/values';
-import { api } from './_generated/api';
 import { mutation, query } from './_generated/server';
-import { hasAccessToOrg, isAdminOfOrg } from './utils';
+import {
+  checkSubscriptionStatusAndFormCount,
+  hasAccessToOrg,
+  isAdminOfOrg,
+} from './utils';
 
 export const createForm = mutation({
   args: { name: v.string(), description: v.string(), orgId: v.string() },
@@ -11,6 +13,13 @@ export const createForm = mutation({
 
     if (!identity) {
       throw new ConvexError('you must be signed in to create a form');
+    }
+
+    const { hasActiveSubscription, formCount } =
+      await checkSubscriptionStatusAndFormCount(ctx);
+
+    if (!hasActiveSubscription && formCount >= 5) {
+      throw new ConvexError('Non-subscribed users are limited to 5 forms.');
     }
 
     // store admin id's in the form settings email recipients
