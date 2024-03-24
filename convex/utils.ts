@@ -126,3 +126,22 @@ export const checkSubStatus = async (
     remainingSubmissions: user.remainingSubmissions,
   };
 };
+
+export const checkUserSubscription = query({
+  args: { userId: v.id('users') },
+
+  handler: async (ctx, { userId }) => {
+    const user = await ctx.db.get(userId);
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const currentTime = Date.now();
+
+    const hasActiveSubscription =
+      user.subscriptionId && user.endsOn && user.endsOn > currentTime;
+
+    return hasActiveSubscription;
+  },
+});
