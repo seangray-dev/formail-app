@@ -153,7 +153,7 @@ export default function DashboardHeader() {
               }>
               Files
             </Link>
-            {/* <Link
+            <Link
               href={`/dashboard/${orgId}/form/${formId}/analytics`}
               className={
                 isActive(`/dashboard/${orgId}/form/${formId}/analytics`)
@@ -161,7 +161,7 @@ export default function DashboardHeader() {
                   : 'hover:text-white duration-150 transition-all'
               }>
               Analytics
-            </Link> */}
+            </Link>
             <Link
               href={`/dashboard/${orgId}/form/${formId}/export`}
               className={
