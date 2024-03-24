@@ -57,7 +57,7 @@ type FileWithUrl = {
   storageId: string;
 };
 
-export default function SubmissionsPage() {
+export default function FilesPage() {
   const { toast } = useToast();
   const [formDetails] = useAtom(formDetailsAtom);
   const { formId } = formDetails;
@@ -66,6 +66,11 @@ export default function SubmissionsPage() {
     useState<Id<'submissions'> | null>(null);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
   const [sortOrder, setSortOrder] = useState('newest');
+  const userActive = useQuery(api.users.getMe);
+  const isSubActive = useQuery(
+    api.utils.checkUserSubscription,
+    userActive ? { userId: userActive._id } : 'skip'
+  );
 
   const formQueryArg = formId ? { formId: formId as Id<'forms'> } : 'skip';
   const submissions = useQuery(
@@ -128,6 +133,8 @@ export default function SubmissionsPage() {
     (submission) => submission.files && submission.files.length > 0
   );
 
+  const showUpgradeImage = !isSubActive && submissionsWithFiles?.length === 0;
+
   function RenderFile({
     file,
     index,
@@ -168,7 +175,15 @@ export default function SubmissionsPage() {
 
   return (
     <section className='container flex-1 flex flex-col mx-auto p-4'>
-      {submissionsWithFiles && submissionsWithFiles.length > 0 ? (
+      {showUpgradeImage && (
+        <div className='flex-1 flex flex-col justify-center items-center gap-10'>
+          <Image alt='upgrade' src='/upgrade.svg' width={200} height={200} />
+          <p className='text-base md:text-2xl text-center'>
+            Upgrade to start receiving file submissions
+          </p>
+        </div>
+      )}
+      {submissionsWithFiles && submissionsWithFiles.length > 0 && (
         <>
           <div className='self-end mb-10 flex gap-4'>
             <Button className='max-w-44'>Download All Files</Button>
@@ -221,7 +236,9 @@ export default function SubmissionsPage() {
             ))}
           </div>
         </>
-      ) : (
+      )}
+
+      {isSubActive && submissionsWithFiles.length === 0 && (
         <div className='flex-1 flex flex-col justify-center items-center gap-10'>
           <Image alt='No files' src='/no_files.svg' width={200} height={200} />
           <p className='text-base md:text-2xl text-center'>
@@ -229,6 +246,7 @@ export default function SubmissionsPage() {
           </p>
         </div>
       )}
+
       <AlertDialog
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}>
