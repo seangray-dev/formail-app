@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { formailSubmit } from 'formail-hooks';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useToast } from '../ui/use-toast';
@@ -38,7 +39,6 @@ export function PlaygroundForm() {
   const file2Ref = form.register('file2');
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const formId = 'j574wd5phr7eevfvnf9bhgbrm16nbcqt';
     const formData = new FormData();
 
     formData.append('name', values.name);
@@ -54,14 +54,15 @@ export function PlaygroundForm() {
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/submit/${formId}`, {
-        method: 'POST',
-        body: formData,
-      });
+      const formId = 'j57dyengj0demmzx55btnt16rh6nwcrr';
+      const response = await formailSubmit({ formId, formData });
+
+      console.log(response);
 
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error(response.statusText);
       }
+
       form.reset();
       toast({
         variant: 'default',
