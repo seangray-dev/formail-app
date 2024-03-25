@@ -1,25 +1,28 @@
-import Link from 'next/link';
-import React from 'react';
+import Link from "next/link";
+import React from "react";
 
 export default function Footer() {
   return (
-    <footer className='border-t container py-5 items-center'>
-      <div className='text-muted-foreground text-xs text-center md:text-left flex flex-col gap-2 md:flex-row justify-between items-center'>
+    <footer className="container items-center border-t py-5">
+      <div className="flex flex-col items-center justify-between gap-2 text-center text-xs text-muted-foreground md:flex-row md:text-left">
         <div>@{new Date().getFullYear()} Formail. All Rights Reserved.</div>
-        <div className='flex flex-col md:flex-row gap-2'>
+        <div className="flex flex-col gap-2 md:flex-row">
           <Link
-            className='hover:text-white hover:underline'
-            href={'/legal/privacy-policy'}>
+            className="hover:text-white hover:underline"
+            href={"/legal/privacy-policy"}
+          >
             Privacy Policy
           </Link>
           <Link
-            className='hover:text-white hover:underline'
-            href={'/legal/terms-&-conditions'}>
-            Terms & Conditions
+            className="hover:text-white hover:underline"
+            href={"/legal/terms-of-service"}
+          >
+            Terms of Service
           </Link>
           <Link
-            className='hover:text-white hover:underline'
-            href={'/legal/cookie-policy'}>
+            className="hover:text-white hover:underline"
+            href={"/legal/cookie-policy"}
+          >
             Cookie Policy
           </Link>
         </div>
