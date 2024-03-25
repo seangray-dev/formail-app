@@ -46,6 +46,23 @@ export async function POST(
     if (contentType.includes('application/json')) {
       submissionData = await req.json();
     } else if (contentType.includes('multipart/form-data')) {
+      // file submission handling
+      // check user subscription, reject response if not subscribed
+      const user = await convex.query(api.users.getUserByFormId, { formId });
+      const hasActiveSubscription = await convex.query(
+        api.utils.checkUserSubscription,
+        { userId: user._id }
+      );
+
+      if (!user || !hasActiveSubscription) {
+        return new NextResponse(
+          JSON.stringify({
+            error: 'File submissions are only for premium users.',
+          }),
+          { status: 400 }
+        );
+      }
+
       const formData = await req.formData();
       let fileUploadTasks: Promise<void>[] = [];
 

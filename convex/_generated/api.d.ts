@@ -17,10 +17,10 @@ import type {
 import type * as clerk from "../clerk.js";
 import type * as forms from "../forms.js";
 import type * as http from "../http.js";
-import type * as orgAccess from "../orgAccess.js";
 import type * as stripe from "../stripe.js";
 import type * as submissions from "../submissions.js";
 import type * as users from "../users.js";
+import type * as utils from "../utils.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -34,10 +34,10 @@ declare const fullApi: ApiFromModules<{
   clerk: typeof clerk;
   forms: typeof forms;
   http: typeof http;
-  orgAccess: typeof orgAccess;
   stripe: typeof stripe;
   submissions: typeof submissions;
   users: typeof users;
+  utils: typeof utils;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

@@ -11,11 +11,13 @@ import {
 import { Button } from '@/components/ui/button';
 import { formDetailsAtom } from '@/jotai/state';
 import { OrganizationSwitcher, useOrganization, useUser } from '@clerk/nextjs';
+import { useQuery } from 'convex/react';
 import { useAtom } from 'jotai';
 import { ClipboardCheckIcon, ClipboardIcon } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { api } from '../../../../convex/_generated/api';
 
 export default function DashboardHeader() {
   const pathname = usePathname();
@@ -26,6 +28,12 @@ export default function DashboardHeader() {
   const [formDetails] = useAtom(formDetailsAtom);
   const isActive = (href: string) => pathname === href;
   const { formName, formId, formDescription } = formDetails;
+
+  const userActive = useQuery(api.users.getMe);
+  const isSubActive = useQuery(
+    api.utils.checkUserSubscription,
+    userActive ? { userId: userActive._id } : 'skip'
+  );
 
   let orgId: string | undefined = undefined;
   let orgName: string | undefined = undefined;
@@ -55,10 +63,12 @@ export default function DashboardHeader() {
   return (
     <>
       <div className='mb-4'>
-        <OrganizationSwitcher
-          afterSelectOrganizationUrl='/dashboard'
-          afterLeaveOrganizationUrl='/dashboard'
-        />
+        {isSubActive && (
+          <OrganizationSwitcher
+            afterSelectOrganizationUrl='/dashboard'
+            afterLeaveOrganizationUrl='/dashboard'
+          />
+        )}
       </div>
       <Breadcrumb>
         <BreadcrumbList>

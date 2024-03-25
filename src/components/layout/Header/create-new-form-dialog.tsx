@@ -20,6 +20,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { useOrganization, useUser } from '@clerk/nextjs';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from 'convex/react';
+import { ConvexError } from 'convex/values';
 import { Loader2, PlusIcon } from 'lucide-react';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -70,10 +71,14 @@ export default function CreateFormDialog() {
         description: 'You can now start collecting submissions!',
       });
     } catch (err) {
+      let errorMessage = 'Your form was not created, please try again.';
+      if (err instanceof ConvexError) {
+        errorMessage = err.data;
+      }
       toast({
         variant: 'destructive',
         title: 'Something went wrong!',
-        description: 'Your form was not created, please try again.',
+        description: errorMessage,
       });
     }
   }

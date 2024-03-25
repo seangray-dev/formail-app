@@ -37,6 +37,11 @@ export default function Header() {
             </SignedIn>
             <Link
               className='hover:underline hover:text-white text-muted-foreground'
+              href={'/pricing'}>
+              Pricing
+            </Link>
+            <Link
+              className='hover:underline hover:text-white text-muted-foreground'
               href={'/contact'}>
               Contact
             </Link>
@@ -58,11 +63,11 @@ export default function Header() {
           </SignedOut>
           <SignedIn>
             <div className='flex items-center gap-3'>
-              {!isSubbed && (
+              {/* {!isSubbed && (
                 <Button variant={'secondary'} onClick={handleUpgradeClick}>
                   Upgrade
                 </Button>
-              )}
+              )} */}
               <UserButton />
             </div>
           </SignedIn>

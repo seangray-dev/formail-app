@@ -1,7 +1,8 @@
 import { ConvexError, v } from 'convex/values';
 import { Id } from './_generated/dataModel';
 import { mutation, query } from './_generated/server';
-import { hasAccessToOrg, isAdminOfOrg } from './orgAccess';
+import { getUserByFormId } from './users';
+import { checkSubStatus, hasAccessToOrg, isAdminOfOrg } from './utils';
 
 export const addSubmission = mutation({
   args: {
@@ -20,12 +21,28 @@ export const addSubmission = mutation({
       )
     ),
   },
+
   async handler(ctx, { formId, data, files = [] }) {
+    const user = await getUserByFormId(ctx, { formId });
+    const { hasActiveSubscription } = await checkSubStatus(ctx, user._id);
+
+    if (!hasActiveSubscription && user.remainingSubmissions <= 0) {
+      throw new Error(
+        'Submission limit reached. Please upgrade your plan for more submissions.'
+      );
+    }
+
     await ctx.db.insert('submissions', {
       formId,
       data,
       files,
     });
+
+    if (!hasActiveSubscription) {
+      await ctx.db.patch(user._id, {
+        remainingSubmissions: user.remainingSubmissions - 1,
+      });
+    }
   },
 });
 
@@ -123,6 +140,53 @@ export const deleteSubmissionById = mutation({
 
     // Proceed with deletion
     await ctx.db.delete(args.submissionId);
+  },
+});
+
+export const getSubmissionsByDateRange = query({
+  args: {
+    formId: v.id('forms'),
+    fromDate: v.number(),
+    toDate: v.number(),
+  },
+  async handler(ctx, { formId, fromDate, toDate }) {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity) {
+      throw new ConvexError('You must be signed in to access form details.');
+    }
+
+    const form = await ctx.db.get(formId);
+
+    if (!form) {
+      throw new ConvexError('Form not found.');
+    }
+
+    const hasAccess = await hasAccessToOrg(ctx, form.orgId);
+
+    if (!hasAccess) {
+      throw new ConvexError(
+        'You do not have permission to view these form submissions.'
+      );
+    }
+
+    // Fetch and return all submissions for the provided formId within the date range
+    const _submissions = await ctx.db
+      .query('submissions')
+      .filter((q) =>
+        q.and(
+          q.eq(q.field('formId'), formId),
+          q.gte(q.field('_creationTime'), fromDate),
+          q.lte(q.field('_creationTime'), toDate)
+        )
+      )
+      .collect();
+
+    const submissions = _submissions.map((submission) =>
+      JSON.parse(submission.data)
+    );
+
+    return submissions;
   },
 });
 

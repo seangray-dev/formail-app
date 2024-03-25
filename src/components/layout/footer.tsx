@@ -1,11 +1,10 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
 export default function Footer() {
   return (
-    <footer className='mt-20 border-t container py-5 items-center'>
-      <div className='text-muted-foreground text-sm text-center md:text-left flex flex-col gap-2 md:flex-row justify-between items-center'>
+    <footer className='border-t container py-5 items-center'>
+      <div className='text-muted-foreground text-xs text-center md:text-left flex flex-col gap-2 md:flex-row justify-between items-center'>
         <div>@{new Date().getFullYear()} Formail. All Rights Reserved.</div>
         <div className='flex flex-col md:flex-row gap-2'>
           <Link
