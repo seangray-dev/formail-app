@@ -17,69 +17,68 @@ import {
 import Link from 'next/link';
 import React, { useState } from 'react';
 
+type SnippetKeys = 'install' | 'usage' | 'directSubmission';
+type CopiedStatus = Record<SnippetKeys, boolean>;
+
 export default function HowToPage() {
   const [formDetails] = useAtom(formDetailsAtom);
   const { formId } = formDetails;
-  const [copySuccess, setCopySuccess] = useState('');
+  const [copiedSnippets, setCopiedSnippets] = useState<CopiedStatus>({
+    install: false,
+    usage: false,
+    directSubmission: false,
+  });
 
-  const installFormailSnippet = 'npm install formail-hooks';
-
-  const formailHookUsageSnippet = `import React, { useState } from 'react';
+  const snippets: Record<SnippetKeys, string> = {
+    install: 'npm install formail-hooks',
+    usage: `import React, { useState } from 'react';
 import { formailSubmit } from 'formail-hooks';
 
 function MyForm() {
   const [formData, setFormData] = useState({});
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formId = '${formId}'; // Your Formail form ID
+    const formId = '${formId}';
     const data = new FormData();
-    Object.keys(formData).forEach((key) => {
-      data.append(key, formData[key]);
-    });
+    Object.keys(formData).forEach((key) => data.append(key, formData[key]));
 
     try {
-      const response = await formailSubmit({ formId, formData: data });
-      console.log('Form submitted successfully:', response);
+      await formailSubmit({ formId, formData: data });
+      console.log('Form submitted successfully');
     } catch (error) {
       console.error('Form submission failed:', error);
     }
   };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      {/* Form fields go here */}
-      <button type="submit">Submit</button>
-    </form>
-  );
-}`;
-
-  const directSubmissionSnippet = `const handleSubmit = async (event) => {
+  return <form onSubmit={handleSubmit}><button type="submit">Submit</button></form>;
+}`,
+    directSubmission: `const handleSubmit = async (event) => {
   event.preventDefault();
-  const formId = '${formId}'; // Your Formail form ID
+  const formId = '${formId}';
   const data = new FormData(event.target);
 
   try {
-    const response = await fetch(\`https://www.formail.dev/submit/\${formId}\`, {
-      method: 'POST',
-      body: data,
-    });
-
+    const response = await fetch(\`https://www.formail.dev/submit/\${formId}\`, { method: 'POST', body: data });
     if (!response.ok) throw new Error('Form submission failed');
     console.log('Form submitted successfully');
   } catch (error) {
     console.error(error);
   }
-};`;
+};`,
+  };
 
-  const copyToClipboard = async (text: string) => {
+  const copyToClipboard = async (snippetKey: SnippetKeys) => {
     try {
-      await navigator.clipboard.writeText(text);
-      setCopySuccess('Copied!');
-      setTimeout(() => setCopySuccess(''), 2000);
+      await navigator.clipboard.writeText(snippets[snippetKey]);
+      setCopiedSnippets({ ...copiedSnippets, [snippetKey]: true });
+      setTimeout(
+        () => setCopiedSnippets({ ...copiedSnippets, [snippetKey]: false }),
+        2000
+      );
     } catch (err) {
       console.error('Failed to copy: ', err);
     }
   };
+
   return (
     <div className='container'>
       <Accordion type='single' collapsible className='w-full'>
@@ -91,18 +90,18 @@ function MyForm() {
                 <li className='flex flex-col gap-2'>
                   <div className='font-semibold'>
                     1. Install our{' '}
-                    <code className='bg-muted font-normal text-muted-foreground px-1'>
+                    <code className='relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold'>
                       formail-hooks
                     </code>{' '}
                     library
                   </div>
                   <div className='bg-secondary p-2 relative'>
-                    <code className='text-muted-foreground'>
-                      {installFormailSnippet}
+                    <code className='relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold'>
+                      {snippets.install}
                     </code>
-                    {!copySuccess ? (
+                    {!copiedSnippets.install ? (
                       <ClipboardIcon
-                        onClick={() => copyToClipboard(installFormailSnippet)}
+                        onClick={() => copyToClipboard('install')}
                         className='absolute text-muted-foreground top-2 right-3 hover:cursor-pointer hover:text-white transition-all duration-150'
                         size={18}
                       />
@@ -117,9 +116,9 @@ function MyForm() {
                 <li className='flex flex-col gap-2'>
                   <div className='font-semibold'>2. Usage</div>
                   <div className='bg-muted text-muted-foreground p-2 relative'>
-                    {!copySuccess ? (
+                    {!copiedSnippets.usage ? (
                       <ClipboardIcon
-                        onClick={() => copyToClipboard(formailHookUsageSnippet)}
+                        onClick={() => copyToClipboard('usage')}
                         className='absolute top-3 right-3 hover:cursor-pointer hover:text-white transition-all duration-150'
                         size={18}
                       />
@@ -130,7 +129,9 @@ function MyForm() {
                       />
                     )}
                     <pre>
-                      <code>{formailHookUsageSnippet}</code>
+                      <code className='relative rounded bg-muted py-[0.2rem] font-mono text-sm font-semibold text-white'>
+                        {snippets.usage}
+                      </code>
                     </pre>
                   </div>
                 </li>
@@ -142,9 +143,9 @@ function MyForm() {
           <AccordionTrigger>Without using formail-hooks</AccordionTrigger>
           <AccordionContent>
             <div className='bg-muted text-muted-foreground p-2 relative'>
-              {!copySuccess ? (
+              {!copiedSnippets.directSubmission ? (
                 <ClipboardIcon
-                  onClick={() => copyToClipboard(directSubmissionSnippet)}
+                  onClick={() => copyToClipboard('directSubmission')}
                   className='absolute top-3 right-3 hover:cursor-pointer hover:text-white transition-all duration-150'
                   size={18}
                 />
@@ -155,7 +156,9 @@ function MyForm() {
                 />
               )}
               <pre>
-                <code>{directSubmissionSnippet}</code>
+                <code className='relative rounded bg-muted py-[0.2rem] font-mono text-sm font-semibold text-white'>
+                  {snippets.directSubmission}
+                </code>
               </pre>
             </div>
           </AccordionContent>
@@ -164,7 +167,10 @@ function MyForm() {
       <div className='mt-6 mb-10 text-muted-foreground'>
         <div className='font-semibold text-white'>Note:</div>
         Make sure all form elements have a{' '}
-        <code className='bg-muted p-1 text-white'>name</code> attribute.
+        <code className='relative rounded bg-muted py-[0.2rem] font-mono text-sm font-semibold text-white'>
+          name
+        </code>{' '}
+        attribute.
       </div>
       <Alert className='bg-secondary'>
         <CircleHelpIcon size={18} />
