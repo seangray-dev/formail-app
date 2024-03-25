@@ -132,7 +132,7 @@ export default function TermsAndConditionsPage() {
       <div>
         <h2>Limitation of Liability</h2>
         <p>
-          In no event shall Formspark, nor its proprietors, directors,
+          In no event shall Formail, nor its proprietors, directors,
           shareholders, employees, partners, agents, suppliers, or affiliates,
           be liable for any indirect, incidental, special, consequential or
           punitive damages, including without limitation, loss of profits, data,
@@ -255,7 +255,7 @@ export default function TermsAndConditionsPage() {
 
       <div>
         <h2>Questions</h2>
-        <p>Have any questions, comments, conerns about these Terms?</p>
+        <p>Have any questions, comments, or conerns about these Terms?</p>
         <p>
           Please get in touch with us by contacting us{" "}
           <Link href={"/contact"}>here</Link>.
