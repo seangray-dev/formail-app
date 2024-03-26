@@ -48,12 +48,13 @@ export default function Header() {
             >
               Contact
             </Link>
-            <Link
+            <a
+              target="_blank"
               className="text-muted-foreground hover:text-white hover:underline"
-              href={"/docs"}
+              href="https://docs.formail.dev"
             >
               Docs
-            </Link>
+            </a>
           </div>
           <SignedOut>
             <Link

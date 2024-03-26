@@ -137,7 +137,8 @@ export default function FormSheet() {
                 setIsSheetOpen(false);
               }}
               className="text-muted-foreground hover:text-white hover:underline"
-              href={"/docs"}
+              href="https://docs.formail.dev"
+              target="_blank"
             >
               Docs
             </Link>
