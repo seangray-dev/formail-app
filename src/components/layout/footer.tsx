@@ -19,12 +19,6 @@ export default function Footer() {
           >
             Terms of Service
           </Link>
-          <Link
-            className="hover:text-white hover:underline"
-            href={"/legal/cookie-policy"}
-          >
-            Cookie Policy
-          </Link>
         </div>
       </div>
     </footer>
