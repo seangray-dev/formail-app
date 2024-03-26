@@ -21,8 +21,8 @@ export default function PrivacyPolicyPage() {
           data.
         </p>
         <p>
-          By using Formail ("Service"), you are consenting to the data practices
-          described in this policy.
+          By using Formail (&quot;Service&quot;), you are consenting to the data
+          practices described in this policy.
         </p>
       </div>
 
@@ -63,8 +63,8 @@ export default function PrivacyPolicyPage() {
         <ul>
           <li>
             All credit card transactions are managed by external PCI-compliant
-            payment gateways (such as "Stripe") and are neither stored nor
-            processed on our servers.
+            payment gateways (such as &quot;Stripe&quot;) and are neither stored
+            nor processed on our servers.
           </li>
           <li>
             We maintain a record of each payment transaction, which includes the
@@ -153,7 +153,7 @@ export default function PrivacyPolicyPage() {
       </div>
 
       <div>
-        <h2>Data We Don't Collect</h2>
+        <h2>Data We Don&apos;t Collect</h2>
         <p>
           We refrain from collecting any attributes of protected classifications
           such as age, race, gender, religion, sexual orientation, gender
@@ -201,8 +201,8 @@ export default function PrivacyPolicyPage() {
         </p>
         <p>
           All credit card transactions are handled by external PCI-compliant
-          payment gateways ("Stripe") and are not stored or processed on our
-          servers.
+          payment gateways (&quot;Stripe&quot;) and are not stored or processed
+          on our servers.
         </p>
         <p>
           Despite our efforts to protect your data using commercially acceptable
@@ -213,9 +213,9 @@ export default function PrivacyPolicyPage() {
       <div>
         <h2>Ownership of Your Data</h2>
         <p>
-          Despite the Service's ownership of the code, databases, and all rights
-          to the application of the Service, you maintain all rights to your
-          data.
+          Despite the Service&apos;s ownership of the code, databases, and all
+          rights to the application of the Service, you maintain all rights to
+          your data.
         </p>
       </div>
 
@@ -252,7 +252,7 @@ export default function PrivacyPolicyPage() {
         <p>
           The Service may include links to external sites not operated by us. If
           you click on a third-party link, you will be redirected to that third
-          party's site.
+          party&apos;s site.
         </p>
         <p>
           We strongly recommend that you review the Privacy Policy of every site

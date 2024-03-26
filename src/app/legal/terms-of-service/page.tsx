@@ -7,10 +7,11 @@ export default function TermsAndConditionsPage() {
       <div>
         <h1>Formail Terms of Service</h1>
         <p>
-          By accessing, browsing, or otherwise utilizing Formail ("Service"),
-          you consent to be bound by the ensuing terms and conditions ("Terms").
-          Your access to and use of the Service is contingent upon your
-          acceptance of and adherence to these Terms.
+          By accessing, browsing, or otherwise utilizing Formail
+          (&quot;Service&quot;), you consent to be bound by the ensuing terms
+          and conditions (&quot;Terms&quot;). Your access to and use of the
+          Service is contingent upon your acceptance of and adherence to these
+          Terms.
         </p>
       </div>
 
@@ -47,8 +48,8 @@ export default function TermsAndConditionsPage() {
             otherwise offensive, vulgar or obscene.
           </li>
           <li>
-            You must be a human. Accounts registered by "bots" or other
-            automated methods are not allowed.
+            You must be a human. Accounts registered by &quot;bots&quot; or
+            other automated methods are not allowed.
           </li>
         </ul>
       </div>
@@ -154,7 +155,10 @@ export default function TermsAndConditionsPage() {
       <div>
         <h2>Disclaimer</h2>
         <p>Your utilization of the Service is at your sole risk.</p>
-        <p>The Service is offered on an "AS IS" and "AS AVAILABLE" basis.</p>
+        <p>
+          The Service is offered on an &quot;AS IS&quot; and &quot;AS
+          AVAILABLE&quot; basis.
+        </p>
         <p>
           The Service is provided without warranties of any kind, whether
           express or implied, including, but not limited to, implied warranties
@@ -177,7 +181,7 @@ export default function TermsAndConditionsPage() {
       <div>
         <h2>Material Accuracy</h2>
         <p>
-          The materials displayed on the Service's website and other
+          The materials displayed on the Service&apos;s website and other
           communication formats may contain technical, typographical, or
           photographic errors.
         </p>
