@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
-import { useAction, useQuery } from 'convex/react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { api } from '../../../../convex/_generated/api';
-import { Button } from '../../ui/button';
-import FormSheet from './forms-sheet';
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { useAction, useQuery } from "convex/react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { api } from "../../../../convex/_generated/api";
+import { Button } from "../../ui/button";
+import FormSheet from "./forms-sheet";
 
 export default function Header() {
   const pay = useAction(api.stripe.pay);
@@ -20,49 +20,54 @@ export default function Header() {
   };
 
   return (
-    <nav className='container border-b py-3 text-sm'>
-      <div className='flex justify-between items-center'>
-        <div className='flex items-center gap-2'>
-          <Link href={'/'}>Formail</Link>
+    <nav className="container border-b py-3 text-sm">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Link href={"/"}>Formail</Link>
           <FormSheet />
         </div>
-        <div className='flex gap-4 items-center'>
-          <div className='hidden md:flex gap-4'>
+        <div className="flex items-center gap-4">
+          <div className="hidden gap-4 md:flex">
             <SignedIn>
               <Link
-                className='hover:underline hover:text-white text-muted-foreground'
-                href={'/dashboard'}>
+                className="text-muted-foreground hover:text-white hover:underline"
+                href={"/dashboard"}
+              >
                 Dashboard
               </Link>
             </SignedIn>
             <Link
-              className='hover:underline hover:text-white text-muted-foreground'
-              href={'/pricing'}>
+              className="text-muted-foreground hover:text-white hover:underline"
+              href={"/pricing"}
+            >
               Pricing
             </Link>
             <Link
-              className='hover:underline hover:text-white text-muted-foreground'
-              href={'/contact'}>
+              className="text-muted-foreground hover:text-white hover:underline"
+              href={"/contact"}
+            >
               Contact
             </Link>
             <Link
-              className='hover:underline hover:text-white text-muted-foreground'
-              href={'/documentation'}>
+              className="text-muted-foreground hover:text-white hover:underline"
+              href={"/docs"}
+            >
               Docs
             </Link>
           </div>
           <SignedOut>
             <Link
-              className='hover:underline hover:text-white text-muted-foreground'
-              href={'/sign-in'}>
+              className="text-muted-foreground hover:text-white hover:underline"
+              href={"/sign-in"}
+            >
               Sign In
             </Link>
-            <Button asChild variant={'secondary'}>
-              <Link href={'/sign-up'}>Try It Free</Link>
+            <Button asChild variant={"secondary"}>
+              <Link href={"/sign-up"}>Try It Free</Link>
             </Button>
           </SignedOut>
           <SignedIn>
-            <div className='flex items-center gap-3'>
+            <div className="flex items-center gap-3">
               {/* {!isSubbed && (
                 <Button variant={'secondary'} onClick={handleUpgradeClick}>
                   Upgrade
