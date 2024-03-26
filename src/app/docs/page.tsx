@@ -14,7 +14,7 @@ export default function GettingStartedPage() {
         <h2>Simplifying Form Managment</h2>
         <p>
           Handling form submissions can be cumbersome, which is why we
-          streamline the process for you. Currently, we're enhancing form
+          streamline the process for you. Currently, we&apos;re enhancing form
           management with efficient data handling and with more features on the
           horizon.
         </p>
