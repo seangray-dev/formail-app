@@ -20,7 +20,7 @@ export default function Header() {
   };
 
   return (
-    <nav className="container border-b py-3 text-sm">
+    <nav className="container  z-50 border-b bg-background py-3 text-sm">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Link href={"/"}>Formail</Link>
