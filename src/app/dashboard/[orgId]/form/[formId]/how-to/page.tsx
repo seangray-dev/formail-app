@@ -1,23 +1,23 @@
-'use client';
+"use client";
 
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '@/components/ui/accordion';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { formDetailsAtom } from '@/jotai/state';
-import { useAtom } from 'jotai';
+} from "@/components/ui/accordion";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { formDetailsAtom } from "@/jotai/state";
+import { useAtom } from "jotai";
 import {
   CircleHelpIcon,
   ClipboardCheckIcon,
   ClipboardIcon,
-} from 'lucide-react';
-import Link from 'next/link';
-import React, { useState } from 'react';
+} from "lucide-react";
+import Link from "next/link";
+import React, { useState } from "react";
 
-type SnippetKeys = 'install' | 'usage' | 'directSubmission';
+type SnippetKeys = "install" | "usage" | "directSubmission";
 type CopiedStatus = Record<SnippetKeys, boolean>;
 
 export default function HowToPage() {
@@ -30,7 +30,7 @@ export default function HowToPage() {
   });
 
   const snippets: Record<SnippetKeys, string> = {
-    install: 'npm install formail-hooks',
+    install: "npm install formail-hooks",
     usage: `import React, { useState } from 'react';
 import { formailSubmit } from 'formail-hooks';
 
@@ -72,64 +72,64 @@ function MyForm() {
       setCopiedSnippets({ ...copiedSnippets, [snippetKey]: true });
       setTimeout(
         () => setCopiedSnippets({ ...copiedSnippets, [snippetKey]: false }),
-        2000
+        2000,
       );
     } catch (err) {
-      console.error('Failed to copy: ', err);
+      console.error("Failed to copy: ", err);
     }
   };
 
   return (
-    <div className='container'>
-      <Accordion type='single' collapsible className='w-full'>
-        <AccordionItem value='item-1'>
+    <div className="container">
+      <Accordion type="single" collapsible className="w-full">
+        <AccordionItem value="item-1">
           <AccordionTrigger>Using formail-hooks</AccordionTrigger>
           <AccordionContent>
             <div>
-              <ul className='flex flex-col gap-4'>
-                <li className='flex flex-col gap-2'>
-                  <div className='font-semibold'>
-                    1. Install our{' '}
-                    <code className='relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold'>
+              <ul className="flex flex-col gap-4">
+                <li className="flex flex-col gap-2">
+                  <div className="font-semibold">
+                    1. Install our{" "}
+                    <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
                       formail-hooks
-                    </code>{' '}
+                    </code>{" "}
                     library
                   </div>
-                  <div className='bg-secondary p-2 relative'>
-                    <code className='relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold'>
+                  <div className="relative bg-secondary p-2">
+                    <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
                       {snippets.install}
                     </code>
                     {!copiedSnippets.install ? (
                       <ClipboardIcon
-                        onClick={() => copyToClipboard('install')}
-                        className='absolute text-muted-foreground top-2 right-3 hover:cursor-pointer hover:text-white transition-all duration-150'
+                        onClick={() => copyToClipboard("install")}
+                        className="absolute right-3 top-2 text-muted-foreground transition-all duration-150 hover:cursor-pointer hover:text-white"
                         size={18}
                       />
                     ) : (
                       <ClipboardCheckIcon
-                        className='absolute top-2 right-3 hover:cursor-pointer hover:text-white transition-all duration-150'
+                        className="absolute right-3 top-2 transition-all duration-150 hover:cursor-pointer hover:text-white"
                         size={18}
                       />
                     )}
                   </div>
                 </li>
-                <li className='flex flex-col gap-2'>
-                  <div className='font-semibold'>2. Usage</div>
-                  <div className='bg-muted text-muted-foreground p-2 relative'>
+                <li className="flex flex-col gap-2">
+                  <div className="font-semibold">2. Usage</div>
+                  <div className="relative bg-muted p-2 text-muted-foreground">
                     {!copiedSnippets.usage ? (
                       <ClipboardIcon
-                        onClick={() => copyToClipboard('usage')}
-                        className='absolute top-3 right-3 hover:cursor-pointer hover:text-white transition-all duration-150'
+                        onClick={() => copyToClipboard("usage")}
+                        className="absolute right-3 top-3 transition-all duration-150 hover:cursor-pointer hover:text-white"
                         size={18}
                       />
                     ) : (
                       <ClipboardCheckIcon
-                        className='absolute top-3 right-3 hover:cursor-pointer hover:text-white transition-all duration-150'
+                        className="absolute right-3 top-3 transition-all duration-150 hover:cursor-pointer hover:text-white"
                         size={18}
                       />
                     )}
                     <pre>
-                      <code className='relative rounded bg-muted py-[0.2rem] font-mono text-sm font-semibold text-white'>
+                      <code className="relative rounded bg-muted py-[0.2rem] font-mono text-sm font-semibold text-white">
                         {snippets.usage}
                       </code>
                     </pre>
@@ -139,24 +139,24 @@ function MyForm() {
             </div>
           </AccordionContent>
         </AccordionItem>
-        <AccordionItem value='item-2'>
+        <AccordionItem value="item-2">
           <AccordionTrigger>Without using formail-hooks</AccordionTrigger>
           <AccordionContent>
-            <div className='bg-muted text-muted-foreground p-2 relative'>
+            <div className="relative bg-muted p-2 text-muted-foreground">
               {!copiedSnippets.directSubmission ? (
                 <ClipboardIcon
-                  onClick={() => copyToClipboard('directSubmission')}
-                  className='absolute top-3 right-3 hover:cursor-pointer hover:text-white transition-all duration-150'
+                  onClick={() => copyToClipboard("directSubmission")}
+                  className="absolute right-3 top-3 transition-all duration-150 hover:cursor-pointer hover:text-white"
                   size={18}
                 />
               ) : (
                 <ClipboardCheckIcon
-                  className='absolute top-3 right-3 hover:cursor-pointer hover:text-white transition-all duration-150'
+                  className="absolute right-3 top-3 transition-all duration-150 hover:cursor-pointer hover:text-white"
                   size={18}
                 />
               )}
               <pre>
-                <code className='relative rounded bg-muted py-[0.2rem] font-mono text-sm font-semibold text-white'>
+                <code className="relative rounded bg-muted py-[0.2rem] font-mono text-sm font-semibold text-white">
                   {snippets.directSubmission}
                 </code>
               </pre>
@@ -164,25 +164,26 @@ function MyForm() {
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-      <div className='mt-6 mb-10 text-muted-foreground'>
-        <div className='font-semibold text-white'>Note:</div>
-        Make sure all form elements have a{' '}
-        <code className='relative rounded bg-muted py-[0.2rem] font-mono text-sm font-semibold text-white'>
+      <div className="mb-10 mt-6 text-muted-foreground">
+        <div className="font-semibold text-white">Note:</div>
+        Make sure all form elements have a{" "}
+        <code className="relative rounded bg-muted py-[0.2rem] font-mono text-sm font-semibold text-white">
           name
-        </code>{' '}
+        </code>{" "}
         attribute.
       </div>
-      <Alert className='bg-secondary'>
+      <Alert className="bg-secondary">
         <CircleHelpIcon size={18} />
         <AlertTitle>Need help?</AlertTitle>
-        <AlertDescription className='text-muted-foreground'>
-          Check out the{' '}
+        <AlertDescription className="text-muted-foreground">
+          Check out the{" "}
           <Link
-            target='_blank'
-            href={'/documenation'}
-            className='hover:text-white underline'>
+            target="_blank"
+            href="https://docs.formail.dev"
+            className="underline hover:text-white"
+          >
             docs
-          </Link>{' '}
+          </Link>{" "}
           for more information.
         </AlertDescription>
       </Alert>
