@@ -12,7 +12,7 @@ export default authMiddleware({
     "/documentation",
     "/legal/cookie-policy",
     "/legal/privacy-policy",
-    "/legal/terms-&-conditions",
+    "/legal/terms-of-service",
     "/pricing",
   ],
 });
