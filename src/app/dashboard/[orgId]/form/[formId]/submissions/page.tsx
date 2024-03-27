@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   AlertDialog,
@@ -9,24 +9,24 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -34,19 +34,20 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { useToast } from '@/components/ui/use-toast';
-import { formDetailsAtom } from '@/jotai/state';
-import { exportToCsv, exportToJson } from '@/lib/utils';
-import { useMutation, useQuery } from 'convex/react';
-import { formatRelative } from 'date-fns';
-import { useAtom } from 'jotai';
+} from "@/components/ui/tooltip";
+import { useToast } from "@/components/ui/use-toast";
+import { useOrgUserDetails } from "@/hooks/useOrgUserDetails";
+import { formDetailsAtom } from "@/jotai/state";
+import { exportToCsv, exportToJson } from "@/lib/utils";
+import { useMutation, useQuery } from "convex/react";
+import { formatRelative } from "date-fns";
+import { useAtom } from "jotai";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
@@ -54,17 +55,18 @@ import {
   MailIcon,
   ShieldAlertIcon,
   TrashIcon,
-} from 'lucide-react';
-import Image from 'next/image';
-import { useState } from 'react';
-import { api } from '../../../../../../../convex/_generated/api';
-import { Id } from '../../../../../../../convex/_generated/dataModel';
-type submissionId = Id<'submissions'>;
+} from "lucide-react";
+import Image from "next/image";
+import { useState } from "react";
+import { api } from "../../../../../../../convex/_generated/api";
+import { Id } from "../../../../../../../convex/_generated/dataModel";
+type submissionId = Id<"submissions">;
 type SubmissionData = {
   [key: string]: string;
 };
 
 export default function SubmissionsPage() {
+  const { isLoading, user } = useOrgUserDetails();
   const { toast } = useToast();
   const [formDetails] = useAtom(formDetailsAtom);
   const { formId } = formDetails;
@@ -73,38 +75,37 @@ export default function SubmissionsPage() {
     submissionId[]
   >([]);
   const [checkedSubmissions, setcheckedSubmissions] = useState(
-    new Set<submissionId>()
+    new Set<submissionId>(),
   );
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const formQueryArg = formId ? { formId: formId as Id<'forms'> } : 'skip';
   const submissions = useQuery(
     api.submissions.getSubmissionsByFormId,
-    formQueryArg
+    formId ? { formId: formId as Id<"forms"> } : "skip",
   );
 
   const filteredSubmissions =
     submissions?.filter((submission) => {
       const submissionData = JSON.parse(submission.data);
       return Object.values(submissionData).some((value) =>
-        String(value).toLowerCase().includes(searchTerm.toLowerCase())
+        String(value).toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }) || [];
 
   const totalPages = Math.max(
     1,
-    Math.ceil(filteredSubmissions.length / rowsPerPage)
+    Math.ceil(filteredSubmissions.length / rowsPerPage),
   );
   const indexOfLastSubmission = Math.min(
     currentPage * rowsPerPage,
-    filteredSubmissions.length
+    filteredSubmissions.length,
   );
   const indexOfFirstSubmission = (currentPage - 1) * rowsPerPage;
   const currentSubmissions = filteredSubmissions.slice(
     indexOfFirstSubmission,
-    indexOfLastSubmission
+    indexOfLastSubmission,
   );
 
   const handleNextPage = () => {
@@ -150,8 +151,8 @@ export default function SubmissionsPage() {
         });
       } catch (error) {
         toast({
-          variant: 'destructive',
-          title: 'Error deleting submission',
+          variant: "destructive",
+          title: "Error deleting submission",
           description: `Could not delete submission with ID ${submissionId}.`,
         });
       }
@@ -159,8 +160,8 @@ export default function SubmissionsPage() {
     setIsDeleteDialogOpen(false);
     setSelectedSubmissionIds([]);
     toast({
-      variant: 'default',
-      title: 'Selected submissions deleted successfully',
+      variant: "default",
+      title: "Selected submissions deleted successfully",
     });
   };
 
@@ -196,19 +197,22 @@ export default function SubmissionsPage() {
     setSearchTerm(event.target.value);
   };
 
+  if (isLoading || !user.isSignedIn) return <div>loading...</div>;
+
   return (
-    <section className='container flex-1 flex flex-col'>
+    <section className="container flex flex-1 flex-col">
       {submissions && submissions.length > 0 ? (
         <>
-          <div className='bg-muted px-4 py-2 flex items-center justify-between mb-4'>
+          <div className="mb-4 flex items-center justify-between bg-muted px-4 py-2">
             <div>Selected: {checkedSubmissions.size}</div>
-            <div className='flex items-center gap-4'>
+            <div className="flex items-center gap-4">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
-                    variant={'outline'}
+                    variant={"outline"}
                     disabled={checkedSubmissions.size === 0}
-                    className='flex items-center gap-2 hover:bg-transparent hover:border-white'>
+                    className="flex items-center gap-2 hover:border-white hover:bg-transparent"
+                  >
                     <FileDownIcon size={18} />
                     Export
                   </Button>
@@ -223,68 +227,71 @@ export default function SubmissionsPage() {
                 </DropdownMenuContent>
               </DropdownMenu>
               <Button
-                size={'icon'}
-                variant={'destructive'}
+                size={"icon"}
+                variant={"destructive"}
                 onClick={onDeleteMultiple}
-                disabled={checkedSubmissions.size === 0}>
+                disabled={checkedSubmissions.size === 0}
+              >
                 <TrashIcon size={18} />
               </Button>
             </div>
           </div>
-          <div className='bg-muted py-2 px-4 flex flex-col gap-4 md:flex-row md:items-center justify-between'>
+          <div className="flex flex-col justify-between gap-4 bg-muted px-4 py-2 md:flex-row md:items-center">
             <div>
               <Input
-                type='text'
-                placeholder='Search...'
+                type="text"
+                placeholder="Search..."
                 value={searchTerm}
                 onChange={handleSearchChange}
               />
             </div>
-            <div className='text-center md:text-left'>
-              Showing {currentSubmissions?.length} /{' '}
+            <div className="text-center md:text-left">
+              Showing {currentSubmissions?.length} /{" "}
               {filteredSubmissions.length} result
-              {'(s)'}
+              {"(s)"}
             </div>
-            <div className='flex gap-2 item-center'>
-              <div className='flex items-center gap-4 mx-auto md:mx-0'>
+            <div className="item-center flex gap-2">
+              <div className="mx-auto flex items-center gap-4 md:mx-0">
                 <Button
                   onClick={() => {
                     handlePreviousPage();
                   }}
-                  variant={'outline'}
-                  size={'icon'}
-                  className='hover:bg-transparent hover:border-white'
-                  disabled={currentPage === 1}>
+                  variant={"outline"}
+                  size={"icon"}
+                  className="hover:border-white hover:bg-transparent"
+                  disabled={currentPage === 1}
+                >
                   <ArrowLeftIcon size={18} />
                 </Button>
-                <span className='text-sm'>
+                <span className="text-sm">
                   Page {currentPage} / {totalPages}
                 </span>
                 <Button
                   onClick={() => {
                     handleNextPage();
                   }}
-                  variant={'outline'}
-                  size={'icon'}
-                  className='hover:bg-transparent hover:border-white'
-                  disabled={currentPage === totalPages || totalPages === 0}>
+                  variant={"outline"}
+                  size={"icon"}
+                  className="hover:border-white hover:bg-transparent"
+                  disabled={currentPage === totalPages || totalPages === 0}
+                >
                   <ArrowRightIcon size={18} />
                 </Button>
               </div>
             </div>
           </div>
-          <Table className='w-full border'>
+          <Table className="w-full border">
             <TableHeader>
               <TableRow>
-                <TableHead className='w-[100px] border-r'>
+                <TableHead className="w-[100px] border-r">
                   <Checkbox
                     checked={checkedSubmissions.size === submissions?.length}
                     onClick={handleSelectAllChange}
                   />
                 </TableHead>
-                <TableHead className='border-r'>Date</TableHead>
-                <TableHead className='border-r'>Data</TableHead>
-                <TableHead className='text-center'>Actions</TableHead>
+                <TableHead className="border-r">Date</TableHead>
+                <TableHead className="border-r">Data</TableHead>
+                <TableHead className="text-center">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -292,38 +299,39 @@ export default function SubmissionsPage() {
                 <TableRow
                   key={index}
                   className={`${
-                    checkedSubmissions.has(submission._id) ? 'bg-muted' : ''
-                  }`}>
-                  <TableCell className='font-medium border-r'>
+                    checkedSubmissions.has(submission._id) ? "bg-muted" : ""
+                  }`}
+                >
+                  <TableCell className="border-r font-medium">
                     <Checkbox
                       checked={checkedSubmissions.has(submission._id)}
                       onClick={() => handleCheckboxChange(submission._id)}
                     />
                   </TableCell>
-                  <TableCell className='border-r'>
-                    <div className='flex flex-col gap-2'>
+                  <TableCell className="border-r">
+                    <div className="flex flex-col gap-2">
                       {formatRelative(submission._creationTime, new Date())}
                     </div>
                   </TableCell>
-                  <TableCell className='border-r'>
-                    <div className='flex flex-col gap-2'>
+                  <TableCell className="border-r">
+                    <div className="flex flex-col gap-2">
                       {Object.entries(
-                        JSON.parse(submission.data) as Record<string, string>
+                        JSON.parse(submission.data) as Record<string, string>,
                       ).map(([key, value]) => (
-                        <div key={key} className='flex gap-2'>
-                          <span className='font-medium'>{key}:</span>
-                          <span className='text-muted-foreground'>{value}</span>
+                        <div key={key} className="flex gap-2">
+                          <span className="font-medium">{key}:</span>
+                          <span className="text-muted-foreground">{value}</span>
                         </div>
                       ))}
                     </div>
                   </TableCell>
-                  <TableCell className='text-right'>
-                    <div className='flex gap-2 justify-end'>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-2">
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger>
                             <MailIcon
-                              className='text-muted-foreground hover:text-white transition-all duration-150'
+                              className="text-muted-foreground transition-all duration-150 hover:text-white"
                               size={20}
                             />
                           </TooltipTrigger>
@@ -336,7 +344,7 @@ export default function SubmissionsPage() {
                         <Tooltip>
                           <TooltipTrigger>
                             <ShieldAlertIcon
-                              className='text-muted-foreground hover:text-white transition-all duration-150'
+                              className="text-muted-foreground transition-all duration-150 hover:text-white"
                               size={20}
                             />
                           </TooltipTrigger>
@@ -348,9 +356,10 @@ export default function SubmissionsPage() {
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger
-                            onClick={() => onDeleteSingle(submission._id)}>
+                            onClick={() => onDeleteSingle(submission._id)}
+                          >
                             <TrashIcon
-                              className='text-muted-foreground hover:text-destructive transition-all duration-150'
+                              className="text-muted-foreground transition-all duration-150 hover:text-destructive"
                               size={20}
                             />
                           </TooltipTrigger>
@@ -365,55 +374,58 @@ export default function SubmissionsPage() {
               ))}
             </TableBody>
           </Table>
-          <div className='flex items-center gap-2 justify-between bg-muted py-2 px-4'>
-            <div className='flex items-center gap-4 mx-auto md:mx-0'>
+          <div className="flex items-center justify-between gap-2 bg-muted px-4 py-2">
+            <div className="mx-auto flex items-center gap-4 md:mx-0">
               <Button
                 onClick={() => {
                   handlePreviousPage();
                 }}
-                variant={'outline'}
-                size={'icon'}
-                className='hover:bg-transparent hover:border-white'
-                disabled={currentPage === 1}>
+                variant={"outline"}
+                size={"icon"}
+                className="hover:border-white hover:bg-transparent"
+                disabled={currentPage === 1}
+              >
                 <ArrowLeftIcon size={18} />
               </Button>
-              <span className='text-sm'>
+              <span className="text-sm">
                 Page {Math.min(currentPage, totalPages)} / {totalPages}
               </span>
               <Button
                 onClick={() => {
                   handleNextPage();
                 }}
-                variant={'outline'}
-                size={'icon'}
-                className='hover:bg-transparent hover:border-white'
-                disabled={currentPage === totalPages || totalPages === 0}>
+                variant={"outline"}
+                size={"icon"}
+                className="hover:border-white hover:bg-transparent"
+                disabled={currentPage === totalPages || totalPages === 0}
+              >
                 <ArrowRightIcon size={18} />
               </Button>
             </div>
-            <div className='flex items-center gap-2'>
+            <div className="flex items-center gap-2">
               <Label>Rows per page</Label>
               <Select
                 onValueChange={handleRowsPerPageChange}
-                value={rowsPerPage.toLocaleString()}>
-                <SelectTrigger className='w-[70px]'>
+                value={rowsPerPage.toLocaleString()}
+              >
+                <SelectTrigger className="w-[70px]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value='10'>10</SelectItem>
-                  <SelectItem value='20'>20</SelectItem>
-                  <SelectItem value='30'>30</SelectItem>
-                  <SelectItem value='40'>40</SelectItem>
-                  <SelectItem value='50'>50</SelectItem>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="20">20</SelectItem>
+                  <SelectItem value="30">30</SelectItem>
+                  <SelectItem value="40">40</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
         </>
       ) : (
-        <div className='flex-1 flex flex-col justify-center items-center gap-10'>
-          <Image alt='' width={200} height={200} src='/no_submissions.svg' />
-          <div className='text-base md:text-2xl text-center'>
+        <div className="flex flex-1 flex-col items-center justify-center gap-10">
+          <Image alt="" width={200} height={200} src="/no_submissions.svg" />
+          <div className="text-center text-base md:text-2xl">
             You don&apos;t have any submissions for this form yet.
           </div>
         </div>
@@ -421,13 +433,14 @@ export default function SubmissionsPage() {
 
       <AlertDialog
         open={isDeleteDialogOpen}
-        onOpenChange={setIsDeleteDialogOpen}>
+        onOpenChange={setIsDeleteDialogOpen}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
               {selectedSubmissionIds.length > 1
-                ? 'Are you sure you want to delete these submissions?'
-                : 'Are you sure you want to delete this submission?'}
+                ? "Are you sure you want to delete these submissions?"
+                : "Are you sure you want to delete this submission?"}
             </AlertDialogTitle>
             <AlertDialogDescription>
               This action cannot be undone. This will permanently delete this
@@ -438,7 +451,8 @@ export default function SubmissionsPage() {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteConfirmation}
-              className='bg-destructive text-destructive-foreground hover:bg-destructive/80 transition-all duration-150'>
+              className="bg-destructive text-destructive-foreground transition-all duration-150 hover:bg-destructive/80"
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
