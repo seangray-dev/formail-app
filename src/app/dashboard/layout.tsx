@@ -1,46 +1,35 @@
-'use client';
+"use client";
 
-import DashboardHeader from '@/components/layout/DashboardHeader/dash-board-header';
-import { formDetailsAtom } from '@/jotai/state';
-import { useOrganization, useUser } from '@clerk/nextjs';
-import { useQuery } from 'convex/react';
-import { useAtom } from 'jotai';
-import { usePathname } from 'next/navigation';
-import { useEffect } from 'react';
-import { api } from '../../../convex/_generated/api';
-import { Id } from '../../../convex/_generated/dataModel';
+import DashboardHeader from "@/components/layout/DashboardHeader/dash-board-header";
+import useAuthStatus from "@/hooks/useAuthStatus";
+import { useOrgUserDetails } from "@/hooks/useOrgUserDetails";
+import { formDetailsAtom } from "@/jotai/state";
+import { useQuery } from "convex/react";
+import { useAtom } from "jotai";
+import { Loader2Icon } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { useEffect } from "react";
+import { api } from "../../../convex/_generated/api";
+import { Id } from "../../../convex/_generated/dataModel";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { isAuthLoading, isUserAuthenticated } = useAuthStatus();
   const [, setFormDetails] = useAtom(formDetailsAtom);
-
+  const { orgId } = useOrgUserDetails();
   const pathname = usePathname();
-  const organization = useOrganization();
-  const user = useUser();
-
-  let orgId: string | undefined = undefined;
-
-  if (organization.isLoaded && user.isLoaded) {
-    orgId = organization.organization?.id ?? user.user?.id;
-  }
-
-  // Parse the pathname to extract formId if present
-  const pathSegments = pathname.split('/').filter(Boolean); // Remove empty segments
-  const isFormPage = pathSegments.length > 2 && pathSegments[2] === 'form';
+  const pathSegments = pathname.split("/").filter(Boolean);
+  const isFormPage = pathSegments[2] === "form";
   const formId = isFormPage ? pathSegments[3] : null;
-
-  // Use `useQuery` with 'skip' option when formId is not available
   const formQueryArg =
-    user.isLoaded && formId ? { formId: formId as Id<'forms'> } : 'skip';
-
+    isUserAuthenticated && formId ? { formId: formId as Id<"forms"> } : "skip";
   const form = useQuery(api.forms.getFormById, formQueryArg);
-  let formName = form?.name ?? 'Unknown';
   const orgUsers = useQuery(
     api.users.getUsersByOrgIdWithRoles,
-    orgId ? { orgId } : 'skip'
+    orgId ? { orgId } : "skip",
   );
 
   useEffect(() => {
@@ -48,16 +37,25 @@ export default function DashboardLayout({
       setFormDetails({
         orgUsers,
         formId,
-        formName,
+        formName: form?.name ?? "Unknown",
         formDescription: form.description,
         pathname,
       });
     }
-  }, [formId, formName, form, orgUsers, setFormDetails, pathname]);
+  }, [formId, form, orgUsers, setFormDetails, pathname]);
+
+  if (isAuthLoading || !isUserAuthenticated) {
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center gap-10">
+        <Loader2Icon className="h-10 w-10 animate-spin" />
+        <div className="text-xl">Loading forms...</div>
+      </div>
+    );
+  }
 
   return (
-    <section className='flex-1 flex flex-col pb-10'>
-      <div className='container my-6'>
+    <section className="flex flex-1 flex-col pb-10">
+      <div className="container my-6">
         <DashboardHeader />
       </div>
       {children}
