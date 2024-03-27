@@ -1,31 +1,31 @@
-import { ConvexError, v } from 'convex/values';
-import { Id } from './_generated/dataModel';
-import { MutationCtx, QueryCtx, query } from './_generated/server';
+import { ConvexError, v } from "convex/values";
+import { Id } from "./_generated/dataModel";
+import { MutationCtx, QueryCtx, query } from "./_generated/server";
 
 export async function hasAccessToOrg(
   ctx: QueryCtx | MutationCtx,
-  orgId: string
+  orgId: string,
 ) {
   const identity = await ctx.auth.getUserIdentity();
 
   if (!identity) {
-    throw new ConvexError('No user identity provided');
+    throw new ConvexError("No user identity provided");
   }
-  const tokenId = identity.tokenIdentifier.split('|').pop() as string;
+  const tokenId = identity?.tokenIdentifier.split("|").pop() as string;
 
   const user = await ctx.db
-    .query('users')
-    .withIndex('by_tokenIdentifier', (q) => q.eq('tokenIdentifier', tokenId))
+    .query("users")
+    .withIndex("by_tokenIdentifier", (q) => q.eq("tokenIdentifier", tokenId))
     .first();
 
   if (!user) {
-    throw new ConvexError('No user found');
+    throw new ConvexError("No user found");
   }
 
   const roleRecord = await ctx.db
-    .query('userOrgRoles')
+    .query("userOrgRoles")
     .filter((q) =>
-      q.and(q.eq(q.field('orgId'), orgId), q.eq(q.field('userId'), user._id))
+      q.and(q.eq(q.field("orgId"), orgId), q.eq(q.field("userId"), user?._id)),
     )
     .first();
 
@@ -34,27 +34,28 @@ export async function hasAccessToOrg(
 
 export async function isAdminOfOrg(
   ctx: QueryCtx | MutationCtx,
-  orgId: string
+  orgId: string,
 ): Promise<boolean> {
   const identity = await ctx.auth.getUserIdentity();
 
-  if (!identity) throw new ConvexError('No user found');
+  if (!identity) throw new ConvexError("No user found");
 
-  const tokenId = identity.tokenIdentifier.split('|').pop() as string;
+  const tokenId = identity.tokenIdentifier.split("|").pop() as string;
 
   const user = await ctx.db
-    .query('users')
-    .withIndex('by_tokenIdentifier', (q) => q.eq('tokenIdentifier', tokenId))
+    .query("users")
+    .withIndex("by_tokenIdentifier", (q) => q.eq("tokenIdentifier", tokenId))
     .first();
-  if (!user) throw new ConvexError('No user found');
+
+  if (!user) throw new ConvexError("No user found");
 
   const roleRecord = await ctx.db
-    .query('userOrgRoles')
+    .query("userOrgRoles")
     .filter((q) =>
-      q.and(q.eq(q.field('orgId'), orgId), q.eq(q.field('userId'), user._id))
+      q.and(q.eq(q.field("orgId"), orgId), q.eq(q.field("userId"), user._id)),
     )
     .first();
-  return roleRecord?.role === 'admin';
+  return roleRecord?.role === "admin";
 }
 
 export const isAdminUserOfOrg = query({
@@ -65,23 +66,23 @@ export const isAdminUserOfOrg = query({
 });
 
 export async function checkSubscriptionStatusAndFormCount(
-  ctx: QueryCtx | MutationCtx
+  ctx: QueryCtx | MutationCtx,
 ) {
   const identity = await ctx.auth.getUserIdentity();
 
   if (!identity) {
-    throw new Error('User must be authenticated to check subscription status');
+    throw new Error("User must be authenticated to check subscription status");
   }
 
-  const tokenId = identity.tokenIdentifier.split('|').pop() as string;
+  const tokenId = identity.tokenIdentifier.split("|").pop() as string;
 
   const user = await ctx.db
-    .query('users')
-    .withIndex('by_tokenIdentifier', (q) => q.eq('tokenIdentifier', tokenId))
+    .query("users")
+    .withIndex("by_tokenIdentifier", (q) => q.eq("tokenIdentifier", tokenId))
     .first();
 
   if (!user) {
-    throw new Error('User not found');
+    throw new Error("User not found");
   }
 
   const currentTime = Date.now();
@@ -95,8 +96,8 @@ export async function checkSubscriptionStatusAndFormCount(
   }
 
   const forms = await ctx.db
-    .query('forms')
-    .withIndex('by_orgId', (q) => q.eq('orgId', user.orgIds[0]))
+    .query("forms")
+    .withIndex("by_orgId", (q) => q.eq("orgId", user.orgIds[0]))
     .collect();
 
   const formCount = forms.length;
@@ -109,12 +110,12 @@ export async function checkSubscriptionStatusAndFormCount(
 
 export const checkSubStatus = async (
   ctx: QueryCtx | MutationCtx,
-  userId: Id<'users'>
+  userId: Id<"users">,
 ) => {
   const user = await ctx.db.get(userId);
 
   if (!user) {
-    throw new Error('User not found');
+    throw new Error("User not found");
   }
 
   const currentTime = Date.now();
@@ -128,13 +129,13 @@ export const checkSubStatus = async (
 };
 
 export const checkUserSubscription = query({
-  args: { userId: v.id('users') },
+  args: { userId: v.id("users") },
 
   handler: async (ctx, { userId }) => {
     const user = await ctx.db.get(userId);
 
     if (!user) {
-      throw new Error('User not found');
+      throw new Error("User not found");
     }
 
     const currentTime = Date.now();
