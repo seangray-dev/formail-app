@@ -1,4 +1,4 @@
-import CSPostHogProvider from "@/components/Providers/PostHogClientProvider";
+import { CSPostHogProvider } from "@/components/Providers/PostHogClientProvider";
 import Header from "@/components/layout/Header/header";
 import Footer from "@/components/layout/footer";
 import { Toaster } from "@/components/ui/toaster";
