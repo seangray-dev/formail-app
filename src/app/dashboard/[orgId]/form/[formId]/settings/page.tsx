@@ -328,7 +328,7 @@ export default function FormSettingsPage() {
             )}
           />
 
-          <FormField
+          {/* <FormField
             control={form.control}
             name="spam_protection_service"
             render={({ field }) => (
@@ -348,9 +348,9 @@ export default function FormSettingsPage() {
                       <SelectItem value="Google reCAPTCHA v2">
                         Google reCAPTCHA v2
                       </SelectItem>
-                      {/* <SelectItem value='Botpoison'>Botpoison</SelectItem>
+                      <SelectItem value='Botpoison'>Botpoison</SelectItem>
                       <SelectItem value='hCaptcha'>hCaptcha</SelectItem>
-                      <SelectItem value='Turnstile'>Turnstile</SelectItem> */}
+                      <SelectItem value='Turnstile'>Turnstile</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormControl>
@@ -383,7 +383,7 @@ export default function FormSettingsPage() {
                 </FormItem>
               )}
             />
-          )}
+          )} */}
 
           <div className="flex flex-col gap-4 md:flex-row md:justify-between">
             <DeleteSubmissions formId={formId} />
