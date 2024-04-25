@@ -43,18 +43,18 @@ export function ContactForm() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const response = await fetch(
-        'https://www.formail.dev/submit/j579e6gcc8dvbnm9vkv55r1rph6nqh87',
+        "https://www.formail.dev/submit/j5745zzef22t8c916q9sqqm7e96p2adt",
         {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             name: values.name,
             email: values.email,
             message: values.message,
           }),
-        }
+        },
       );
       if (!response.ok) {
         throw new Error('Network response was not ok');

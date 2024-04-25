@@ -1,7 +1,7 @@
-import { defineSchema, defineTable } from 'convex/server';
-import { v } from 'convex/values';
+import { defineSchema, defineTable } from "convex/server";
+import { v } from "convex/values";
 
-export const roles = v.union(v.literal('admin'), v.literal('member'));
+export const roles = v.union(v.literal("admin"), v.literal("member"));
 
 export default defineSchema({
   forms: defineTable({
@@ -16,7 +16,7 @@ export default defineSchema({
       spamProtectionService: v.string(),
       spamProtectionSecret: v.optional(v.string()),
     }),
-  }).index('by_orgId', ['orgId']),
+  }).index("by_orgId", ["orgId"]),
   users: defineTable({
     tokenIdentifier: v.string(),
     name: v.optional(v.string()),
@@ -27,29 +27,30 @@ export default defineSchema({
     subscriptionId: v.optional(v.string()),
     endsOn: v.optional(v.number()),
   })
-    .index('by_tokenIdentifier', ['tokenIdentifier'])
-    .index('by_subscriptionId', ['subscriptionId']),
+    .index("by_tokenIdentifier", ["tokenIdentifier"])
+    .index("by_subscriptionId", ["subscriptionId"]),
   submissions: defineTable({
-    formId: v.id('forms'),
+    formId: v.id("forms"),
     data: v.string(),
+    isSpam: v.optional(v.boolean()),
     files: v.optional(
       v.array(
         v.object({
           storageId: v.string(),
           type: v.union(
-            v.literal('image/jpeg'),
-            v.literal('image/png'),
-            v.literal('application/pdf')
+            v.literal("image/jpeg"),
+            v.literal("image/png"),
+            v.literal("application/pdf"),
           ),
-        })
-      )
+        }),
+      ),
     ),
   }),
   userOrgRoles: defineTable({
-    userId: v.id('users'),
+    userId: v.id("users"),
     orgId: v.string(),
     role: roles,
   })
-    .index('by_orgId_and_role', ['orgId', 'role'])
-    .index('by_orgId', ['orgId']),
+    .index("by_orgId_and_role", ["orgId", "role"])
+    .index("by_orgId", ["orgId"]),
 });

@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -8,19 +8,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { formailSubmit } from 'formail-hooks';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { useToast } from '../ui/use-toast';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { formailSubmit } from "formail-hooks";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useToast } from "../ui/use-toast";
 
 const formSchema = z.object({
-  name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
+  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   file1: z
     .instanceof(FileList)
-    .refine((files) => files.length > 0, 'At least one file is required.'),
+    .refine((files) => files.length > 0, "At least one file is required."),
   file2: z.instanceof(FileList).optional(),
 });
 
@@ -29,19 +29,19 @@ export function PlaygroundForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: '',
+      name: "",
       file1: undefined,
       file2: undefined,
     },
   });
 
-  const file1Ref = form.register('file1');
-  const file2Ref = form.register('file2');
+  const file1Ref = form.register("file1");
+  const file2Ref = form.register("file2");
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const formData = new FormData();
 
-    formData.append('name', values.name);
+    formData.append("name", values.name);
 
     // Append all files from the 'file1' input
     Array.from(values.file1).forEach((file, index) => {
@@ -50,11 +50,11 @@ export function PlaygroundForm() {
 
     // Append a single file from the 'file2' input, if present
     if (values.file2 && values.file2[0]) {
-      formData.append('file2', values.file2[0]);
+      formData.append("file2", values.file2[0]);
     }
 
     try {
-      const formId = 'j57dyengj0demmzx55btnt16rh6nwcrr';
+      const formId = "j5745zzef22t8c916q9sqqm7e96p2adt";
       const response = await formailSubmit({ formId, formData });
 
       console.log(response);
@@ -65,16 +65,16 @@ export function PlaygroundForm() {
 
       form.reset();
       toast({
-        variant: 'default',
-        title: 'Message sent!',
+        variant: "default",
+        title: "Message sent!",
         description:
-          'Thanks for contacting us, someone will be in touch with you soon.',
+          "Thanks for contacting us, someone will be in touch with you soon.",
       });
     } catch (error) {
       toast({
-        variant: 'destructive',
-        title: 'Your message was not sent',
-        description: 'Please try again',
+        variant: "destructive",
+        title: "Your message was not sent",
+        description: "Please try again",
       });
     }
   }
@@ -83,15 +83,16 @@ export function PlaygroundForm() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className='flex flex-col gap-4 max-w-md mx-auto md:mx-0 md:max-w-2xl'>
+        className="mx-auto flex max-w-md flex-col gap-4 md:mx-0 md:max-w-2xl"
+      >
         <FormField
           control={form.control}
-          name='name'
+          name="name"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder='Michael Scott' {...field} />
+                <Input placeholder="Michael Scott" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -99,12 +100,12 @@ export function PlaygroundForm() {
         />
         <FormField
           control={form.control}
-          name='file1'
+          name="file1"
           render={() => (
             <FormItem>
               <FormLabel>File(s)</FormLabel>
               <FormControl>
-                <Input type='file' {...file1Ref} multiple />
+                <Input type="file" {...file1Ref} multiple />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -112,18 +113,18 @@ export function PlaygroundForm() {
         />
         <FormField
           control={form.control}
-          name='file2'
+          name="file2"
           render={() => (
             <FormItem>
               <FormLabel>File 2 (Optional)</FormLabel>
               <FormControl>
-                <Input type='file' {...file2Ref} />
+                <Input type="file" {...file2Ref} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type='submit'>Submit</Button>
+        <Button type="submit">Submit</Button>
       </form>
     </Form>
   );
