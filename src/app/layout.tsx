@@ -22,19 +22,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${sora.className} flex min-h-screen flex-col antialiased`}
-      >
-        <CSPostHogProvider>
-          <ConvexClientProvider>
+    <ConvexClientProvider>
+      <CSPostHogProvider>
+        <html lang="en">
+          <body
+            className={`${sora.className} flex min-h-screen flex-col antialiased`}
+          >
             <Header />
             {children}
             <Footer />
             <Toaster />
-          </ConvexClientProvider>
-        </CSPostHogProvider>
-      </body>
-    </html>
+          </body>
+        </html>
+      </CSPostHogProvider>
+    </ConvexClientProvider>
   );
 }
