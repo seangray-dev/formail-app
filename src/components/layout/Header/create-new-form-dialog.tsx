@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -14,19 +14,20 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { useToast } from '@/components/ui/use-toast';
-import { useOrganization, useUser } from '@clerk/nextjs';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from 'convex/react';
-import { ConvexError } from 'convex/values';
-import { Loader2, PlusIcon } from 'lucide-react';
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { api } from '../../../../convex/_generated/api';
-import { Button } from '../../ui/button';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
+import { useOrganization, useUser } from "@clerk/nextjs";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "convex/react";
+import { ConvexError } from "convex/values";
+import { Loader2, PlusIcon } from "lucide-react";
+import { usePostHog } from "posthog-js/react";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { api } from "../../../../convex/_generated/api";
+import { Button } from "../../ui/button";
 
 const formSchema = z.object({
   name: z.string().min(2).max(50),
@@ -34,6 +35,7 @@ const formSchema = z.object({
 });
 
 export default function CreateFormDialog() {
+  const posthog = usePostHog();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const { toast } = useToast();
   const organization = useOrganization();
@@ -46,8 +48,8 @@ export default function CreateFormDialog() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: '',
-      description: '',
+      name: "",
+      description: "",
     },
   });
 
@@ -62,22 +64,25 @@ export default function CreateFormDialog() {
         description: values.description,
         orgId,
       });
-
+      posthog.capture("form created");
       form.reset();
       setIsFormOpen(false);
       toast({
-        variant: 'default',
-        title: 'Form Created',
-        description: 'You can now start collecting submissions!',
+        variant: "default",
+        title: "Form Created",
+        description: "You can now start collecting submissions!",
       });
     } catch (err) {
-      let errorMessage = 'Your form was not created, please try again.';
+      let errorMessage = "Your form was not created, please try again.";
       if (err instanceof ConvexError) {
         errorMessage = err.data;
+        posthog.capture("form failed to create - not subscribed");
+      } else {
+        posthog.capture("form failed to create - unknown error");
       }
       toast({
-        variant: 'destructive',
-        title: 'Something went wrong!',
+        variant: "destructive",
+        title: "Something went wrong!",
         description: errorMessage,
       });
     }
@@ -86,8 +91,8 @@ export default function CreateFormDialog() {
   return (
     <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
       <DialogTrigger asChild>
-        <div className='text-sm rounded-md border px-4 py-2 cursor-pointer hover:bg-secondary transition-all duration-150 flex gap-2 items-center'>
-          <PlusIcon className='h-4 w-4' />
+        <div className="flex cursor-pointer items-center gap-2 rounded-md border px-4 py-2 text-sm transition-all duration-150 hover:bg-secondary">
+          <PlusIcon className="h-4 w-4" />
           <span>Create New Form</span>
         </div>
       </DialogTrigger>
@@ -99,10 +104,10 @@ export default function CreateFormDialog() {
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
               control={form.control}
-              name='name'
+              name="name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Form Name</FormLabel>
@@ -115,7 +120,7 @@ export default function CreateFormDialog() {
             />
             <FormField
               control={form.control}
-              name='description'
+              name="description"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Description</FormLabel>
@@ -127,18 +132,19 @@ export default function CreateFormDialog() {
               )}
             />
             <Button
-              type='submit'
-              className='w-full'
-              disabled={form.formState.isSubmitting}>
+              type="submit"
+              className="w-full"
+              disabled={form.formState.isSubmitting}
+            >
               {form.formState.isSubmitting && (
-                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
               Create
             </Button>
           </form>
         </Form>
         <DialogClose asChild>
-          <Button type='button' variant='secondary'>
+          <Button type="button" variant="secondary">
             Cancel
           </Button>
         </DialogClose>
