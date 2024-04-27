@@ -1,4 +1,5 @@
 import { handleFileUploads } from "@/lib/convex";
+import { ratelimit } from "@/lib/ratelimit";
 import { sendEmailNotification } from "@/lib/resend";
 import { ConvexHttpClient } from "convex/browser";
 import { NextRequest, NextResponse } from "next/server";
@@ -32,6 +33,15 @@ export async function POST(
   if (!formId) {
     return new NextResponse(JSON.stringify({ error: "Missing formId" }), {
       status: 400,
+    });
+  }
+
+  const ip = req.headers.get("x-forwarded-for") || req.ip;
+  
+  const { success } = await ratelimit.limit(ip!);
+  if (!success) {
+    return new NextResponse(JSON.stringify({ error: "Rate limit exceeded" }), {
+      status: 429,
     });
   }
 
