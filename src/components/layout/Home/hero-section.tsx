@@ -1,50 +1,45 @@
-'use client';
-
-import { Button } from '@/components/ui/button';
-import { CheckIcon } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import React from 'react';
+import { CheckIcon } from "lucide-react";
+import Image from "next/image";
+import React from "react";
+import CTAButton from "./cta-button";
 
 export default function HeroSection() {
   return (
-    <section className='flex flex-col-reverse gap-16 justify-between items-center md:grid md:grid-cols-2 md:gap-10 mb-20 md:mb-32 2xl:mb-36'>
+    <section className="bg-dot-white/[0.2] relative flex h-fit w-full flex-col-reverse items-center justify-between gap-16 bg-background py-20 md:grid md:grid-cols-2 md:gap-10">
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-background [mask-image:radial-gradient(ellipse_at_center,transparent_70%,black)]"></div>
       <div>
-        <div className='flex flex-col gap-3 md:gap-4 2xl:gap-5 max-w-xl text-center md:text-left'>
-          <h1 className='font-extrabold tracking-tight leading-none text-3xl md:text-5xl 2xl:text-6xl capitalize'>
-            Make{' '}
+        <div className="flex max-w-xl flex-col gap-3 text-center md:gap-4 md:text-left 2xl:gap-5">
+          <h1 className="text-3xl font-extrabold capitalize leading-none tracking-tight md:text-5xl 2xl:text-6xl">
+            Make{" "}
             <span
-              className={`bg-clip-text bg-gradient-to-r from-zinc-300 to-zinc-600 text-transparent transition-opacity`}>
+              className={`bg-gradient-to-r from-zinc-300 to-zinc-600 bg-clip-text text-transparent transition-opacity`}
+            >
               Form
-            </span>{' '}
+            </span>{" "}
             Management Effortless
           </h1>
-          <p className='text-muted-foreground'>
-            Streamline your form handling effortlessly with our intuitive
-            platform. Assign unique IDs to your forms, utilize our API for
-            seamless submissions, and enjoy tailored management solutions
-            perfect for developers and small businesses. Ideal for contact
-            forms, surveys, and feedback, Formail enhances your strategy
-            seamlessly.
+          <p className="text-muted-foreground">
+            Streamline form handling for developers and businesses, ensuring
+            instant notifications and seamless data integration for a smoother
+            workflow. Ideal for contact forms, surveys, and feedback, Formail
+            enhances your strategy seamlessly.
           </p>
         </div>
-        <div className='mt-12 flex flex-col gap-3 md:items-start justify-start items-center'>
-          <Button asChild className='max-w-52'>
-            <Link href={'/sign-up'}>Get Started For Free</Link>
-          </Button>
-          <div className='flex items-center gap-1'>
-            <CheckIcon size={18} className='text-muted-foreground' />
-            <p className='text-sm'>No Credit Card Required</p>
+        <div className="mt-12 flex flex-col items-center justify-start gap-3 md:items-start">
+          <CTAButton />
+          <div className="flex items-center gap-1">
+            <CheckIcon size={18} className="text-muted-foreground" />
+            <p className="text-sm">No Credit Card Required</p>
           </div>
         </div>
       </div>
       <div>
         <Image
-          className='object-contain w-full h-full'
-          src={'/screenshot.png'}
+          className="h-full w-full object-contain"
+          src={"/screenshot.png"}
           height={600}
           width={600}
-          alt='screenshot of product'
+          alt="screenshot of product"
         />
       </div>
     </section>

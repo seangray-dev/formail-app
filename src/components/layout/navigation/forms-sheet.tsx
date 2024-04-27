@@ -45,7 +45,21 @@ export default function FormSheet() {
       >
         <SheetHeader>
           <SheetTitle>
-            <div className="mb-10">Formail</div>
+            <Link
+              href={"/"}
+              className="max-w-28"
+              onClick={() => {
+                setIsSheetOpen(false);
+              }}
+            >
+              <Image
+                src={"/logo.png"}
+                width={2000}
+                height={303}
+                alt="logo"
+                className="max-w-28 pb-10"
+              />
+            </Link>
             <SignedIn>
               <div className="mb-10">{orgName}</div>
             </SignedIn>

@@ -1,6 +1,6 @@
 "use client";
 
-import DashboardHeader from "@/components/layout/DashboardHeader/dash-board-header";
+import DashboardHeader from "@/components/layout/dashboard-header/dash-board-header";
 import useAuthStatus from "@/hooks/useAuthStatus";
 import { useOrgUserDetails } from "@/hooks/useOrgUserDetails";
 import { formDetailsAtom } from "@/jotai/state";

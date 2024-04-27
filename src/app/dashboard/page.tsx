@@ -1,5 +1,5 @@
 "use client";
-import CreateFormDialog from "@/components/layout/Header/create-new-form-dialog";
+import CreateFormDialog from "@/components/layout/navigation/create-new-form-dialog";
 import {
   AlertDialog,
   AlertDialogAction,

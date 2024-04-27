@@ -1,6 +1,6 @@
 import { CSPostHogProvider } from "@/components/Providers/PostHogClientProvider";
-import Header from "@/components/layout/Header/header";
-import Footer from "@/components/layout/footer";
+import SiteFooter from "@/components/layout/navigation/site-footer";
+import SiteNav from "@/components/layout/navigation/site-nav";
 import { Toaster } from "@/components/ui/toaster";
 import type { Metadata } from "next";
 import { Sora } from "next/font/google";
@@ -28,9 +28,9 @@ export default function RootLayout({
           <body
             className={`${sora.className} flex min-h-screen flex-col antialiased`}
           >
-            <Header />
+            <SiteNav />
             {children}
-            <Footer />
+            <SiteFooter />
             <Toaster />
           </body>
         </html>

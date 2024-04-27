@@ -37,7 +37,7 @@ export async function POST(
   }
 
   const ip = req.headers.get("x-forwarded-for") || req.ip;
-  
+
   const { success } = await ratelimit.limit(ip!);
   if (!success) {
     return new NextResponse(JSON.stringify({ error: "Rate limit exceeded" }), {
@@ -112,7 +112,7 @@ export async function POST(
     );
 
     // testing purposes: flag for skipping emails
-    const emailActive = false;
+    const emailActive = process.env.NODE_ENV !== "development";
 
     if (emailRecipientIds.length > 0 && emailActive) {
       const recipientEmails = (
