@@ -8,7 +8,7 @@ import { api } from "../../../../convex/_generated/api";
 import { Button } from "../../ui/button";
 import FormSheet from "./forms-sheet";
 
-export default function Header() {
+export default function SiteNav() {
   const pay = useAction(api.stripe.pay);
   const router = useRouter();
   const user = useQuery(api.users.getMe);
