@@ -18,10 +18,10 @@ import { useToast } from "../ui/use-toast";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
-  file1: z
-    .instanceof(FileList)
-    .refine((files) => files.length > 0, "At least one file is required."),
-  file2: z.instanceof(FileList).optional(),
+  // file1: z
+  //   .instanceof(FileList)
+  //   .refine((files) => files.length > 0, "At least one file is required."),
+  // file2: z.instanceof(FileList).optional(),
 });
 
 export function PlaygroundForm() {
@@ -30,34 +30,37 @@ export function PlaygroundForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      file1: undefined,
-      file2: undefined,
+      // file1: undefined,
+      // file2: undefined,
     },
   });
 
-  const file1Ref = form.register("file1");
-  const file2Ref = form.register("file2");
+  // const file1Ref = form.register("file1");
+  // const file2Ref = form.register("file2");
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const formData = new FormData();
 
     formData.append("name", values.name);
 
-    // Append all files from the 'file1' input
-    Array.from(values.file1).forEach((file, index) => {
-      formData.append(`file1_${index}`, file);
-    });
+    // // Append all files from the 'file1' input
+    // Array.from(values.file1).forEach((file, index) => {
+    //   formData.append(`file1_${index}`, file);
+    // });
 
-    // Append a single file from the 'file2' input, if present
-    if (values.file2 && values.file2[0]) {
-      formData.append("file2", values.file2[0]);
-    }
+    // // Append a single file from the 'file2' input, if present
+    // if (values.file2 && values.file2[0]) {
+    //   formData.append("file2", values.file2[0]);
+    // }
 
     try {
-      const formId = "j5745zzef22t8c916q9sqqm7e96p2adt";
-      const response = await formailSubmit({ formId, formData });
+      const formId = "j57azen14xb6r075ywk4qqht8n6r0jb3";
+      // const response = await formailSubmit({ formId, formData });
 
-      console.log(response);
+      const response = await fetch(`http://localhost:3000/submit/${formId}`, {
+        method: "POST",
+        body: formData,
+      });
 
       if (!response.ok) {
         throw new Error(response.statusText);
@@ -98,7 +101,7 @@ export function PlaygroundForm() {
             </FormItem>
           )}
         />
-        <FormField
+        {/* <FormField
           control={form.control}
           name="file1"
           render={() => (
@@ -123,7 +126,7 @@ export function PlaygroundForm() {
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
         <Button type="submit">Submit</Button>
       </form>
     </Form>
