@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { api } from "../../../../convex/_generated/api";
-import { Button } from "../../ui/button";
+import CTAButton from "../Home/cta-button";
 import FormSheet from "./forms-sheet";
 
 export default function SiteNav() {
@@ -72,9 +72,7 @@ export default function SiteNav() {
             >
               Sign In
             </Link>
-            <Button asChild variant={"secondary"}>
-              <Link href={"/sign-up"}>Try It Free</Link>
-            </Button>
+            <CTAButton buttonText="Try It Free" />
           </SignedOut>
           <SignedIn>
             <div className="flex items-center gap-3">
