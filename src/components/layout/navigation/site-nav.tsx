@@ -31,12 +31,19 @@ export default function SiteNav() {
               width={2000}
               height={303}
               alt="logo"
-              className="max-w-28"
+              className="hidden max-w-28 md:block"
+            />
+            <Image
+              src={"/logo-icon.png"}
+              width={800}
+              height={463}
+              alt="logo"
+              className="h-auto w-10 md:hidden"
             />
           </Link>
         </div>
         <div className="flex items-center gap-4">
-          <div className="hidden gap-4 md:flex">
+          <div className="hidden gap-4 sm:flex">
             <SignedIn>
               <Link
                 className="text-muted-foreground hover:text-white hover:underline"

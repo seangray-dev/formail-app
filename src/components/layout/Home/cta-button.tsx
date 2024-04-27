@@ -12,7 +12,7 @@ interface CTAButtonProps {
 
 export default function CTAButton({
   className = "",
-  buttonText = "Manage Your Forms For Free",
+  buttonText = "Manage Your Forms",
 }: CTAButtonProps) {
   const posthog = usePostHog();
 
