@@ -6,7 +6,7 @@ export default function HowItWorksSection() {
     <section className="mt-24 flex flex-col gap-12 border-t py-12">
       <div className="flex flex-col gap-2 text-center">
         <h2 className="text-2xl font-bold">How It Works</h2>
-        <p className="mx-auto text-muted-foreground md:max-w-2xl 2xl:max-w-3xl">
+        <p className="mx-auto text-muted-foreground md:max-w-3xl">
           Transform the way you manage forms with Formail, from initial setup to
           collecting and reviewing data. Here’s how you can streamline your form
           processes effortlessly:
