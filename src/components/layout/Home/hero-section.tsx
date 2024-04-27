@@ -5,7 +5,8 @@ import CTAButton from "./cta-button";
 
 export default function HeroSection() {
   return (
-    <section className="mb-20 flex flex-col-reverse items-center justify-between gap-16 md:mb-32 md:grid md:grid-cols-2 md:gap-10 2xl:mb-36">
+    <section className="bg-dot-white/[0.2] relative flex h-[50rem] w-full flex-col-reverse items-center justify-between gap-16 bg-background md:grid md:grid-cols-2 md:gap-10">
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-background [mask-image:radial-gradient(ellipse_at_center,transparent_70%,black)]"></div>
       <div>
         <div className="flex max-w-xl flex-col gap-3 text-center md:gap-4 md:text-left 2xl:gap-5">
           <h1 className="text-3xl font-extrabold capitalize leading-none tracking-tight md:text-5xl 2xl:text-6xl">

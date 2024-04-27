@@ -5,7 +5,7 @@ import HowItWorksSection from "@/components/layout/Home/how-it-works-section";
 
 export default function Home() {
   return (
-    <main className="container mt-8 flex-1 md:mt-20">
+    <main className="container flex-1">
       <HeroSection />
       <FeaturesSection />
       <HowItWorksSection />
