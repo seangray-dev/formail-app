@@ -2,6 +2,7 @@
 
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { useAction, useQuery } from "convex/react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { api } from "../../../../convex/_generated/api";
@@ -22,9 +23,17 @@ export default function SiteNav() {
   return (
     <nav className="container  z-50 border-b bg-background py-3 text-sm">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Link href={"/"}>Formail</Link>
+        <div className="flex items-center gap-4">
           <FormSheet />
+          <Link href={"/"}>
+            <Image
+              src={"/logo.png"}
+              width={2000}
+              height={303}
+              alt="logo"
+              className="max-w-28"
+            />
+          </Link>
         </div>
         <div className="flex items-center gap-4">
           <div className="hidden gap-4 md:flex">
