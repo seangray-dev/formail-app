@@ -56,6 +56,7 @@ export function ContactForm() {
           body: JSON.stringify({
             name: values.name,
             email: values.email,
+            subject: values.subject,
             message: values.message,
           }),
         },
