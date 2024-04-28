@@ -16,15 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { useToast } from "@/components/ui/use-toast";
 import { formDetailsAtom } from "@/jotai/state";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "convex/react";
@@ -32,6 +24,7 @@ import { useAtom } from "jotai";
 import { SaveIcon } from "lucide-react";
 import { useEffect } from "react";
 import { useForm, useWatch } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 import { api } from "../../../../../../../convex/_generated/api";
 import { Id } from "../../../../../../../convex/_generated/dataModel";
@@ -63,7 +56,6 @@ const formSchema = z.object({
 });
 
 export default function FormSettingsPage() {
-  const { toast } = useToast();
   const [formDetails] = useAtom(formDetailsAtom);
   const updateFormSettingsMutation = useMutation(api.forms.updateFormSettings);
   const { orgUsers, formId } = formDetails;
@@ -156,9 +148,7 @@ export default function FormSettingsPage() {
         description: form_description || "",
         settings,
       });
-      toast({
-        variant: "default",
-        title: "Updated Form Settings",
+      toast.success("Updated Form Settings", {
         description:
           "Your settings for this form have successfully been updated.",
       });
@@ -171,9 +161,7 @@ export default function FormSettingsPage() {
         errorMessage = "Only admins can update form settings.";
       }
       console.log(err);
-      toast({
-        variant: "destructive",
-        title: "Failed to update settings for this form",
+      toast.error("Failed to update settings for this form", {
         description: `${errorMessage}`,
       });
     }

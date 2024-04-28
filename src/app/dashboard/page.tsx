@@ -17,22 +17,18 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useToast } from "@/components/ui/use-toast";
 import { useOrgUserDetails } from "@/hooks/useOrgUserDetails";
-import { useOrganization, useUser } from "@clerk/nextjs";
 import { useMutation, useQuery } from "convex/react";
 import { BarChart2Icon, CogIcon, Loader2, TrashIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { toast } from "sonner";
 import { api } from "../../../convex/_generated/api";
 import { Id } from "../../../convex/_generated/dataModel";
 type FormId = Id<"forms">;
 
 export default function DashboardHomePage() {
   const { orgId, orgName, isLoading } = useOrgUserDetails();
-  const organization = useOrganization();
-  const user = useUser();
-  const { toast } = useToast();
 
   const forms = useQuery(api.forms.getForms, orgId ? { orgId } : "skip");
   const deleteForm = useMutation(api.forms.deleteForm);
@@ -40,15 +36,11 @@ export default function DashboardHomePage() {
   async function handleDeleteForm(formId: FormId) {
     try {
       await deleteForm({ formId: formId });
-      toast({
-        variant: "success",
-        title: "Form Deleted",
-        description: "Your form has been successfully deleted.",
+      toast.success("Form Deleted", {
+        description: "Your Form has been successfully deleted.",
       });
     } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Deletion Failed",
+      toast.error("Deletion Failed", {
         description:
           "There was a problem deleting your form. Please try again.",
       });

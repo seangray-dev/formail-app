@@ -41,7 +41,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useToast } from "@/components/ui/use-toast";
 import { useOrgUserDetails } from "@/hooks/useOrgUserDetails";
 import { formDetailsAtom } from "@/jotai/state";
 import { exportToCsv, exportToJson } from "@/lib/utils";
@@ -58,6 +57,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
+import { toast } from "sonner";
 import { api } from "../../../../../../../convex/_generated/api";
 import { Id } from "../../../../../../../convex/_generated/dataModel";
 type submissionId = Id<"submissions">;
@@ -67,7 +67,6 @@ type SubmissionData = {
 
 export default function SubmissionsPage() {
   const { isLoading, user } = useOrgUserDetails();
-  const { toast } = useToast();
   const [formDetails] = useAtom(formDetailsAtom);
   const { formId } = formDetails;
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -150,19 +149,14 @@ export default function SubmissionsPage() {
           return newSet;
         });
       } catch (error) {
-        toast({
-          variant: "destructive",
-          title: "Error deleting submission",
+        toast.error("Error deleting submission", {
           description: `Could not delete submission with ID ${submissionId}.`,
         });
       }
     }
     setIsDeleteDialogOpen(false);
     setSelectedSubmissionIds([]);
-    toast({
-      variant: "default",
-      title: "Selected submissions deleted successfully",
-    });
+    toast.success("Selected submission(s) deleted successfully");
   };
 
   // Handle individual checkbox change

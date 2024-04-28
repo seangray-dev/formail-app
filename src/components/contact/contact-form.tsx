@@ -13,9 +13,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useWatch } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 import { Textarea } from "../ui/textarea";
-import { useToast } from "../ui/use-toast";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -32,7 +32,6 @@ const formSchema = z.object({
 });
 
 export function ContactForm() {
-  const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -65,16 +64,12 @@ export function ContactForm() {
         throw new Error("Network response was not ok");
       }
       form.reset();
-      toast({
-        variant: "default",
-        title: "Message sent!",
+      toast.success("Message sent!", {
         description:
           "Thanks for contacting us, someone will be in touch with you soon.",
       });
     } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Your message was not sent",
+      toast.error("Your message was not sent", {
         description: "Please try again ",
       });
     }

@@ -16,7 +16,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
 import { useOrganization, useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "convex/react";
@@ -25,6 +24,7 @@ import { Loader2, PlusIcon } from "lucide-react";
 import { usePostHog } from "posthog-js/react";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 import { api } from "../../../../convex/_generated/api";
 import { Button } from "../../ui/button";
@@ -37,7 +37,6 @@ const formSchema = z.object({
 export default function CreateFormDialog() {
   const posthog = usePostHog();
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const { toast } = useToast();
   const organization = useOrganization();
   const user = useUser();
   const createForm = useMutation(api.forms.createForm);
@@ -67,9 +66,7 @@ export default function CreateFormDialog() {
       posthog.capture("form created");
       form.reset();
       setIsFormOpen(false);
-      toast({
-        variant: "default",
-        title: "Form Created",
+      toast.success("Form Created", {
         description: "You can now start collecting submissions!",
       });
     } catch (err) {
@@ -80,9 +77,7 @@ export default function CreateFormDialog() {
       } else {
         posthog.capture("form failed to create - unknown error");
       }
-      toast({
-        variant: "destructive",
-        title: "Something went wrong!",
+      toast.error("Something went wrong!", {
         description: errorMessage,
       });
     }

@@ -22,7 +22,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { toast } from "@/components/ui/use-toast";
 import { formDetailsAtom } from "@/jotai/state";
 import { exportToCsv, exportToJson } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -34,6 +33,7 @@ import { usePostHog } from "posthog-js/react";
 import React, { useState } from "react";
 import { DateRange } from "react-day-picker";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 import { api } from "../../../../../../../convex/_generated/api";
 import { Id } from "../../../../../../../convex/_generated/dataModel";
@@ -77,40 +77,17 @@ export default function ExportPage() {
 
     try {
       if (!submissions || submissions.length === 0) {
-        toast({
-          title: "No data to export.",
+        toast.error("No data to export.", {
           description: "No submissions found in the selected date range.",
-          variant: "destructive",
         });
         return;
       }
-
-      // Create a custom filename based on form name and date range
-      const formattedFromDate = format(fromDate, "yyyy-MM-dd");
-      const formattedToDate = format(toDate, "yyyy-MM-dd");
-
-      if (fileFormat === "json") {
-        const exportFileName = `${formName}_${formattedFromDate}_to_${formattedToDate}.json`;
-        exportToJson(submissions, exportFileName);
-        posthog.capture("submission data: json exported");
-      } else if (fileFormat === "csv") {
-        const exportFileName = `${formName}_${formattedFromDate}_to_${formattedToDate}.csv`;
-        exportToCsv(submissions, exportFileName);
-        posthog.capture("submission data: csv exported");
-      }
-
-      toast({
-        title: "Export created successfully!",
-        description: `Your data has been exported as a ${fileFormat.toUpperCase()} file.`,
-      });
     } catch (error) {
       console.error("Error exporting submissions:", error);
       posthog.capture("submission data: error exporting");
-      toast({
-        title: "Failed to create export.",
+      toast.error("Failed to create export.", {
         description:
           "There was an error exporting your data. Please try again.",
-        variant: "destructive",
       });
     }
   }
