@@ -88,7 +88,11 @@ export default function SiteNav() {
                   Upgrade
                 </Button>
               )} */}
-              <UserButton />
+              <UserButton
+                afterSignOutUrl="/"
+                afterMultiSessionSingleSignOutUrl="/"
+                afterSwitchSessionUrl="/dashboard"
+              />
             </div>
           </SignedIn>
         </div>
