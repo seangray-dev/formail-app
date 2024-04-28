@@ -25,7 +25,7 @@ import {
 import { formDetailsAtom } from "@/jotai/state";
 import { exportToCsv, exportToJson } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery } from "convex/react";
+import { useConvex } from "convex/react";
 import { endOfDay, format, subDays } from "date-fns";
 import { useAtom } from "jotai";
 import { Calendar as CalendarIcon } from "lucide-react";
@@ -49,10 +49,11 @@ const FormSchema = z.object({
 });
 
 export default function ExportPage() {
+  const convex = useConvex();
   const posthog = usePostHog();
   const [formDetails] = useAtom(formDetailsAtom);
   const { formId, formName } = formDetails;
-  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+  const [dateRange, setDateRange] = useState<DateRange>({
     from: subDays(new Date(), 30),
     to: new Date(),
   });
@@ -60,27 +61,58 @@ export default function ExportPage() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
+
   const disableFutureDates = (date: Date) => {
     return endOfDay(date) > endOfDay(new Date());
   };
-  const fromDate = dateRange?.from?.getTime() || 0;
-  const toDate = dateRange?.to?.getTime() || Date.now();
 
-  const submissions = useQuery(api.submissions.getSubmissionsByDateRange, {
-    formId: formId as Id<"forms">,
-    fromDate,
-    toDate,
-  });
+  const handleDateChange = (newRange?: DateRange) => {
+    if (
+      newRange &&
+      (newRange.from?.getTime() !== dateRange.from?.getTime() ||
+        newRange.to?.getTime() !== dateRange.to?.getTime())
+    ) {
+      setDateRange(newRange);
+      form.setValue("timeRange", newRange, { shouldValidate: true });
+    }
+  };
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    const { fileFormat } = data;
+    const { fileFormat, timeRange } = data;
+    if (!timeRange.from || !timeRange.to) {
+      toast.error("Please select a complete date range.");
+      return;
+    }
 
     try {
+      const fromDate = timeRange.from.getTime();
+      const toDate = timeRange.to.getTime();
+
+      const submissions = await convex.query(
+        api.submissions.getSubmissionsByDateRange,
+        {
+          formId: formId as Id<"forms">,
+          fromDate,
+          toDate,
+        },
+      );
       if (!submissions || submissions.length === 0) {
         toast.error("No data to export.", {
           description: "No submissions found in the selected date range.",
         });
         return;
+      }
+
+      if (fileFormat === "json") {
+        exportToJson(submissions, formName);
+        toast.success("Check your downloads for your file");
+        posthog.capture("submission data: exported");
+      }
+
+      if (fileFormat === "csv") {
+        exportToCsv(submissions, formName);
+        toast.success("Check your downloads for your file");
+        posthog.capture("submission data: exported");
       }
     } catch (error) {
       console.error("Error exporting submissions:", error);
@@ -155,7 +187,7 @@ export default function ExportPage() {
                         mode="range"
                         defaultMonth={dateRange?.from}
                         selected={dateRange}
-                        onSelect={setDateRange}
+                        onSelect={handleDateChange}
                         numberOfMonths={2}
                         disabled={disableFutureDates}
                       />
