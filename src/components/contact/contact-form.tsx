@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -9,41 +9,44 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, useWatch } from 'react-hook-form';
-import { z } from 'zod';
-import { Textarea } from '../ui/textarea';
-import { useToast } from '../ui/use-toast';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, useWatch } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import { Textarea } from "../ui/textarea";
 
 const formSchema = z.object({
   name: z.string().min(2, {
-    message: 'name must be at least 2 characters.',
+    message: "name must be at least 2 characters.",
   }),
-  email: z.string().min(2, { message: 'must be a valid email.' }),
+  email: z.string().min(2, { message: "must be a valid email." }),
+  subject: z.string().min(2, {
+    message: "subject must be at least 2 characters.",
+  }),
   message: z
     .string()
-    .min(10, { message: 'must be at least 10 characters.' })
-    .max(1000, { message: 'Message must not be longer than 1000 characters.' }),
+    .min(10, { message: "must be at least 10 characters." })
+    .max(1000, { message: "Message must not be longer than 1000 characters." }),
 });
 
 export function ContactForm() {
-  const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: '',
-      email: '',
-      message: '',
+      name: "",
+      email: "",
+      subject: "",
+      message: "",
     },
   });
-  const messageValue = useWatch({ control: form.control, name: 'message' });
+  const messageValue = useWatch({ control: form.control, name: "message" });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const response = await fetch(
-        "https://www.formail.dev/submit/j5745zzef22t8c916q9sqqm7e96p2adt",
+        "https://www.formail.dev/submit/j57bnta6xmnvj5k9m0e47nyjc16r3vgm",
         {
           method: "POST",
           headers: {
@@ -52,25 +55,22 @@ export function ContactForm() {
           body: JSON.stringify({
             name: values.name,
             email: values.email,
+            subject: values.subject,
             message: values.message,
           }),
         },
       );
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
       }
       form.reset();
-      toast({
-        variant: 'default',
-        title: 'Message sent!',
+      toast.success("Message sent!", {
         description:
-          'Thanks for contacting us, someone will be in touch with you soon.',
+          "Thanks for contacting us, someone will be in touch with you soon.",
       });
     } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Your message was not sent',
-        description: 'Please try again ',
+      toast.error("Your message was not sent", {
+        description: "Please try again ",
       });
     }
   }
@@ -79,15 +79,16 @@ export function ContactForm() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className='flex flex-col gap-4 max-w-md mx-auto md:mx-0 md:max-w-2xl'>
+        className="mx-auto flex w-full max-w-md flex-col gap-4 md:max-w-2xl"
+      >
         <FormField
           control={form.control}
-          name='name'
+          name="name"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder='Michael Scott' {...field} />
+                <Input placeholder="Michael Scott" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -95,14 +96,14 @@ export function ContactForm() {
         />
         <FormField
           control={form.control}
-          name='email'
+          name="email"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
                 <Input
-                  type='email'
-                  placeholder='michaelscott@dundermifflin.com'
+                  type="email"
+                  placeholder="michaelscott@dundermifflin.com"
                   {...field}
                 />
               </FormControl>
@@ -112,26 +113,39 @@ export function ContactForm() {
         />
         <FormField
           control={form.control}
-          name='message'
+          name="subject"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Subject</FormLabel>
+              <FormControl>
+                <Input type="text" placeholder="Subject" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="message"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Message</FormLabel>
               <FormControl>
                 <Textarea
                   maxLength={1000}
-                  className='resize-none'
-                  placeholder='Your message'
+                  className="resize-none"
+                  placeholder="Your message"
                   {...field}
                 />
               </FormControl>
               <FormDescription>
-                <p className='text-right'>{`${messageValue.length}/1000`}</p>
+                <p className="text-right">{`${messageValue.length}/1000`}</p>
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type='submit'>Submit</Button>
+        <Button type="submit">Submit</Button>
       </form>
     </Form>
   );

@@ -1,7 +1,7 @@
 import { CSPostHogProvider } from "@/components/Providers/PostHogClientProvider";
 import SiteFooter from "@/components/layout/navigation/site-footer";
 import SiteNav from "@/components/layout/navigation/site-nav";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/components/ui/sonner";
 import type { Metadata } from "next";
 import { Sora } from "next/font/google";
 import ConvexClientProvider from "../components/Providers/ConvexClientProvider";
@@ -31,7 +31,7 @@ export default function RootLayout({
             <SiteNav />
             {children}
             <SiteFooter />
-            <Toaster />
+            <Toaster richColors />
           </body>
         </html>
       </CSPostHogProvider>

@@ -63,9 +63,7 @@ export default function GlobalError({
           <Alert variant="destructive">
             <AlertCircleIcon className="h-4 w-4" />
             <AlertTitle>Error</AlertTitle>
-            <AlertDescription>
-              {error?.message ? error.message : "Unexpected error"}
-            </AlertDescription>
+            <AlertDescription>Unexpected error</AlertDescription>
           </Alert>
           <Button className="w-full" onClick={reset}>
             Try again

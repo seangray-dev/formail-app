@@ -8,41 +8,36 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
-import { formDetailsAtom } from '@/jotai/state';
-import { useMutation } from 'convex/react';
-import { useAtom } from 'jotai';
-import { TrashIcon } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { api } from '../../../convex/_generated/api';
-import { useToast } from '../ui/use-toast';
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { formDetailsAtom } from "@/jotai/state";
+import { useMutation } from "convex/react";
+import { useAtom } from "jotai";
+import { TrashIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { api } from "../../../convex/_generated/api";
 
 export function DeleteSubmissions({ formId }: any) {
-  const { toast } = useToast();
   const deleteSubmissions = useMutation(api.forms.deleteSubmissionsForForm);
   async function handleDeleteSubmissions(formId: any) {
     try {
       await deleteSubmissions({ formId: formId });
-      toast({
-        variant: 'success',
-        title: 'Form Deleted',
-        description: 'Your form has been succesxsfully deleted.',
+      toast.success("Form Deleted", {
+        description: "Your form has been succesxsfully deleted.",
       });
     } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Deletion Failed',
+      toast.error("Deletion Failed", {
         description:
-          'There was a problem deleting your form. Please try again.',
+          "There was a problem deleting your form. Please try again.",
       });
     }
   }
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button type='button' variant={'destructive'}>
-          <TrashIcon className='mr-2' size={18} />
+        <Button type="button" variant={"destructive"}>
+          <TrashIcon className="mr-2" size={18} />
           Delete All Submissions
         </Button>
       </AlertDialogTrigger>
@@ -58,7 +53,8 @@ export function DeleteSubmissions({ formId }: any) {
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={() => handleDeleteSubmissions(formId)}
-            className='bg-destructive text-destructive-foreground hover:bg-destructive/80 transition-all duration-150'>
+            className="bg-destructive text-destructive-foreground transition-all duration-150 hover:bg-destructive/80"
+          >
             Delete Submissions
           </AlertDialogAction>
         </AlertDialogFooter>
@@ -69,7 +65,6 @@ export function DeleteSubmissions({ formId }: any) {
 
 export function DeleteForm({ formId }: any) {
   const [, setFormDetails] = useAtom(formDetailsAtom);
-  const { toast } = useToast();
   const router = useRouter();
   const deleteForm = useMutation(api.forms.deleteForm);
 
@@ -81,27 +76,23 @@ export function DeleteForm({ formId }: any) {
         formName: undefined,
         formDescription: undefined,
       }));
-      router.push('/dashboard');
+      router.push("/dashboard");
       await deleteForm({ formId: formId });
-      toast({
-        variant: 'success',
-        title: 'Form Deleted',
-        description: 'Your form has been successfully deleted.',
+      toast.success("Form Deleted", {
+        description: "Your form has been successfully deleted.",
       });
     } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Deletion Failed',
+      toast.error("Deletion Failed", {
         description:
-          'There was a problem deleting your form. Please try again.',
+          "There was a problem deleting your form. Please try again.",
       });
     }
   }
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button type='button' variant={'destructive'}>
-          <TrashIcon className='mr-2' size={18} />
+        <Button type="button" variant={"destructive"}>
+          <TrashIcon className="mr-2" size={18} />
           Delete Form
         </Button>
       </AlertDialogTrigger>
@@ -117,7 +108,8 @@ export function DeleteForm({ formId }: any) {
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={() => handleDeleteForm(formId)}
-            className='bg-destructive text-destructive-foreground hover:bg-destructive/80 transition-all duration-150'>
+            className="bg-destructive text-destructive-foreground transition-all duration-150 hover:bg-destructive/80"
+          >
             Delete Form
           </AlertDialogAction>
         </AlertDialogFooter>

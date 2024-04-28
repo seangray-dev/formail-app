@@ -40,7 +40,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useToast } from "@/components/ui/use-toast";
 import { formDetailsAtom } from "@/jotai/state";
 import { useMutation, useQuery } from "convex/react";
 import { formatRelative } from "date-fns";
@@ -48,6 +47,7 @@ import { useAtom } from "jotai";
 import { EyeIcon, FilesIcon, TrashIcon } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
+import { toast } from "sonner";
 import { api } from "../../../../../../../convex/_generated/api";
 import { Id } from "../../../../../../../convex/_generated/dataModel";
 type submissionId = Id<"submissions">;
@@ -58,7 +58,6 @@ type FileWithUrl = {
 };
 
 export default function FilesPage() {
-  const { toast } = useToast();
   const [formDetails] = useAtom(formDetailsAtom);
   const { formId } = formDetails;
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -95,12 +94,9 @@ export default function FilesPage() {
         await deleteSubmission({ submissionId: selectedSubmissionId });
         setIsDeleteDialogOpen(false);
         setSelectedSubmissionId(null);
-        toast({ variant: "default", title: "Submission deleted successfully" });
+        toast.success("Submission deleted successfully");
       } catch (error) {
-        toast({
-          variant: "destructive",
-          title: "Deleting submission failed, please try again.",
-        });
+        toast.error("Deleting submission failed, please try again.");
       }
     }
   };

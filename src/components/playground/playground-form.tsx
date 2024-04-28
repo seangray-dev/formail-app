@@ -13,8 +13,8 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formailSubmit } from "formail-hooks";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
-import { useToast } from "../ui/use-toast";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -25,7 +25,6 @@ const formSchema = z.object({
 });
 
 export function PlaygroundForm() {
-  const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -67,18 +66,18 @@ export function PlaygroundForm() {
       }
 
       form.reset();
-      toast({
-        variant: "default",
-        title: "Message sent!",
-        description:
-          "Thanks for contacting us, someone will be in touch with you soon.",
-      });
+      // toast({
+      //   variant: "default",
+      //   title: "Message sent!",
+      //   description:
+      //     "Thanks for contacting us, someone will be in touch with you soon.",
+      // });
     } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Your message was not sent",
-        description: "Please try again",
-      });
+      // toast({
+      //   variant: "destructive",
+      //   title: "Your message was not sent",
+      //   description: "Please try again",
+      // });
     }
   }
 
