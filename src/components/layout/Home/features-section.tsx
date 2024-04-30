@@ -18,27 +18,51 @@ export default function FeaturesSection() {
           making form handling smooth and effective.
         </p>
       </div>
-      <div className="grid gap-5 md:grid-cols-4 2xl:gap-8">
+      <div className="grid gap-5 md:grid-cols-2 2xl:gap-8">
         <FeatureCard
-          icon={<SendIcon size={28} className="relative text-white" />}
+          icon={
+            <SendIcon
+              aria-hidden="true"
+              size={28}
+              className="relative text-white"
+            />
+          }
           title="Email Notifications"
           description="Get real-time alerts with every form submission, keeping you promptly informed."
         />
 
         <FeatureCard
-          icon={<ShieldAlertIcon size={28} className="relative text-white" />}
+          icon={
+            <ShieldAlertIcon
+              aria-hidden="true"
+              size={28}
+              className="relative text-white"
+            />
+          }
           title="Spam Protection"
           description="Effortlessly shield spam with Akismet, custom spam words, and reCaptcha integrations."
         />
 
         <FeatureCard
-          icon={<LayoutListIcon size={28} className="relative text-white" />}
+          icon={
+            <LayoutListIcon
+              aria-hidden="true"
+              size={28}
+              className="relative text-white"
+            />
+          }
           title="Form Flexibility"
           description="Submit anything. Our platform dynamically adapts, organizing and storing your data effortlessly."
         />
 
         <FeatureCard
-          icon={<FileJsonIcon size={28} className="relative text-white" />}
+          icon={
+            <FileJsonIcon
+              aria-hidden="true"
+              size={28}
+              className="relative text-white"
+            />
+          }
           title="Data Management"
           description="Easily manage submissions. Download data in JSON or CSV formats for convenient access."
         />
