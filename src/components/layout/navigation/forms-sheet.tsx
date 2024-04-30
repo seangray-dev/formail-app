@@ -36,7 +36,7 @@ export default function FormSheet() {
 
   return (
     <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-      <SheetTrigger>
+      <SheetTrigger aria-label="open menu">
         <MenuIcon size={18} />
       </SheetTrigger>
       <SheetContent
