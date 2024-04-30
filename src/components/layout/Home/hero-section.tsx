@@ -35,6 +35,7 @@ export default function HeroSection() {
       </div>
       <div>
         <Image
+          priority
           className="h-full w-full object-contain"
           src={"/screenshot.png"}
           height={1407}
