@@ -12,13 +12,25 @@ export const size = {
 export const contentType = "image/png";
 
 export default async function Image() {
-  const fontData = await fetch(
-    new URL("../../assets/fonts/Sora-ExtraBold.ttf", import.meta.url),
-  ).then((res) => res.arrayBuffer());
+  let fontData, imageData;
 
-  const imageData = await fetch(
-    new URL("../../assets/logo.png", import.meta.url),
-  ).then((res) => res.arrayBuffer());
+  try {
+    fontData = await fetch(
+      new URL("../assets/fonts/Sora-ExtraBold.ttf", import.meta.url),
+    ).then((res) => res.arrayBuffer());
+  } catch (error) {
+    console.error("Failed to load font:", error);
+    throw error;
+  }
+
+  try {
+    imageData = await fetch(
+      new URL("../assets/logo.png", import.meta.url),
+    ).then((res) => res.arrayBuffer());
+  } catch (error) {
+    console.error("Failed to load image:", error);
+    throw error;
+  }
 
   return new ImageResponse(
     (
