@@ -14,6 +14,7 @@ export default authMiddleware({
     "/legal/privacy-policy",
     "/legal/terms-of-service",
     "/pricing",
+    "/api/(.*)",
   ],
 });
 

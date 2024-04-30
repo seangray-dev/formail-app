@@ -16,6 +16,16 @@ const sora = Sora({
 export const metadata: Metadata = {
   title: "Formail",
   description: "Streamline your workflow with Formail",
+  openGraph: {
+    images: [
+      {
+        url: "/api/og",
+        width: 1200,
+        height: 630,
+        alt: "Formail",
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
