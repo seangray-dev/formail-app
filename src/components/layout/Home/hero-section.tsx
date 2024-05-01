@@ -10,13 +10,12 @@ export default function HeroSection() {
       <div>
         <div className="flex max-w-xl flex-col gap-3 text-center md:gap-4 md:text-left 2xl:gap-5">
           <h1 className="text-3xl font-extrabold capitalize leading-none tracking-tight md:text-5xl 2xl:text-6xl">
-            Make{" "}
+            Make Form Management{" "}
             <span
               className={`bg-gradient-to-r from-zinc-300 to-zinc-600 bg-clip-text text-transparent transition-opacity`}
             >
-              Form
-            </span>{" "}
-            Management Effortless
+              Effortless
+            </span>
           </h1>
           <p className="text-muted-foreground">
             Streamline form handling for developers and businesses, ensuring

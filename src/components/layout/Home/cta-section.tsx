@@ -6,9 +6,8 @@ import CTAButton from "./cta-button";
 
 export default function CTASection() {
   return (
-    <section className="relative flex h-96 w-full flex-col items-center justify-center overflow-hidden rounded-lg bg-secondary">
-      <div className="pointer-events-none absolute inset-0 z-20 h-full w-full bg-secondary [mask-image:radial-gradient(transparent,white)]" />
-      <Boxes />
+    <section className="relative flex h-96 w-full flex-col items-center justify-center overflow-hidden rounded bg-secondary bg-dot-white/[0.2]">
+      <div className="pointer-events-none absolute inset-0 z-20 h-full w-full bg-secondary [mask-image:radial-gradient(ellipse_at_center,transparent_70%,black)]" />
       <div className="flex flex-col items-center justify-center gap-4">
         <p className="relative z-20 text-xl text-white md:text-4xl">
           Get Started For Free
