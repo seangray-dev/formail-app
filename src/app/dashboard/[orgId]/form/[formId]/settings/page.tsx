@@ -39,7 +39,6 @@ const formSchema = z.object({
   form_description: z.string().optional(),
   email_recipients: z.array(z.string()),
   email_threads: z.boolean().default(true),
-  honeypot_field: z.string().optional(),
   custom_spam_words: z
     .string()
     .optional()
@@ -71,7 +70,6 @@ export default function FormSettingsPage() {
       form_description: "",
       email_recipients: [],
       email_threads: true,
-      honeypot_field: "",
       custom_spam_words: "",
       spam_protection_service: "",
       spam_protection_secret: "",
@@ -86,7 +84,6 @@ export default function FormSettingsPage() {
         settings: {
           emailRecipients,
           emailThreads,
-          honeypotField,
           customSpamWords,
           spamProtectionService,
           spamProtectionSecret,
@@ -98,7 +95,6 @@ export default function FormSettingsPage() {
         form_description: formSettings.description || "",
         email_recipients: emailRecipients,
         email_threads: emailThreads,
-        honeypot_field: honeypotField,
         custom_spam_words: customSpamWords,
         spam_protection_service: spamProtectionService,
         spam_protection_secret: spamProtectionSecret,
@@ -119,7 +115,6 @@ export default function FormSettingsPage() {
     const settings = {
       emailRecipients: values.email_recipients,
       emailThreads: values.email_threads,
-      honeypotField: values.honeypot_field,
       customSpamWords: values.custom_spam_words,
       spamProtectionService: values.spam_protection_service || "",
       spamProtectionSecret: values.spam_protection_secret,
@@ -225,6 +220,7 @@ export default function FormSettingsPage() {
                         >
                           <FormControl>
                             <Checkbox
+                              aria-label={`Enable/Disable Email Notification for ${user.name}`}
                               checked={field.value?.includes(user.id || "")}
                               onCheckedChange={(checked) => {
                                 return checked
@@ -272,28 +268,11 @@ export default function FormSettingsPage() {
                 </div>
                 <FormControl>
                   <Switch
+                    aria-label="Enable/Disable Email Threads"
                     checked={field.value}
                     onCheckedChange={field.onChange}
                   />
                 </FormControl>
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="honeypot_field"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Honeypot Field</FormLabel>
-                <FormControl>
-                  <Input {...field} placeholder="example: form_honeypot" />
-                </FormControl>
-                <FormDescription>
-                  Enter the name of a hidden field that acts as a honeypot for
-                  bots.
-                </FormDescription>
-                <FormMessage />
               </FormItem>
             )}
           />

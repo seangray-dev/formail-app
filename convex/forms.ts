@@ -65,7 +65,6 @@ export const createForm = mutation({
       settings: {
         emailRecipients: defaultAdmins,
         emailThreads: true,
-        honeypotField: "",
         customSpamWords: "",
         spamProtectionService: "None",
         spamProtectionSecret: "",
@@ -196,7 +195,6 @@ export const updateFormSettings = mutation({
     settings: v.object({
       emailRecipients: v.array(v.string()),
       emailThreads: v.boolean(),
-      honeypotField: v.optional(v.string()),
       customSpamWords: v.optional(v.string()),
       spamProtectionService: v.string(),
       spamProtectionSecret: v.optional(v.string()),
