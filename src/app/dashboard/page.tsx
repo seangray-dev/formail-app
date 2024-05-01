@@ -85,9 +85,10 @@ export default function DashboardHomePage() {
                 <div>
                   <TooltipProvider>
                     <Tooltip>
-                      <TooltipTrigger>
+                      <TooltipTrigger asChild>
                         <Link
                           href={`/dashboard/${orgId}/form/${form._id}/settings`}
+                          aria-label={`Settings for ${form.name}`}
                         >
                           <CogIcon className="h-5 w-5 text-muted-foreground transition-all duration-150 hover:text-white" />
                         </Link>
@@ -104,9 +105,10 @@ export default function DashboardHomePage() {
                 <div>
                   <TooltipProvider>
                     <Tooltip>
-                      <TooltipTrigger>
+                      <TooltipTrigger asChild>
                         <Link
                           href={`/dashboard/${orgId}/form/${form._id}/analytics`}
+                          aria-label={`Analytics for ${form.name}`}
                         >
                           <BarChart2Icon className="h-5 w-5 text-muted-foreground transition-all duration-150 hover:text-white" />
                         </Link>
@@ -121,29 +123,13 @@ export default function DashboardHomePage() {
                   </TooltipProvider>
                 </div>
                 <AlertDialog>
-                  <AlertDialogTrigger title="Delete Form">
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <TrashIcon className="h-5 w-5 text-destructive hover:text-destructive/80" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-sm font-normal text-muted-foreground">
-                            Delete{" "}
-                            <span className="text-white">{form.name}</span> form
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                  <AlertDialogTrigger aria-label={`Delete ${form.name} form`}>
+                    <TrashIcon className="h-5 w-5 text-destructive hover:text-destructive/80" />
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle>
-                        Are you sure you want to delete the{" "}
-                        <span className="text-muted-foreground">
-                          &ldquo;{form.name}&ldquo;
-                        </span>{" "}
-                        form?
+                        Are you sure you want to delete the {form.name} form?
                       </AlertDialogTitle>
                       <AlertDialogDescription>
                         This action cannot be undone. This will permanently
