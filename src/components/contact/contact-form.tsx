@@ -138,8 +138,8 @@ export function ContactForm() {
                   {...field}
                 />
               </FormControl>
-              <FormDescription>
-                <p className="text-right">{`${messageValue.length}/1000`}</p>
+              <FormDescription className="text-right">
+                {`${messageValue.length}/1000`}
               </FormDescription>
               <FormMessage />
             </FormItem>
