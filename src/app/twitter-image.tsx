@@ -4,6 +4,8 @@
 
 import { ImageResponse } from "next/og";
 
+export const runtime = "edge";
+
 export const size = {
   width: 1200,
   height: 630,
@@ -15,7 +17,7 @@ export default async function Image() {
   let fontData, imageData;
 
   try {
-    fontData = await fetch(
+    fontData = fetch(
       new URL("../assets/fonts/Sora-ExtraBold.ttf", import.meta.url),
     ).then((res) => res.arrayBuffer());
   } catch (error) {
@@ -24,9 +26,9 @@ export default async function Image() {
   }
 
   try {
-    imageData = await fetch(
-      new URL("../assets/logo.png", import.meta.url),
-    ).then((res) => res.arrayBuffer());
+    imageData = fetch(new URL("../assets/logo.png", import.meta.url)).then(
+      (res) => res.arrayBuffer(),
+    );
   } catch (error) {
     console.error("Failed to load image:", error);
     throw error;
@@ -39,7 +41,7 @@ export default async function Image() {
         tw="flex justify-between items-center bg-black h-full w-full text-white p-24 relative"
       >
         <div tw="border-r border-[#52525b] h-2/3 flex justify-center items-center pr-24">
-          <img width={300} height={45} src={imageData} />
+          <img width={300} height={45} src={await imageData} />
         </div>
         <h1 tw="text-6xl font-extrabold capitalize leading-none tracking-tight flex flex-col text-center">
           <div>Make</div>
@@ -62,7 +64,7 @@ export default async function Image() {
       fonts: [
         {
           name: "Sora",
-          data: fontData,
+          data: await fontData,
           style: "normal",
         },
       ],
