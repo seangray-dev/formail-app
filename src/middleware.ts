@@ -15,6 +15,8 @@ export default authMiddleware({
     "/legal/terms-of-service",
     "/pricing",
     "/api/(.*)",
+    "/twitter-image(.*)",
+    "/opengraph-image(.*)",
   ],
 });
 

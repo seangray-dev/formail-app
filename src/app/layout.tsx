@@ -43,30 +43,7 @@ export const metadata: Metadata = {
   authors: [{ name: siteMetadata.author }],
   creator: "GrayTech Solutions",
   openGraph: {
-    type: "website",
-    locale: "en_US",
     url: siteMetadata.siteUrl,
-    title: siteMetadata.title,
-    description: siteMetadata.description,
-    siteName: siteMetadata.title,
-    images: [
-      {
-        url: "https://formail.dev/api/og",
-        width: 1200,
-        height: 630,
-        alt: "Formail",
-      },
-    ],
-  },
-  twitter: {
-    images: [
-      {
-        url: "https://formail.dev/api/og",
-        width: 1200,
-        height: 630,
-        alt: "Formail",
-      },
-    ],
   },
 };
 
