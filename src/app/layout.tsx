@@ -42,6 +42,9 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: siteMetadata.author }],
   creator: "GrayTech Solutions",
+  openGraph: {
+    url: siteMetadata.siteUrl,
+  },
 };
 
 export default function RootLayout({
