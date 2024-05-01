@@ -4,7 +4,9 @@ export default function ContactPage() {
   return (
     <section className="container flex flex-1 flex-col items-center justify-center py-10">
       <div className="mb-6 text-center">
-        <h2 className="mb-4 text-2xl">Get in touch with us Today!</h2>
+        <h2 className="mb-4 text-xl font-extrabold capitalize leading-none tracking-tight md:text-3xl 2xl:text-4xl">
+          Get in touch with us Today!
+        </h2>
         <p className="mx-auto max-w-[65ch] font-light text-muted-foreground">
           At Formail, we&apos;re committed to supporting your communication
           needs. Whether you have questions about our form management platform,

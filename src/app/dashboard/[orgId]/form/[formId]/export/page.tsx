@@ -144,7 +144,7 @@ export default function ExportPage() {
                     defaultValue={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger aria-label="Select a format to export">
                         <SelectValue placeholder="Select a format to export" />
                       </SelectTrigger>
                     </FormControl>

@@ -11,7 +11,6 @@ export default defineSchema({
     settings: v.object({
       emailRecipients: v.array(v.string()),
       emailThreads: v.boolean(),
-      honeypotField: v.optional(v.string()),
       customSpamWords: v.optional(v.string()),
       spamProtectionService: v.string(),
       spamProtectionSecret: v.optional(v.string()),
