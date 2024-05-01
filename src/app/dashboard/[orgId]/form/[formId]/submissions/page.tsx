@@ -221,6 +221,7 @@ export default function SubmissionsPage() {
                 </DropdownMenuContent>
               </DropdownMenu>
               <Button
+                aria-label="Delete selected submissions"
                 size={"icon"}
                 variant={"destructive"}
                 onClick={onDeleteMultiple}
@@ -247,6 +248,7 @@ export default function SubmissionsPage() {
             <div className="item-center flex gap-2">
               <div className="mx-auto flex items-center gap-4 md:mx-0">
                 <Button
+                  aria-label="Go to previous page"
                   onClick={() => {
                     handlePreviousPage();
                   }}
@@ -261,6 +263,7 @@ export default function SubmissionsPage() {
                   Page {currentPage} / {totalPages}
                 </span>
                 <Button
+                  aria-label="Go to next page"
                   onClick={() => {
                     handleNextPage();
                   }}
@@ -279,6 +282,7 @@ export default function SubmissionsPage() {
               <TableRow>
                 <TableHead className="w-[100px] border-r">
                   <Checkbox
+                    aria-label="Select all submissions"
                     checked={checkedSubmissions.size === submissions?.length}
                     onClick={handleSelectAllChange}
                   />
@@ -298,6 +302,7 @@ export default function SubmissionsPage() {
                 >
                   <TableCell className="border-r font-medium">
                     <Checkbox
+                      aria-label="Select submission"
                       checked={checkedSubmissions.has(submission._id)}
                       onClick={() => handleCheckboxChange(submission._id)}
                     />
@@ -321,9 +326,10 @@ export default function SubmissionsPage() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
+                      {/* TODO: implement email to submitter */}
                       <TooltipProvider>
                         <Tooltip>
-                          <TooltipTrigger>
+                          <TooltipTrigger aria-label="Email to submitter">
                             <MailIcon
                               className="text-muted-foreground transition-all duration-150 hover:text-white"
                               size={20}
@@ -334,9 +340,10 @@ export default function SubmissionsPage() {
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
-                      <TooltipProvider>
+                      {/* TODO: implement mark as spam + determine logic for handling this  */}
+                      {/* <TooltipProvider>
                         <Tooltip>
-                          <TooltipTrigger>
+                          <TooltipTrigger aria-label="Mark submission as spam">
                             <ShieldAlertIcon
                               className="text-muted-foreground transition-all duration-150 hover:text-white"
                               size={20}
@@ -346,10 +353,11 @@ export default function SubmissionsPage() {
                             <p>Mark as spam</p>
                           </TooltipContent>
                         </Tooltip>
-                      </TooltipProvider>
+                      </TooltipProvider> */}
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger
+                            aria-label="Delete submission"
                             onClick={() => onDeleteSingle(submission._id)}
                           >
                             <TrashIcon
@@ -371,6 +379,7 @@ export default function SubmissionsPage() {
           <div className="flex items-center justify-between gap-2 bg-muted px-4 py-2">
             <div className="mx-auto flex items-center gap-4 md:mx-0">
               <Button
+                aria-label="Go to previous page"
                 onClick={() => {
                   handlePreviousPage();
                 }}
@@ -385,6 +394,7 @@ export default function SubmissionsPage() {
                 Page {Math.min(currentPage, totalPages)} / {totalPages}
               </span>
               <Button
+                aria-label="Go to next page"
                 onClick={() => {
                   handleNextPage();
                 }}
@@ -402,7 +412,10 @@ export default function SubmissionsPage() {
                 onValueChange={handleRowsPerPageChange}
                 value={rowsPerPage.toLocaleString()}
               >
-                <SelectTrigger className="w-[70px]">
+                <SelectTrigger
+                  className="w-[70px]"
+                  aria-label="Select rows per page"
+                >
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
