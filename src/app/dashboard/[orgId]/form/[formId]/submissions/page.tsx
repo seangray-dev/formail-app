@@ -27,6 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import {
   Table,
   TableBody,
@@ -79,6 +80,7 @@ export default function SubmissionsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showOnlySpam, setShowOnlySpam] = useState(false);
 
   const submissions = useQuery(
     api.submissions.getSubmissionsByFormId,
@@ -88,9 +90,12 @@ export default function SubmissionsPage() {
   const filteredSubmissions =
     submissions?.filter((submission) => {
       const submissionData = JSON.parse(submission.data);
-      return Object.values(submissionData).some((value) =>
+      const matchesSearchTerm = Object.values(submissionData).some((value) =>
         String(value).toLowerCase().includes(searchTerm.toLowerCase()),
       );
+      return showOnlySpam
+        ? submission.isSpam && matchesSearchTerm
+        : matchesSearchTerm;
     }) || [];
 
   const totalPages = Math.max(
@@ -172,6 +177,23 @@ export default function SubmissionsPage() {
     });
   };
 
+  const toggleIsSpam = useMutation(api.submissions.toggleSubmissionAsSpam);
+
+  const handleToggleIsSpam = async (submissionId: submissionId) => {
+    try {
+      await toggleIsSpam({ submissionId });
+    } catch (error) {
+      toast.error("Error updating submission status", {
+        description: `There was a problem updating the spam status of the submission.`,
+      });
+    }
+    toast.success("Updated spam status of submission");
+  };
+
+  const handleSpamToggle = () => {
+    setShowOnlySpam((prev) => !prev);
+  };
+
   // Handle select all checkboxes
   const handleSelectAllChange = () => {
     if (checkedSubmissions.size === submissions?.length) {
@@ -199,7 +221,21 @@ export default function SubmissionsPage() {
         <>
           <div className="mb-4 flex items-center justify-between bg-muted px-4 py-2">
             <div>Selected: {checkedSubmissions.size}</div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-5">
+              <div className="flex items-center space-x-2">
+                <Label
+                  htmlFor="show-only-spam"
+                  className="text-muted-foreground"
+                >
+                  Show Only Spam
+                </Label>
+                <Switch
+                  checked={showOnlySpam}
+                  onCheckedChange={handleSpamToggle}
+                  id="show-only-spam"
+                  className="data-[state=unchecked]:bg-muted-foreground"
+                />
+              </div>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -232,19 +268,6 @@ export default function SubmissionsPage() {
             </div>
           </div>
           <div className="flex flex-col justify-between gap-4 bg-muted px-4 py-2 md:flex-row md:items-center">
-            <div>
-              <Input
-                type="text"
-                placeholder="Search..."
-                value={searchTerm}
-                onChange={handleSearchChange}
-              />
-            </div>
-            <div className="text-center md:text-left">
-              Showing {currentSubmissions?.length} /{" "}
-              {filteredSubmissions.length} result
-              {"(s)"}
-            </div>
             <div className="item-center flex gap-2">
               <div className="mx-auto flex items-center gap-4 md:mx-0">
                 <Button
@@ -275,6 +298,19 @@ export default function SubmissionsPage() {
                   <ArrowRightIcon size={18} />
                 </Button>
               </div>
+            </div>
+            <div className="text-center md:text-left">
+              Showing {currentSubmissions?.length} /{" "}
+              {filteredSubmissions.length} result
+              {"(s)"}
+            </div>
+            <div>
+              <Input
+                type="text"
+                placeholder="Search..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+              />
             </div>
           </div>
           <Table className="w-full border">
@@ -341,19 +377,26 @@ export default function SubmissionsPage() {
                         </Tooltip>
                       </TooltipProvider>
                       {/* TODO: implement mark as spam + determine logic for handling this  */}
-                      {/* <TooltipProvider>
+                      <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger aria-label="Mark submission as spam">
                             <ShieldAlertIcon
-                              className="text-muted-foreground transition-all duration-150 hover:text-white"
+                              onClick={() => {
+                                handleToggleIsSpam(submission._id);
+                              }}
+                              className={`transition-all duration-150 hover:text-white ${submission.isSpam ? "text-yellow-400" : "text-muted-foreground"}`}
                               size={20}
                             />
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>Mark as spam</p>
+                            {submission.isSpam ? (
+                              <p>Unmark as spam</p>
+                            ) : (
+                              <p>Mark as spam</p>
+                            )}
                           </TooltipContent>
                         </Tooltip>
-                      </TooltipProvider> */}
+                      </TooltipProvider>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger
