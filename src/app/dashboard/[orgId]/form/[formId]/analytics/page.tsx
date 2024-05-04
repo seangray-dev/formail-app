@@ -1,6 +1,6 @@
 "use client";
 
-import { Progress } from "@/components/ui/progress";
+import RemaingSubmissions from "@/components/layout/shared/remaining-submissions";
 import {
   Select,
   SelectContent,
@@ -12,7 +12,6 @@ import { formDetailsAtom } from "@/jotai/state";
 import { useQuery } from "convex/react";
 import { eachDayOfInterval, format, startOfWeek, subDays } from "date-fns";
 import { useAtom } from "jotai";
-import { InfinityIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import {
   Bar,
@@ -39,13 +38,6 @@ export default function FormAnalyticsPage() {
   const [chartData, setChartData] = useState<GroupedData[]>([]);
   const [formDetails] = useAtom(formDetailsAtom);
   const { formId } = formDetails;
-  const user = useQuery(api.users.getMe);
-  const remainingSubmissions = user?.remainingSubmissions || 0;
-  const progressValue = (remainingSubmissions / 500) * 100;
-  const isSubActive = useQuery(
-    api.utils.checkUserSubscription,
-    user ? { userId: user._id } : "skip",
-  );
   const submissions = useQuery(
     api.submissions.getSubmissionsByFormId,
     formId ? { formId: formId as Id<"forms"> } : "skip",
@@ -115,21 +107,7 @@ export default function FormAnalyticsPage() {
           <p>Total Form Submissions</p>
           <p className="text-lg font-bold text-primary">{submissionCount}</p>
         </div>
-        <div className="flex flex-col gap-4">
-          <p>Remaining Account Submissions</p>
-          <Progress
-            aria-label="remaining submissions"
-            aria-valuetext={`${remainingSubmissions} submissions left`}
-            value={progressValue}
-          />
-          <p className="text-lg font-bold text-primary">
-            {isSubActive ? (
-              <InfinityIcon />
-            ) : (
-              <div>{remainingSubmissions} / 500</div>
-            )}
-          </p>
-        </div>
+        <RemaingSubmissions />
       </div>
       <div className="self-end">
         <div className="ml-2">Submissions by:</div>

@@ -1,5 +1,6 @@
 "use client";
 import CreateFormDialog from "@/components/layout/navigation/create-new-form-dialog";
+import RemaingSubmissions from "@/components/layout/shared/remaining-submissions";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -49,9 +50,12 @@ export default function DashboardHomePage() {
 
   return (
     <main className="container flex flex-1 flex-col py-10">
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8 flex items-start justify-between">
         <div className="font-medium md:text-3xl">{orgName} Forms</div>
         <CreateFormDialog />
+      </div>
+      <div className="mb-10 flex justify-between">
+        <RemaingSubmissions />
       </div>
       {isLoading && (
         <div className="flex flex-1 flex-col items-center justify-center gap-10">
