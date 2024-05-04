@@ -1,6 +1,5 @@
 import { handleFileUploads } from "@/lib/convex";
 import { ratelimit } from "@/lib/ratelimit";
-import { sendEmailNotification } from "@/lib/resend";
 import { ConvexHttpClient } from "convex/browser";
 import { NextRequest, NextResponse } from "next/server";
 import { api } from "../../../../convex/_generated/api";
@@ -108,7 +107,7 @@ export async function POST(
     const form = await convex.query(api.forms.getFormByIdServer, { formId });
     const { emailRecipients, emailThreads } = form.settings;
     const emailRecipientIds: Id<"users">[] = emailRecipients.map(
-      (id) => id as unknown as Id<"users">,
+      (id) => id as Id<"users">,
     );
 
     // testing purposes: flag for skipping emails
@@ -121,12 +120,12 @@ export async function POST(
         })
       ).filter((email): email is string => !!email);
 
-      await sendEmailNotification(
+      await convex.action(api.emails.sendNewSubmissionEmail, {
         emailThreads,
         recipientEmails,
         submissionData,
-        form,
-      );
+        formId,
+      });
     }
 
     return new NextResponse(

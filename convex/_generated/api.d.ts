@@ -15,6 +15,9 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as clerk from "../clerk.js";
+import type * as emails_NewSubmission from "../emails/NewSubmission.js";
+import type * as emails_WelcomeEmail from "../emails/WelcomeEmail.js";
+import type * as emails from "../emails.js";
 import type * as forms from "../forms.js";
 import type * as http from "../http.js";
 import type * as stripe from "../stripe.js";
@@ -32,6 +35,9 @@ import type * as utils from "../utils.js";
  */
 declare const fullApi: ApiFromModules<{
   clerk: typeof clerk;
+  "emails/NewSubmission": typeof emails_NewSubmission;
+  "emails/WelcomeEmail": typeof emails_WelcomeEmail;
+  emails: typeof emails;
   forms: typeof forms;
   http: typeof http;
   stripe: typeof stripe;
