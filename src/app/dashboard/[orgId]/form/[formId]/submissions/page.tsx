@@ -316,7 +316,7 @@ export default function SubmissionsPage() {
           <Table className="w-full border">
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[100px] border-r">
+                <TableHead className="border-r">
                   <Checkbox
                     aria-label="Select all submissions"
                     checked={checkedSubmissions.size === submissions?.length}
@@ -333,7 +333,7 @@ export default function SubmissionsPage() {
                 <TableRow
                   key={index}
                   className={`${
-                    checkedSubmissions.has(submission._id) ? "bg-muted" : ""
+                    checkedSubmissions.has(submission._id) ? "bg-muted/50" : ""
                   }`}
                 >
                   <TableCell className="border-r font-medium">
