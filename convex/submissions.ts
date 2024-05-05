@@ -40,7 +40,7 @@ export const addSubmission = mutation({
       isSpam,
     });
 
-    if (!hasActiveSubscription) {
+    if (!hasActiveSubscription && !isSpam) {
       await ctx.db.patch(user._id, {
         remainingSubmissions: user.remainingSubmissions - 1,
       });
