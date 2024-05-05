@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+![](./public//logo-black-bg-white-text.png)
+<a target="_blank" href="https://formail.dev">
 
-## Getting Started
+  <h1 align="center">Formail</h1>
+</a>
+<p align="center">
+  <a href="#features"><strong>Features</strong></a> ·
+  <a href="#live-site"><strong>Live Site</strong></a> ·
+  <a target="_blank" href="https://www.docs.formail.dev"><strong>Docs</strong></a> ·
+  <a href="#tech-stack"><strong>Tech Stack</strong></a> ·
+  <a href="#feedback-and-issues"><strong>Feedback & Issues</strong></a>
+</p>
+<hr/>
+<p align="center">
+ Formail offers a streamlined approach to form management, enabling instant notifications and dynamic data handling without pre-structured forms. Ideal for developers, small businesses, and anyone needing efficient form submission management, Formail simplifies the process, making it accessible and user-friendly.
+</p>
+<hr />
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Email Notifications:** Instant email notifications for form submissions.
+- **Spam Protection:** Shield spam with Akismet & custom spam words.
+- **Form Flexibility:** Submit anything. Our backend dynamically adapts, organizing and storing your data effortlessly.
+- **Data Management:** Download submission data in JSON or CSV formats for convenient access.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Live Site
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+You can view the live site at [Formail.dev](https://formail.dev)
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Tech Stack
 
-## Learn More
+- [Next.js 14](https://nextjs.org)
+- [Tailwind CSS](https://tailwindcss.com)
+- [shadcn ui](https://ui.shadcn.com/)
+- [Convex](https://convex.dev) (database)
+- [Clerk](https://clerk.com) (auth)
+- [Vercel](https://vercel.com) (hosting)
+- [Stripe](https://stripe.com) (payments)
+- [Resend](https://resend.io) (email)
+- [Posthog](https://posthog.com) (analytics)
+- [Sentry](https://sentry.io) (error tracking)
 
-To learn more about Next.js, take a look at the following resources:
+## Feedback and issues
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Please file feedback and issues [here](https://github.com/seangray-dev/formail-app/issues).
