@@ -12,6 +12,7 @@
     "stripe:trigger": "stripe trigger payment_intent.succeeded"
   },
   "dependencies": {
+    "@cedx/akismet": "^16.1.0",
     "@clerk/clerk-sdk-node": "^4.13.11",
     "@clerk/nextjs": "^4.29.9",
     "@clerk/themes": "^1.7.9",
