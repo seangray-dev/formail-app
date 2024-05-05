@@ -1,18 +1,18 @@
 import { handleFileUploads } from "@/lib/convex";
 import { ratelimit } from "@/lib/ratelimit";
-import { AkismetClient } from "akismet-api";
+// import { AkismetClient } from "akismet-api";
 import { ConvexHttpClient } from "convex/browser";
 import { NextRequest, NextResponse } from "next/server";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 
-const AKISMET_KEY = process.env.AKISMET_SECRET as string;
+// const AKISMET_KEY = process.env.AKISMET_SECRET as string;
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
-const akismet = new AkismetClient({
-  key: AKISMET_KEY,
-  blog: "https://formail.dev",
-});
+// const akismet = new AkismetClient({
+//   key: AKISMET_KEY,
+//   blog: "https://formail.dev",
+// });
 
 export async function OPTIONS() {
   // Handle OPTIONS request for CORS preflight
@@ -65,20 +65,21 @@ export async function POST(
       .map((value) => value.toString().toLowerCase())
       .join(" ");
 
-    const akismetSubmissionData = {
-      user_ip: ip as string,
-      useragent: req.headers.get("user-agent") || undefined,
-      content: submissionText,
-    };
+    // const akismetSubmissionData = {
+    //   user_ip: ip as string,
+    //   useragent: req.headers.get("user-agent") || undefined,
+    //   content: submissionText,
+    // };
 
     // non-file submission handling
     if (contentType.includes("application/json")) {
       submissionData = await req.json();
 
       const isCustomSpam = checkForSpam(submissionText, customSpamWords);
-      const isAkismetSpam = await akismet.checkSpam(akismetSubmissionData);
+      // const isAkismetSpam = await akismet.checkSpam(akismetSubmissionData);
 
-      const isSpam = isCustomSpam || isAkismetSpam;
+      // const isSpam = isCustomSpam || isAkismetSpam;
+      const isSpam = isCustomSpam;
 
       if (isSpam) {
         // Logic to handle spam submission
@@ -105,8 +106,9 @@ export async function POST(
         .join(" ");
 
       const isCustomSpam = checkForSpam(submissionText, customSpamWords);
-      const isAkismetSpam = await akismet.checkSpam(akismetSubmissionData);
-      const isSpam = isCustomSpam || isAkismetSpam;
+      // const isAkismetSpam = await akismet.checkSpam(akismetSubmissionData);
+      // const isSpam = isCustomSpam || isAkismetSpam;
+      const isSpam = isCustomSpam;
 
       const user = await convex.query(api.users.getUserByFormId, { formId });
 
