@@ -19,8 +19,6 @@ export async function OPTIONS() {
   });
 }
 
-// TODO: If spam is detected do not deduct remaining submission from user
-
 export async function POST(
   req: NextRequest,
   context: { params: { formId: any } },
