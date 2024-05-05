@@ -1,9 +1,21 @@
 import { handleFileUploads } from "@/lib/convex";
 import { ratelimit } from "@/lib/ratelimit";
+import {
+  Author,
+  Blog,
+  CheckResult,
+  Client,
+  Comment,
+  CommentType,
+} from "@cedx/akismet";
 import { ConvexHttpClient } from "convex/browser";
 import { NextRequest, NextResponse } from "next/server";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
+
+const AKISMET_KEY = process.env.AKISMET_SECRET as string;
+const blog = new Blog({ url: "https://formail.dev" });
+const akismet = new Client(AKISMET_KEY, blog);
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
@@ -24,10 +36,7 @@ export async function POST(
   context: { params: { formId: any } },
 ) {
   const formId = context.params.formId;
-  // let akismetSubmissionData = {
-  //   ip: req.headers.get("x-forwarded-for") || req.ip,
-  //   useragent: req.headers.get("user-agent"),
-  // };
+  const form = await convex.query(api.forms.getFormByIdServer, { formId });
 
   if (!formId) {
     return new NextResponse(JSON.stringify({ error: "Missing formId" }), {
@@ -49,16 +58,69 @@ export async function POST(
     const contentType = req.headers.get("content-type") || "";
     let submissionData: { [key: string]: any } = {};
 
+    // Assuming submissionData is parsed from JSON and customSpamWords is fetched
+    const customSpamWords = form.settings.customSpamWords
+      ? form.settings.customSpamWords
+          .split(",")
+          .map((word) => word.trim().toLowerCase())
+      : [];
+
+    // Convert all values to string and to lower case
+    const submissionText = Object.values(submissionData)
+      .map((value) => value.toString().toLowerCase())
+      .join(" ");
+
+    const author = new Author({
+      ipAddress: ip,
+      userAgent: req.headers.get("user-agent") || undefined,
+    });
+
+    const comment = new Comment({
+      author,
+      content: submissionText,
+      type: CommentType.contactForm,
+    });
+
     // non-file submission handling
     if (contentType.includes("application/json")) {
       submissionData = await req.json();
-      // implement check for spam
-      await convex.mutation(api.submissions.addSubmission, {
-        formId,
-        data: JSON.stringify(submissionData),
-      });
+
+      const isSpam = await checkForSpam(
+        submissionText,
+        customSpamWords,
+        comment,
+      );
+
+      if (isSpam) {
+        // Logic to handle spam submission
+        await convex.mutation(api.submissions.addSubmission, {
+          formId,
+          data: JSON.stringify(submissionData),
+          isSpam: true,
+        });
+      } else {
+        // Logic to handle normal submission
+        await convex.mutation(api.submissions.addSubmission, {
+          formId,
+          data: JSON.stringify(submissionData),
+          isSpam: false,
+        });
+      }
     } else if (contentType.includes("multipart/form-data")) {
       const formData = await req.formData();
+      submissionData = Object.fromEntries(formData.entries());
+
+      // Convert all values to string and to lower case
+      const submissionText = Object.values(submissionData)
+        .map((value) => value.toString().toLowerCase())
+        .join(" ");
+
+      const isSpam = await checkForSpam(
+        submissionText,
+        customSpamWords,
+        comment,
+      );
+
       const user = await convex.query(api.users.getUserByFormId, { formId });
 
       let isFilePresent = false;
@@ -66,8 +128,6 @@ export async function POST(
         if (typeof value !== "string") {
           isFilePresent = true;
           break; // break out if a file is found as it's not supported for free users
-        } else {
-          submissionData[key] = value;
         }
       }
 
@@ -86,17 +146,21 @@ export async function POST(
         );
       }
 
-      try {
-        const filesMetadata = await handleFileUploads(formData, convex);
+      const filesMetadata = await handleFileUploads(formData, convex);
+
+      if (isSpam) {
         await convex.mutation(api.submissions.addSubmission, {
           formId,
           data: JSON.stringify(submissionData),
+          isSpam: true,
           files: filesMetadata,
         });
-      } catch (error) {
-        console.error(error);
-        return new NextResponse(JSON.stringify({ error: error }), {
-          status: 400,
+      } else {
+        await convex.mutation(api.submissions.addSubmission, {
+          formId,
+          data: JSON.stringify(submissionData),
+          isSpam: false,
+          files: filesMetadata,
         });
       }
     } else {
@@ -104,7 +168,6 @@ export async function POST(
     }
 
     // email notification
-    const form = await convex.query(api.forms.getFormByIdServer, { formId });
     const { emailRecipients, emailThreads } = form.settings;
     const emailRecipientIds: Id<"users">[] = emailRecipients.map(
       (id) => id as Id<"users">,
@@ -142,4 +205,26 @@ export async function POST(
       { status: 500 },
     );
   }
+}
+
+async function checkForSpam(
+  submissionText: string,
+  customSpamWords: string[],
+  commentData: Comment,
+): Promise<boolean> {
+  // Check custom spam words
+  // TODO: Capture Posthog event for detecting custom spam word
+  const isCustomSpam = customSpamWords.some((spamWord) => {
+    const regex = new RegExp(`\\b${spamWord}\\b`, "i");
+    return regex.test(submissionText);
+  });
+
+  // Check using Akismet
+  const akismetResult = await akismet.checkComment(commentData);
+  const isAkismetSpam = akismetResult !== CheckResult.ham;
+
+  // Combine results from custom spam and Akismet checks
+  const isSpam = isCustomSpam || isAkismetSpam;
+
+  return isSpam;
 }

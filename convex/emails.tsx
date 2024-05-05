@@ -1,7 +1,7 @@
 import { ConvexError, v } from "convex/values";
 import { Resend } from "resend";
 import { internal } from "./_generated/api";
-import { action, internalAction } from "./_generated/server";
+import { action } from "./_generated/server";
 import NewSubmissionEmail from "./emails/NewSubmission";
 import WelcomeEmail from "./emails/WelcomeEmail";
 
