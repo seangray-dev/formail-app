@@ -8,6 +8,7 @@ export const addSubmission = mutation({
   args: {
     formId: v.id("forms"),
     data: v.string(),
+    isSpam: v.optional(v.boolean()),
     files: v.optional(
       v.array(
         v.object({
@@ -22,7 +23,7 @@ export const addSubmission = mutation({
     ),
   },
 
-  async handler(ctx, { formId, data, files = [] }) {
+  async handler(ctx, { formId, data, files = [], isSpam }) {
     const user = await getUserByFormId(ctx, { formId });
     const { hasActiveSubscription } = await checkSubStatus(ctx, user._id);
 
@@ -36,6 +37,7 @@ export const addSubmission = mutation({
       formId,
       data,
       files,
+      isSpam,
     });
 
     if (!hasActiveSubscription) {

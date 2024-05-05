@@ -19,11 +19,14 @@ export async function OPTIONS() {
   });
 }
 
+// TODO: If spam is detected do not deduct remaining submission from user
+
 export async function POST(
   req: NextRequest,
   context: { params: { formId: any } },
 ) {
   const formId = context.params.formId;
+  const form = await convex.query(api.forms.getFormByIdServer, { formId });
   // let akismetSubmissionData = {
   //   ip: req.headers.get("x-forwarded-for") || req.ip,
   //   useragent: req.headers.get("user-agent"),
@@ -49,16 +52,54 @@ export async function POST(
     const contentType = req.headers.get("content-type") || "";
     let submissionData: { [key: string]: any } = {};
 
+    // Assuming submissionData is parsed from JSON and customSpamWords is fetched
+    const customSpamWords = form.settings.customSpamWords
+      ? form.settings.customSpamWords
+          .split(",")
+          .map((word) => word.trim().toLowerCase())
+      : [];
+
+    // Convert all values to string and to lower case
+    const submissionText = Object.values(submissionData)
+      .map((value) => value.toString().toLowerCase())
+      .join(" ");
+
     // non-file submission handling
     if (contentType.includes("application/json")) {
       submissionData = await req.json();
-      // implement check for spam
-      await convex.mutation(api.submissions.addSubmission, {
-        formId,
-        data: JSON.stringify(submissionData),
-      });
+
+      // Convert all values to string and to lower case
+      const submissionText = Object.values(submissionData)
+        .map((value) => value.toString().toLowerCase())
+        .join(" ");
+
+      const isSpam = checkForSpam(submissionText, customSpamWords);
+
+      if (isSpam) {
+        // Logic to handle spam submission
+        await convex.mutation(api.submissions.addSubmission, {
+          formId,
+          data: JSON.stringify(submissionData),
+          isSpam: true,
+        });
+      } else {
+        // Logic to handle normal submission
+        await convex.mutation(api.submissions.addSubmission, {
+          formId,
+          data: JSON.stringify(submissionData),
+          isSpam: false,
+        });
+      }
     } else if (contentType.includes("multipart/form-data")) {
       const formData = await req.formData();
+      submissionData = Object.fromEntries(formData.entries());
+
+      // Convert all values to string and to lower case
+      const submissionText = Object.values(submissionData)
+        .map((value) => value.toString().toLowerCase())
+        .join(" ");
+
+      const isSpam = checkForSpam(submissionText, customSpamWords);
       const user = await convex.query(api.users.getUserByFormId, { formId });
 
       let isFilePresent = false;
@@ -66,8 +107,6 @@ export async function POST(
         if (typeof value !== "string") {
           isFilePresent = true;
           break; // break out if a file is found as it's not supported for free users
-        } else {
-          submissionData[key] = value;
         }
       }
 
@@ -86,17 +125,21 @@ export async function POST(
         );
       }
 
-      try {
-        const filesMetadata = await handleFileUploads(formData, convex);
+      const filesMetadata = await handleFileUploads(formData, convex);
+
+      if (isSpam) {
         await convex.mutation(api.submissions.addSubmission, {
           formId,
           data: JSON.stringify(submissionData),
+          isSpam: true,
           files: filesMetadata,
         });
-      } catch (error) {
-        console.error(error);
-        return new NextResponse(JSON.stringify({ error: error }), {
-          status: 400,
+      } else {
+        await convex.mutation(api.submissions.addSubmission, {
+          formId,
+          data: JSON.stringify(submissionData),
+          isSpam: false,
+          files: filesMetadata,
         });
       }
     } else {
@@ -104,7 +147,6 @@ export async function POST(
     }
 
     // email notification
-    const form = await convex.query(api.forms.getFormByIdServer, { formId });
     const { emailRecipients, emailThreads } = form.settings;
     const emailRecipientIds: Id<"users">[] = emailRecipients.map(
       (id) => id as Id<"users">,
@@ -142,4 +184,19 @@ export async function POST(
       { status: 500 },
     );
   }
+}
+
+function checkForSpam(
+  submissionText: string,
+  customSpamWords: string[],
+): boolean {
+  const isSpam = customSpamWords.some((spamWord) => {
+    const regex = new RegExp(`\\b${spamWord}\\b`, "i");
+    const result = regex.test(submissionText);
+    return result;
+  });
+
+  // TODO: Capture Posthog event for detecting custom spam word
+
+  return isSpam;
 }
