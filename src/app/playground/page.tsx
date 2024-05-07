@@ -7,9 +7,15 @@ export default function PlaygroundPage() {
     Message: "This is a test message.",
   };
 
+  const formId = "j571gwa7mjbv1d4yj1amqw8mxs6rfrvm";
+
   return (
     <section className="container py-10">
-      <PlaygroundForm />
+      {/* <PlaygroundForm /> */}
+      <form action={`http://localhost:3000/submit/${formId}`} method="POST">
+        <input type="email" name="email" className="text-black" />
+        <button type="submit">Send</button>
+      </form>
     </section>
   );
 }
