@@ -1,7 +1,7 @@
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "../../convex/_generated/api";
 
-type FileMetadata = {
+export type FileMetadata = {
   storageId: string;
   type: "image/jpeg" | "image/png" | "application/pdf";
 };

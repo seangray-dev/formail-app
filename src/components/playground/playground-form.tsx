@@ -21,6 +21,7 @@ const formSchema = z.object({
   // file1: z
   //   .instanceof(FileList)
   //   .refine((files) => files.length > 0, "At least one file is required."),
+  email: z.string().email(),
   // file2: z.instanceof(FileList).optional(),
 });
 
@@ -41,6 +42,7 @@ export function PlaygroundForm() {
     const formData = new FormData();
 
     formData.append("name", values.name);
+    formData.append("email", values.email);
 
     // // Append all files from the 'file1' input
     // Array.from(values.file1).forEach((file, index) => {
@@ -95,6 +97,19 @@ export function PlaygroundForm() {
               <FormLabel>Name</FormLabel>
               <FormControl>
                 <Input placeholder="Michael Scott" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>email</FormLabel>
+              <FormControl>
+                <Input type="email" placeholder="Michael Scott" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
