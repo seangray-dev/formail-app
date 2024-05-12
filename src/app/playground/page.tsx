@@ -1,6 +1,6 @@
-import FormAction from "./form-action";
-import FormailHooks from "./formail-hooks";
-import JavaScript from "./javascript";
+// import FormAction from "./form-action";
+// import FormailHooks from "./formail-hooks";
+// import JavaScript from "./javascript";
 
 export default function PlaygroundPage() {
   return (
