@@ -7,13 +7,20 @@ export default function PlaygroundPage() {
     Message: "This is a test message.",
   };
 
-  const formId = "j571gwa7mjbv1d4yj1amqw8mxs6rfrvm";
+  const formId = "j574c5qqbe2x8482ajcq0cd52h6rw6wv";
 
   return (
-    <section className="container py-10">
+    <section className="container flex-1 py-10">
       {/* <PlaygroundForm /> */}
-      <form action={`http://localhost:3000/submit/${formId}`} method="POST">
+      <form
+        action={`http://localhost:3000/submit/${formId}`}
+        method="POST"
+        className="flex flex-col gap-4"
+      >
+        <label htmlFor="email">Email</label>
         <input type="email" name="email" className="text-black" />
+        <label htmlFor="email">Name</label>
+        <input type="text" name="name" className="text-black" />
         <button type="submit">Send</button>
       </form>
     </section>
