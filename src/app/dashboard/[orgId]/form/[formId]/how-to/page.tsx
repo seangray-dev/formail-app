@@ -13,6 +13,7 @@ import {
   CircleHelpIcon,
   ClipboardCheckIcon,
   ClipboardIcon,
+  TriangleAlertIcon,
 } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
@@ -164,29 +165,35 @@ function MyForm() {
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-      <div className="mb-10 mt-6 text-muted-foreground">
-        <div className="font-semibold text-white">Note:</div>
-        Make sure all form elements have a{" "}
-        <code className="relative rounded bg-muted py-[0.2rem] font-mono text-sm font-semibold text-white">
-          name
-        </code>{" "}
-        attribute.
+
+      <div className="flex flex-col gap-4 pt-10">
+        <Alert className="bg-secondary">
+          <TriangleAlertIcon size={18} />
+          <AlertTitle>Note:</AlertTitle>
+          <AlertDescription className="text-muted-foreground">
+            Make sure all form elements have a{" "}
+            <code className="relative rounded bg-muted py-[0.2rem] font-mono text-sm font-semibold text-white">
+              name
+            </code>{" "}
+            attribute.
+          </AlertDescription>
+        </Alert>
+        <Alert className="bg-secondary">
+          <CircleHelpIcon size={18} />
+          <AlertTitle>Need help?</AlertTitle>
+          <AlertDescription className="text-muted-foreground">
+            Check out the{" "}
+            <Link
+              target="_blank"
+              href="https://docs.formail.dev"
+              className="underline hover:text-white"
+            >
+              docs
+            </Link>{" "}
+            for more information.
+          </AlertDescription>
+        </Alert>
       </div>
-      <Alert className="bg-secondary">
-        <CircleHelpIcon size={18} />
-        <AlertTitle>Need help?</AlertTitle>
-        <AlertDescription className="text-muted-foreground">
-          Check out the{" "}
-          <Link
-            target="_blank"
-            href="https://docs.formail.dev"
-            className="underline hover:text-white"
-          >
-            docs
-          </Link>{" "}
-          for more information.
-        </AlertDescription>
-      </Alert>
     </div>
   );
 }
