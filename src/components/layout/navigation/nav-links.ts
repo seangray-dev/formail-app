@@ -16,3 +16,14 @@ export const navLinks = [
     href: "https://docs.formail.dev",
   },
 ];
+
+export const legalLinks = [
+  {
+    title: "Privacy Policy",
+    href: "/legal/privacy-policy",
+  },
+  {
+    title: "Terms of Service",
+    href: "/legal/terms-of-service",
+  },
+];

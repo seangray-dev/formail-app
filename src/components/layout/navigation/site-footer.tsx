@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import React from "react";
-import { navLinks } from "./nav-links";
+import { legalLinks, navLinks } from "./nav-links";
 
 export default function SiteFooter() {
   return (
@@ -31,18 +31,15 @@ export default function SiteFooter() {
             </Link>
           </div>
           <div className="flex justify-center gap-2 md:justify-end">
-            <Link
-              className="hover:text-white hover:underline"
-              href={"/legal/privacy-policy"}
-            >
-              Privacy Policy
-            </Link>
-            <Link
-              className="hover:text-white hover:underline"
-              href={"/legal/terms-of-service"}
-            >
-              Terms of Service
-            </Link>
+            {legalLinks.map((link, idx) => (
+              <Link
+                key={idx}
+                className="hover:text-white hover:underline"
+                href={link.href}
+              >
+                {link.title}
+              </Link>
+            ))}
           </div>
         </div>
       </div>
