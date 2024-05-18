@@ -110,15 +110,36 @@ export async function POST(
         isSpam,
         formId,
         filesMetadata,
+        contentType,
       );
     } else {
       // Convert FormData to a normal object for non-file submission
       submissionData = Object.fromEntries(formData.entries());
-      await handleNonFileSubmission(form, formId, submissionData, isSpam);
+      await handleNonFileSubmission(
+        form,
+        formId,
+        submissionData,
+        isSpam,
+        contentType,
+      );
     }
   } else {
-    await handleNonFileSubmission(form, formId, submissionData, isSpam);
+    await handleNonFileSubmission(
+      form,
+      formId,
+      submissionData,
+      isSpam,
+      contentType,
+    );
   }
+
+  return new NextResponse(
+    JSON.stringify({ message: "Successfully Submitted" }),
+    {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    },
+  );
 }
 
 const handleNonFileSubmission = async (
@@ -126,6 +147,7 @@ const handleNonFileSubmission = async (
   formId: Id<"forms">,
   submissionData: any,
   isSpam: boolean,
+  contentType: string,
 ) => {
   try {
     await convex.mutation(api.submissions.addSubmission, {
@@ -139,8 +161,16 @@ const handleNonFileSubmission = async (
       status: 400,
     });
   }
+
   await sendNewSubmissionEmail(form, submissionData);
-  redirect("/submit/success?status=success");
+
+  // Differentiate handling based on content type:
+  // - HTML form submissions (e.g., application/x-www-form-urlencoded) expect a redirect upon success.
+  // - JSON-based submissions (e.g., application/json) expect a JSON response.
+  // This ensures appropriate response behavior for various submission methods.
+  if (!contentType.includes("application/json")) {
+    return redirect("/submit/success?status=success");
+  }
 };
 
 const handleFileSubmission = async (
@@ -150,6 +180,7 @@ const handleFileSubmission = async (
   isSpam: boolean,
   formId: Id<"forms">,
   filesMetaData: FileMetadata[],
+  contentType: string,
 ) => {
   let isFilePresent = false;
   for (let [key, value] of formData.entries()) {
@@ -187,10 +218,14 @@ const handleFileSubmission = async (
     });
   }
   await sendNewSubmissionEmail(form, formData);
-  return new NextResponse(
-    JSON.stringify({ message: "Submission received and email sent!" }),
-    { status: 200 },
-  );
+
+  // Differentiate handling based on content type:
+  // - HTML form submissions (e.g., application/x-www-form-urlencoded) expect a redirect upon success.
+  // - JSON-based submissions (e.g., application/json) expect a JSON response.
+  // This ensures appropriate response behavior for various submission methods.
+  if (!contentType.includes("application/json")) {
+    return redirect("/submit/success?status=success");
+  }
 };
 
 const checkForSpam = async (
