@@ -138,7 +138,8 @@ export default function DashboardHeader() {
             >
               Submissions
             </Link>
-            <Link
+            {/* TODO: Add when paid features are released */}
+            {/* <Link
               href={`/dashboard/${orgId}/form/${formId}/files`}
               className={
                 isActive(`/dashboard/${orgId}/form/${formId}/files`)
@@ -147,7 +148,7 @@ export default function DashboardHeader() {
               }
             >
               Files
-            </Link>
+            </Link> */}
             <Link
               href={`/dashboard/${orgId}/form/${formId}/analytics`}
               className={

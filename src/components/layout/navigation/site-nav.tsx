@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { api } from "../../../../convex/_generated/api";
 import CTAButton from "../Home/cta-button";
 import FormSheet from "./forms-sheet";
+import { navLinks } from "./nav-links";
 
 export default function SiteNav() {
   const pay = useAction(api.stripe.pay);
@@ -45,32 +46,16 @@ export default function SiteNav() {
         <div className="flex items-center gap-4">
           <div className="hidden gap-4 sm:flex">
             <SignedIn>
-              <Link
-                className="text-muted-foreground hover:text-white hover:underline"
-                href={"/dashboard"}
-              >
-                Dashboard
-              </Link>
+              {navLinks.map((link, idx) => (
+                <Link
+                  key={idx}
+                  className="text-muted-foreground hover:text-white hover:underline"
+                  href={link.href}
+                >
+                  {link.title}
+                </Link>
+              ))}
             </SignedIn>
-            <Link
-              className="text-muted-foreground hover:text-white hover:underline"
-              href={"/pricing"}
-            >
-              Pricing
-            </Link>
-            <Link
-              className="text-muted-foreground hover:text-white hover:underline"
-              href={"/contact"}
-            >
-              Contact
-            </Link>
-            <a
-              target="_blank"
-              className="text-muted-foreground hover:text-white hover:underline"
-              href="https://docs.formail.dev"
-            >
-              Docs
-            </a>
           </div>
           <SignedOut>
             <Link

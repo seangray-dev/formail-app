@@ -22,7 +22,9 @@ export default function FeatureCard({
     <Card className="flex flex-col-reverse">
       <CardHeader className="flex flex-1 flex-col gap-2 pt-0 text-center">
         <CardTitle className="text-lg 2xl:text-xl">{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
+        <CardDescription className="mx-auto w-2/3">
+          {description}
+        </CardDescription>
       </CardHeader>
       <CardContent className="py-10">
         <div className="relative flex justify-center">
