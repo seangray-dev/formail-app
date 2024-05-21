@@ -38,7 +38,11 @@ const nextConfig = {
   },
 };
 
-const withMDX = createNextDocsMDX();
+const withMDX = createNextDocsMDX({
+  mdxOptions: {
+    lastModifiedTime: "git",
+  },
+});
 const wrappedConfig = withMDX(nextConfig);
 
 export default withSentryConfig(

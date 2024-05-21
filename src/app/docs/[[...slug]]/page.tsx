@@ -1,4 +1,5 @@
 import { getPage, getPages } from "@/app/source";
+import { RollButton } from "fumadocs-ui/components/roll-button";
 import { DocsBody, DocsPage } from "fumadocs-ui/page";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -18,10 +19,21 @@ export default async function Page({
 
   return (
     <DocsPage toc={page.data.exports.toc}>
+      <RollButton />
       <DocsBody>
-        <h1>{page.data.title}</h1>
         <MDX />
       </DocsBody>
+      <div className="flex justify-end text-sm">
+        {page.data.exports.lastModified
+          ? `Last updated on ${new Date(
+              page.data.exports.lastModified,
+            ).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}`
+          : ""}
+      </div>
     </DocsPage>
   );
 }
