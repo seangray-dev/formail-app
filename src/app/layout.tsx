@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import siteMetadata from "@/config/site-metadata";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { RootProvider } from "fumadocs-ui/provider";
 import type { Metadata } from "next";
 import { Sora } from "next/font/google";
 import ConvexClientProvider from "../components/Providers/ConvexClientProvider";
@@ -60,7 +61,7 @@ export default function RootLayout({
             className={`${sora.className} flex min-h-screen flex-col antialiased`}
           >
             <SiteNav />
-            {children}
+            <RootProvider>{children}</RootProvider>
             <SiteFooter />
             <Toaster richColors />
             <Analytics />

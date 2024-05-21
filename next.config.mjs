@@ -1,6 +1,7 @@
 import { withSentryConfig } from "@sentry/nextjs";
-/** @type {import('next').NextConfig} */
+import createNextDocsMDX from "fumadocs-mdx/config";
 
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   async rewrites() {
     return [
@@ -37,9 +38,12 @@ const nextConfig = {
   },
 };
 
+const withMDX = createNextDocsMDX();
+const wrappedConfig = withMDX(nextConfig);
+
 export default withSentryConfig(
   withSentryConfig(
-    nextConfig,
+    wrappedConfig,
     {
       // For all available options, see:
       // https://github.com/getsentry/sentry-webpack-plugin#options
