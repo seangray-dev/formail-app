@@ -11,6 +11,13 @@ export default function RootDocsLayout({ children }: { children: ReactNode }) {
         title: "Docs",
         githubUrl: "https://github.com/seangray-dev/formail-app",
       }}
+      links={[
+        {
+          icon: "",
+          text: "Roadmap",
+          url: "https://github.com/users/seangray-dev/projects/5",
+        },
+      ]}
     >
       {children}
     </DocsLayout>
