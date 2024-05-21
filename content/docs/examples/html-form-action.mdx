@@ -1,0 +1,35 @@
+---
+title: HTML Form Action
+---
+
+# HTML Form Action
+
+After you've created a form in the Formail dashboard, you can integrate it directly into your HTML forms. This method is straightforward and works great for static sites and those preferring a server-less approach.
+
+Simply set the form action to `https://formail.dev/submit/<YOUR_FORM_ID>` and the method to `POST`, replacing your `<YOUR_FORM_ID>` with your actual form id obtained from your form page.
+
+```html copy
+<form action="https://formail.dev/submit/<YOUR_FORM_ID>" method="POST">
+  <input type="email" name="email" />
+  <textarea name="message"></textarea>
+  <button type="submit">Send</button>
+</form>
+```
+
+## Form validation
+
+It's recommended using HTML5's built in validation attributes to ensure the form is filled out correctly before submission.
+
+Here's an example of how you can add required fields to the form:
+
+```html copy
+<form action="https://formail.dev/submit/<YOUR_FORM_ID>" method="POST">
+  <input type="email" name="email" required />
+  <textarea name="message" required></textarea>
+  <button type="submit">Send</button>
+</form>
+```
+
+## Resources
+
+[MDN: Client-side form validation](https://developer.mozilla.org/en-US/docs/Learn/HTML/Forms/Form_validation)

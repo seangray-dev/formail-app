@@ -1,0 +1,103 @@
+---
+title: TypeScript / JavaScript
+---
+
+import { Step, Steps } from "fumadocs-ui/components/steps";
+import { Callout } from "fumadocs-ui/components/callout";
+
+# TypeScript / JavaScript
+
+Here's how you can use both JavaScript or TypeScript to submit your forms:
+
+<Steps>
+<Step>
+### Obtain Your Form ID
+Log into your [dashboard](https://formail.dev/dashboard) and create a form. You can find the form id on the form page.
+</Step>
+<Step>
+### Make a `POST` request using `fetch` to your form
+
+Make a `POST` request to `https://formail.dev/submit/<YOUR_FORM_ID>` with the form data in the request body. Also ensure that within the `headers` object you include the `Content Type` as `application/json` Replace `<YOUR_FORM_ID>` with your actual form id obtained from your form page.
+
+</Step>
+</Steps>
+
+## JavaScript
+
+```javascript copy
+const handleSubmit = async (event) => {
+  event.preventDefault();
+  const formData = new FormData(event.target);
+  const data = Object.fromEntries(formData.entries());
+  const formId = "your-form-id"; // Replace this with your form id
+
+  try {
+    const response = await fetch(`https://formail.dev/submit/${formId}`, {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) throw new Error("Form submission failed");
+    console.log("Form submitted successfully");
+  } catch (error) {
+    console.error(error);
+  }
+};
+```
+
+<Callout type="warning">
+  If your form includes non-string types (e.g., files, arrays, or objects), you
+  need to adjust the code to handle these appropriately. This example handles
+  only string values, but you can expand it to manage other types.
+</Callout>
+<Callout type="info">
+  Remember to handle errors and exceptions to ensure a smooth user experience.
+</Callout>
+
+## TypeScript
+
+```typescript copy
+const handleSubmit = async (
+  event: React.FormEvent<HTMLFormElement>,
+): Promise<void> => {
+  event.preventDefault();
+  const formData = new FormData(event.currentTarget);
+  const data: { [key: string]: any } = {}; // Using any type to allow non-string values
+  const formId = "your-form-id"; // Replace this with your form id
+
+  formData.forEach((value, key) => {
+    if (typeof value === "string") {
+      data[key] = value;
+    } else {
+      data[key] = value; // handle non string types here
+    }
+  });
+
+  try {
+    const response = await fetch(`https://formail.dev/submit/${formId}`, {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) throw new Error("Form submission failed");
+    console.log("Form submitted successfully");
+  } catch (error) {
+    console.error("An error occurred:", (error as Error).message);
+  }
+};
+```
+
+<Callout type="warning">
+  If your form includes non-string types (e.g., files, arrays, or objects), you
+  need to adjust the code to handle these appropriately. This example handles
+  only string values, but you can expand it to manage other types.
+</Callout>
+<Callout type="info">
+  Remember to handle errors and exceptions to ensure a smooth user experience.
+</Callout>

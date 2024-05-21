@@ -1,5 +1,62 @@
 ---
-title: Hello World
+title: Introduction
 ---
 
-## Yo what's up
+# What is Formail?
+
+Formail streamlines form management, offering instant notifications and
+flexible data handling. Ideal for developers and small businesses, it
+simplifies submission processes, making them user-friendly and
+efficient.
+
+## Simplifying Form Managment
+
+Handling form submissions can be cumbersome, which is why we
+streamline the process for you. Currently, we're enhancing form
+management with efficient data handling and with more features on the
+horizon.
+
+This is the core service we offer, and our pricing structure is
+straightforward and transparent.
+
+## Centralized Submission Processing
+
+With Formail, form submissions are seamlessly directed to
+`formail.dev/submit/<your-form-id>`, a secure endpoint
+we manage. This approach centralizes data processing, relieving you of
+the direct server management burden.
+
+This system is built to ensure that while you retain control over form
+design and integration, the heavy lifting of data handling is managed
+efficiently by our infrastructure, offering a blend of convenience and
+reliability.
+
+## Streamlined Integration for any framework
+
+Formail provides an open-source [TypeScript Library](https://www.npmjs.com/package/formail-hooks), designed to be framework-agnostic, enabling easy data submissions to
+our servers.
+
+Simplifying form submissions becomes effortless with our library:
+
+```jsx
+import { formailSubmit } from "formail-hooks";
+
+function MyForm() {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formId = "your-unique-form-id";
+    try {
+      await formailSubmit({ formId, formData: new FormData(e.target) });
+      console.log("Form submitted successfully");
+    } catch (error) {
+      console.error("Form submission failed:", error);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <button type="submit">Submit</button>
+    </form>
+  );
+}
+```

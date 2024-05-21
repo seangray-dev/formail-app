@@ -1,0 +1,95 @@
+---
+title: Installation
+---
+
+import { Step, Steps } from "fumadocs-ui/components/steps";
+
+# Installation
+
+Getting started with Formail is easy and flexible. You can integrate Formail into your applications either by using our convenient `formail-hooks` package or by making a `POST` request. Below, you'll find instructions for both methods.
+
+## Obtaining Your Form ID
+
+Before integrating Formail, you'll need a unique Form ID for your form. Here's how to obtain it:
+
+<Steps>
+<Step>
+### Log in to your dashboard:
+
+Visit [Formail Dashboard](https://www.formail.dev/dashboard).
+
+</Step>
+<Step>
+### Create a new form:
+
+If you haven't already created a form, you can do so by clicking the "Create New Form" button.
+
+</Step>
+<Step>
+### Copy your Form ID:
+
+Once your form is created, you'll find a Form ID associated with it. Copy this ID as you will need it for the integration process.
+
+</Step>
+
+</Steps>
+## Using `formail-hooks`
+
+For a more streamlined integration, you can utilize our `formail-hooks` package.
+
+### Installation
+
+First, install the package via npm:
+
+```bash copy
+npm install formail-hooks
+```
+
+### Usage
+
+Here's how to use the hook in a React component:
+
+```jsx copy
+import { useFormail } from "formail-hooks";
+
+const MyComponent = () => {
+  const { handleSubmit } = useFormail("<YOUR_FORM_ID>");
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input type="email" name="email" required />
+      <textarea name="message" required></textarea>
+      <button type="submit">Send</button>
+    </form>
+  );
+};
+```
+
+## Without using `formail-hooks`
+
+If you prefer to handle submissions manually or are not using our package, you can make a direct POST request to our endpoint.
+
+```js copy
+const handleSubmit = async (event) => {
+  event.preventDefault();
+  const formId = "<your-form-id>";
+  const data = new FormData(event.target);
+
+  try {
+    const response = await fetch(`https://www.formail.dev/submit/${formId}`, {
+      method: "POST",
+      body: data,
+    });
+    if (!response.ok) throw new Error("Form submission failed");
+    console.log("Form submitted successfully");
+  } catch (error) {
+    console.error(error);
+  }
+};
+```
+
+Replace `<YOUR_FORM_ID>` with your actual Form ID. The body of the request should contain the form data you wish to submit. \*/}
+
+## Explore More Examples
+
+For more alternative ways to set up your forms visit our [Examples Overview](/examples)

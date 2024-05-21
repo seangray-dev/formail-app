@@ -1,0 +1,76 @@
+---
+title: Formail Hooks
+---
+
+import { Step, Steps } from "fumadocs-ui/components/steps";
+import { Callout } from "fumadocs-ui/components/callout";
+
+# Formail Hooks
+
+[Formail-Hooks](https://github.com/seangray-dev/formail-hooks) is a framework-agnostic TypeScript package designed to simplify form submissions. This package provides a utility function `formailSubmit` that manages the submission process for you, making it seamless and easy to integrate into any JavaScript or TypeScript project.
+
+<Steps>
+<Step>
+### Install the package
+
+```bash copy
+npm install formail-hooks
+```
+
+</Step>
+<Step>
+### Use `formail-submit` in your form
+
+This example shows a basic React component that uses `formailSubmit` to send form data.
+
+```jsx copy
+import { formailSubmit } from "formail-hooks";
+
+const FORMAIL_FORM_ID = process.env.FORMAIL_FORM_ID;
+
+async function handleSubmit(e) {
+  e.preventDefault();
+
+  // Create an instance of FormData
+  const formData = new FormData(e.target);
+
+  try {
+    const response = await formailSubmit({
+      formId: FORMAIL_FORM_ID,
+      formData,
+    });
+
+    if (!response.ok) {
+      throw new Error("Form submission failed");
+    }
+
+    // Reset the form or clear the state here if necessary
+    form.reset();
+    console.log("Form submitted successfully");
+  } catch (err) {
+    console.err("An error occurred:", err.message);
+  }
+}
+
+function ContactPage() {
+  return (
+    <form onSubmit={handleSubmit}>
+      <label htmlFor="name">Name:</label>
+      <input type="text" id="name" name="name" required />
+      <label htmlFor="email">Email:</label>
+      <input type="email" id="email" name="email" required />
+      <button type="submit">Submit</button>
+    </form>
+  );
+}
+
+export default ContactPage;
+```
+
+<Callout type="info">
+  Remember to handle errors and exceptions when using `formailSubmit` to ensure
+  a smooth user experience.
+</Callout>
+
+</Step>
+</Steps>
