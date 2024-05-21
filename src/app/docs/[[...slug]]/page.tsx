@@ -18,22 +18,14 @@ export default async function Page({
   const MDX = page.data.exports.default;
 
   return (
-    <DocsPage toc={page.data.exports.toc}>
+    <DocsPage
+      toc={page.data.exports.toc}
+      lastUpdate={page.data.exports.lastModified}
+    >
       <RollButton />
       <DocsBody>
         <MDX />
       </DocsBody>
-      <div className="flex justify-end text-sm">
-        {page.data.exports.lastModified
-          ? `Last updated on ${new Date(
-              page.data.exports.lastModified,
-            ).toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}`
-          : ""}
-      </div>
     </DocsPage>
   );
 }
